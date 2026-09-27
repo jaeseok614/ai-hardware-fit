@@ -347,10 +347,10 @@
     setStarted(params.has("gpu") || params.has("scenario") || ["modelFinder", "infra", "placement"].includes(params.get("mode")));
     render(document.body.dataset.workspace || "finder");
     document.querySelectorAll("[data-catalog-request]").forEach((link) => {
-      link.href = window.AIHardwareCatalogRequests?.issueUrl(link.dataset.catalogRequest) || "https://github.com/jaeseok614/llm-gpu-checker-ko/issues/new";
+      link.href = window.AIHardwareCatalogRequests?.issueUrl(link.dataset.catalogRequest) || "https://github.com/jaeseok614/ai-hardware-fit/issues/new";
     });
     document.querySelectorAll("[data-catalog-status]").forEach((link) => {
-      link.href = window.AIHardwareCatalogRequests?.statusUrl(link.dataset.catalogStatus) || "https://github.com/jaeseok614/llm-gpu-checker-ko/issues";
+      link.href = window.AIHardwareCatalogRequests?.statusUrl(link.dataset.catalogStatus) || "https://github.com/jaeseok614/ai-hardware-fit/issues";
     });
   }
 

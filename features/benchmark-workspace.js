@@ -16,7 +16,7 @@ function renderBenchmarkDashboardWorkspace() {
   target.innerHTML = `
     <div class="gpu-insights-head">
       <div><span class="section-kicker">MEASURED DATA</span><h2 id="benchmarkDashboardTitle">${uiText("benchmark.dashboard")}</h2></div>
-      <a class="ghost-button" href="https://github.com/jaeseok614/llm-gpu-checker-ko/issues/new?template=benchmark-report.yml" target="_blank" rel="noreferrer">${uiText("benchmark.submit")}</a>
+      <a class="ghost-button" href="https://github.com/jaeseok614/ai-hardware-fit/issues/new?template=benchmark-report.yml" target="_blank" rel="noreferrer">${uiText("benchmark.submit")}</a>
     </div>
     <div class="benchmark-dashboard-grid">
       <div><span>${en ? "Measured rows" : "실측 데이터"}</span><strong>${measured.length}</strong></div>

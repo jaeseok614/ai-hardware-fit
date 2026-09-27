@@ -4,9 +4,9 @@
 
 ## 제보 방식
 
-- 새 모델 추가: GitHub Issue의 [`Model request`](https://github.com/jaeseok614/llm-gpu-checker-ko/issues/new?template=model-request.yml)
-- 새 GPU 추가: GitHub Issue의 [`GPU request`](https://github.com/jaeseok614/llm-gpu-checker-ko/issues/new?template=gpu-request.yml)
-- 실제 실행 결과: `scripts/benchmark-cli.mjs`로 측정한 JSON을 [`Benchmark report`](https://github.com/jaeseok614/llm-gpu-checker-ko/issues/new?template=benchmark-report.yml)에 붙여넣기
+- 새 모델 추가: GitHub Issue의 [`Model request`](https://github.com/jaeseok614/ai-hardware-fit/issues/new?template=model-request.yml)
+- 새 GPU 추가: GitHub Issue의 [`GPU request`](https://github.com/jaeseok614/ai-hardware-fit/issues/new?template=gpu-request.yml)
+- 실제 실행 결과: `scripts/benchmark-cli.mjs`로 측정한 JSON을 [`Benchmark report`](https://github.com/jaeseok614/ai-hardware-fit/issues/new?template=benchmark-report.yml)에 붙여넣기
 
 ## 모델 데이터 기준
 

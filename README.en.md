@@ -1,198 +1,100 @@
-# AI Hardware Fit
+# Can my GPU run this?
 
 <p align="center">
-  <img src="./assets/gpu-board.svg" alt="AI Hardware Fit" width="96" />
+  <img src="./assets/gpu-board.svg" alt="AI Hardware Fit" width="88" />
 </p>
 
 <p align="center">
-  <strong>Find what AI models run on your GPU, or which GPU fits a model.<br />An open-source calculator with no install or sign-in.</strong>
+  <strong>Pick a GPU. Get 3 models that fit, the recommended quantization,<br />VRAM and speed ranges, plus a ready-to-run command.</strong>
 </p>
 
 <p align="center">
-  <a href="https://github.com/jaeseok614/llm-gpu-checker-ko/actions/workflows/ci.yml"><img src="https://github.com/jaeseok614/llm-gpu-checker-ko/actions/workflows/ci.yml/badge.svg" alt="CI status" /></a>
+  <a href="https://github.com/jaeseok614/ai-hardware-fit/actions/workflows/ci.yml"><img src="https://github.com/jaeseok614/ai-hardware-fit/actions/workflows/ci.yml/badge.svg" alt="CI status" /></a>
   <a href="./LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="MIT License" /></a>
+  <img src="https://img.shields.io/badge/GPU_presets-151-0f766e" alt="151 GPU presets" />
+  <img src="https://img.shields.io/badge/AI_models-332-164a7b" alt="332 AI models" />
 </p>
 
 <p align="center">
-  <a href="https://jaeseok614.github.io/llm-gpu-checker-ko/?lang=en"><strong>Open the app</strong></a>
-  · <a href="https://jaeseok614.github.io/llm-gpu-checker-ko/?mode=infra&amp;lang=en&amp;studio=consulting"><strong>AI infrastructure sizing</strong></a>
-  · <a href="https://jaeseok614.github.io/llm-gpu-checker-ko/?mode=placement&amp;lang=en">AI Stack Placement</a>
-  · <a href="https://jaeseok614.github.io/llm-gpu-checker-ko/?mode=apiCost&amp;lang=en">API Cost Calculator</a>
+  <a href="https://jaeseok614.github.io/ai-hardware-fit/?lang=en"><strong>Try it now</strong></a>
+  · <a href="https://jaeseok614.github.io/ai-hardware-fit/?lang=en&amp;gpu=rtx3060-12">RTX 3060 example</a>
   · <a href="./README.md">한국어</a>
-  · <a href="https://github.com/jaeseok614/llm-gpu-checker-ko/issues/new?template=gpu-request.yml">Request a GPU</a>
+  · <a href="https://github.com/jaeseok614/ai-hardware-fit/issues/new?template=benchmark-report.yml">Share a measurement</a>
 </p>
 
 <p align="center">
-  <img src="./docs/home-v7.30.png" alt="AI Hardware Fit home screen for finding AI models that run on a GPU" />
+  <img src="./docs/demo.gif" alt="10-second demo: choose an RTX 3060, see models that fit, and copy a run command" />
 </p>
 
 <p align="center">
-  <sub>Choose a GPU → compare runnable models, quantization, and estimated speed · calculations stay in your browser</sub>
+  <sub>No install · No sign-up · No input leaves your browser · Open formulas and data</sub>
 </p>
 
-The homepage always opens the GPU chooser. GPU-specific example links open results directly; your last GPU remains an explicit shortcut, not an automatic redirect.
+## How it works
 
-## Open a sample scenario
+1. Search for your GPU or choose it from the list.
+2. Review 3 runnable models with quantization, VRAM, and a speed range.
+3. Copy the Ollama or llama.cpp command and start running the model.
 
-| Scenario | Start |
+| Try an example | What you get |
 | --- | --- |
-| RTX 5070 Ti 16GB · local model shortlist | [Open GPU result](https://jaeseok614.github.io/llm-gpu-checker-ko/?lang=en&gpu=rtx5070ti-16) |
-| RTX 3060 12GB · local model shortlist | [Open GPU result](https://jaeseok614.github.io/llm-gpu-checker-ko/?lang=en&gpu=rtx3060-12) |
-| Internal document RAG · 30 users | [Open quick sizing](https://jaeseok614.github.io/llm-gpu-checker-ko/?mode=infra&lang=en&studio=consulting&scenario=internal-rag&users=30) |
-| Customer support chatbot · 100 users | [Open quick sizing](https://jaeseok614.github.io/llm-gpu-checker-ko/?mode=infra&lang=en&studio=consulting&scenario=ai-chatbot&users=100) |
-| Real-time AI avatar chat · 50 users | [Open quick sizing](https://jaeseok614.github.io/llm-gpu-checker-ko/?mode=infra&lang=en&studio=consulting&scenario=avatar-chat&users=50) |
+| [RTX 3060 12GB](https://jaeseok614.github.io/ai-hardware-fit/?lang=en&gpu=rtx3060-12) | Local-model shortlist for a common consumer GPU |
+| [RTX 5070 Ti 16GB](https://jaeseok614.github.io/ai-hardware-fit/?lang=en&gpu=rtx5070ti-16) | Quality/speed options for 16 GB VRAM |
+| [RTX 4090 24GB](https://jaeseok614.github.io/ai-hardware-fit/?lang=en&gpu=rtx4090-24) | Larger-model options for 24 GB VRAM |
+| [Start with a model](https://jaeseok614.github.io/ai-hardware-fit/?lang=en&mode=modelFinder) | Compare GPUs by budget, power, and form factor |
 
-<p align="center">
-  <img src="./docs/result-v7.31.png" alt="Quick recommendation results for an RTX 5070 Ti 16GB" />
-</p>
+## Can I trust the numbers?
 
-## In 10 seconds
+Every result separates **VRAM math** from **speed evidence**.
 
-- **Already have a GPU?** See runnable LLM, VLM, image, and audio models with recommended quantization and estimated speed.
-- **Already chose a model?** Compare three GPUs by VRAM, budget, and power constraints.
-- **Sizing a service?** Turn users, concurrency, and SLA targets into servers, TCO, and a PoC checklist.
+- `Exact-condition measurement`: source-linked data for the same GPU, model, runtime, and quantization.
+- `Measurement-calibrated`: the range is adjusted with the median of measurements from this GPU.
+- `Related measurements`: the same model has measurements under different run conditions.
+- `No matching measurements · calculated`: a formula based on parameters, VRAM, memory bandwidth, and runtime assumptions.
 
-> This tool supports preliminary sizing, comparison, and pre-PoC hypotheses. It does not guarantee performance or produce a final vendor-approved bill of materials.
-
-⭐ If it helps your work, star the repository and share missing real-world pre-sales conditions through an Issue.
-
-## One-line version history
-
-> Add each new release to the top as a single line. See the [CHANGELOG](./CHANGELOG.md) for complete details.
-
-- **v7.31.0** — Simplified the post-GPU quick-result screen, deferred comparison and benchmark code until full catalog mode, shortened result URLs, replaced faux controls with buttons, and refreshed the social preview.
-- **v7.30.0** — Rebuilt the landing screen around a larger task selector and a clear two-panel GPU picker. Also fixed the cramped mobile header and default URL, and removed 254 lines of duplicate task-switcher CSS.
-- **v7.29.0** — Simplified the first screen to three primary tasks and a search-first GPU picker. Advanced tools are disclosed on demand, while the comparison hub and two cost estimators now lazy-load only when needed.
-- **v7.13** — Added AMD Radeon 780M integrated GPU (Ryzen 7040/8040 laptops/mini-PCs) to the GPU catalog per a community request on r/LocalLLaMA. Korean pricing left blank for now since it is not sold as a standalone part. Also fixed a bug where part of the GPU comparison detail panel stayed in Korean after switching to English mode.
-- **v7.14** — Added a 4th "60-second trial" demo button for "place multiple models together" (the GPU placement planner). While building it, also fixed a real bug where an embedding model's name (containing the word "Embedding") got corrupted to Korean ("임베딩") whenever it appeared in the placement/model-finder/infra screens.
-- **v7.15** — Added a new "API cost calculator" (under Advanced tools): computes monthly cost of using OpenAI/Anthropic/Google's hosted APIs instead of buying a GPU, based on each provider's official pricing (checked 2026-08-28, 9 models). Also added a "self-host vs API" comparison to the infra sizing results, reusing the same usage assumptions.
-- **v7.16** — Fixed 3 leftover-Korean-text bugs that survived a language switch (the community measurement panel, two accessibility labels, and a benchmark placeholder). Added a breakeven explanation and a usage-scaling table to the "self-host vs API" comparison. Added provider/tier filtering and column sorting to the API cost calculator table. The header logo now acts as a home link, and buttons show a pointer cursor on hover.
-- **v7.12** — Added MLX as a 4th runtime option, gated to Apple Silicon GPUs. Speed multipliers are calibrated conservatively from local-llm.net's published llama.cpp-vs-MLX benchmark table (rather than an in-house benchmark), and added a compatibility note that LM Studio/koboldcpp/text-generation-webui share the llama.cpp backend.
-- **v7.11** — Added Qwen3.8 27B (Alibaba, released 2026-08-14) to the model catalog. Investigated whether newer LLM releases needed adding; confirmed existing DeepSeek V4/Qwen3.6/GLM-5.2 entries already matched real published specs and left them unchanged, and held off on an unverified Qwen3.8 Max variant and a "GLM-5.2 Turbo" whose specs couldn't be confidently confirmed.
-- **v7.10** — Added 3 real DGX Spark benchmark citations and re-verified GPU-usable-memory ratios for 6 unified-memory GPUs against each platform's actual documented ceiling (Metal docs, AMD VGM/GTT limits, community-safe limits). Extracted Hugging Face import logic into `features/hf-import.js`, trimming app.js from 5,184 to 4,925 lines.
-- **v7.9** — Expanded Korean GPU market pricing from 63 to 67 GPUs (RTX 5050, DGX Spark, and Ryzen AI Max+ 395 mini-PCs). Found and fixed a missing unified-memory schema (formFactor/gpuUsableMemoryGb) on DGX Spark and 5 Apple Silicon GPUs that could have broken the GPU Advisor filter and multi-GPU quote math.
-- **v7.8** — Fixed 6 genuinely broken GPU source URLs across 3 rounds of the data-health link audit (issue #3), and excluded 5 domains from link checking that were repeatedly triggering bot-blocking false positives, bringing the workflow to a clean pass. Expanded Korean GPU market pricing from 46 to 63 GPUs (RX 9000-series, Intel Arc B-series, RTX PRO Blackwell/Ada, and Radeon PRO workstation cards), and found and removed a phantom GPU record (w7800-48) whose specs had been mistakenly duplicated from another card.
-- **v7.7** — Auto-classifies GPU sources into official/family/third-party-reference tiers and flags 32 datacenter-class GPUs as having no normal consumer retail channel, excluding them from the price-coverage percentage. Expands Korean GPU market pricing from 15 to 46 GPUs (RTX 30/40-series, laptops, and workstation-class cards), and adds automatic stale-price warnings plus a 9x reduction in shared-quote URL length (2253 → 253 characters).
-- **v7.6** — Splits measurement submission and benchmark coverage into a fourth task mode, redesigns the getting-started guide with situational copy, time estimates, click-through navigation, and a Q&A wizard, and fixes several UI bugs including price digit wrapping, stray decision-hub panels, and mobile horizontal scroll.
-- **v7.5** — Adds privacy-scrubbed measurement intake, same-condition comparison, contributor visibility, and priority measurement targets.
-- **v7.4** — Adds Lighthouse, axe, keyboard, six-viewport, long-name, empty-state, and print-PDF checks to CI.
-- **v7.3** — Adds a private local funnel summary that stores only predefined event counts and transmits no input values.
-- **v7.2** — Adds official sources for 30 priority GPUs, 30/90-day price warnings, completeness scores, and scheduled source checks.
-- **v7.1** — Splits translations and feature modules, lazy-loads benchmarks, and reduces app.js below the 350 KB budget.
-- **v7.0** — Completes a zero-input 60-second tour, workflow feedback form, price freshness states, and decision guidance after selecting an option.
-- **v6.9** — Splits long calculation tests into five parallel CI jobs, enforces static size budgets, and removes duplicate validation from Pages deployment.
-- **v6.8** — Reduces plan cards to price, GPU, users, VRAM, power, confidence, and rationale while moving operating assumptions and avoid-when guidance into details.
-- **v6.7** — Validates Korean price sources, dates, freshness, and missing coverage while labeling exchange rates as editable planning assumptions.
-- **v6.6.1** — Localizes remaining confidence and used-price-method labels and centralizes Korean KRW versus English USD display rules.
-- **v6.6** — Splits guidance, catalog search, evidence policy, and v6 styles into focused modules covered by the static build and smoke tests.
-- **v6.5** — Adds duplicate checks to GPU, model, and price reports, plus direct views for open and completed catalog requests.
-- **v6.4** — Adds typo-, alias-, and intent-aware search for queries such as `RTX 509O`, `24GB laptop`, and `speech synthesis`.
-- **v6.3** — Separates model-specific official, family-level, external, and missing sources while surfacing source and Korean price coverage.
-- **v6.2** — Reduces infrastructure results to three decision-first options focused on price, GPU, concurrency, VRAM headroom, power, and confidence.
-- **v6.1** — Collapses the task chooser after entry and turns easy sizing into one screen per service, users, priority, and result step.
-- **v6.0** — Reframes the first screen around three situations—own a GPU, know a model, or build an AI service—with a 30-second guide, current-step bar, and zero-input demos.
-- **v5.9** — Adds a GPU, model, and Korean-price request center with duplicate checks and a transparent source-review-to-release workflow.
-- **v5.8** — Turns eight AI service scenarios into descriptive cards and shows the service → users → priority → result journey.
-- **v5.7** — Adds a read-only customer result that excludes internal contact and supplier fields and supports print/PDF delivery.
-- **v5.6** — Shows the coverage of dated Korean market sources and separates unverified prices into supplier-quote or direct-input states.
-- **v5.5** — Explains recommendation and exclusion reasons and adds cost-saving simulations for concurrency, answer length, and growth reserve.
-- **v5.4** — Completes English UI and workbook exports, bilingual static detail pages with hreflang, and modular core features.
-- **v5.3** — Makes KRW the Korean GPU Advisor default and separates dated market prices, launch references, supplier quotes, and planning assumptions.
-- **v5.2** — Sizes QPS, batching, safe utilization, production/reserve/non-production GPUs, failover capacity, and queue health separately.
-- **v5.1** — Separates model finding, GPU recommendations, stack placement, and infrastructure sizing into isolated workspaces with less inactive loading.
-- **v5.0.1** — Replaces broad media and voice tags with per-model capability evidence so purpose filters produce meaningfully different candidates.
-- **v5.0** — Normalizes use cases, languages, modalities, quality, and latency for all 310 models, then separates recommendation and run-feedback modules.
-- **v4.9.5** — Adds real-Chromium regression checks at six viewport sizes with CI screenshot artifacts.
-- **v4.9.4** — Generates static search pages, JSON-LD, and a sitemap for 116 GPUs, 310 models, and 11 workloads.
-- **v4.9.3** — Lets users report successful or failed runs through a prefilled GitHub Issue.
-- **v4.9.2** — Connects workload purposes to normalized model capabilities and explains the matched purpose in recommendations.
-- **v4.9** — Adds estimate readiness, requirements→options→outputs navigation, per-plan fit checks, schema-v3 sharing and draft recovery, and release QA.
-- **v4.8.8** — Stores only infrastructure-sizing state in shared URLs to reduce link length and restore overhead.
-- **v4.8.7** — Adds arrow-key tabs, issue focus jumps, mobile tooltip boundary correction, and 44px workflow controls.
-- **v4.8.6** — Separates Korean pricing, supplier-quote, model-source, and GPU-source readiness.
-- **v4.8.5** — Upgrades project JSON to schema v3 with readiness and per-plan fit metadata.
-- **v4.8.4** — Shows model-memory, normal-capacity, failover-capacity, budget fit, and cost delta for each option.
-- **v4.8.3** — Validates users, concurrency, QPS, token lengths, and SLA inputs with direct issue navigation.
-- **v4.8.2** — Keeps detailed-setting help inside form boundaries and turns dev/production separation into a compact full-width row.
-- **v4.8.1** — Simplifies the landing page to three guided paths and samples, then adds a three-step infrastructure wizard, decision-first plans, evidence/price states, and mobile QA.
-- **v4.8** — Compares economy, recommended, and scalable options by proposal price, SLA, hardware, rack/power/cooling, failover capacity, and evidence confidence.
-- **v4.7** — Adds draft, review, approval, and revision states with owners, reviewers, approvers, timestamps, and saved estimate versions.
-- **v4.6** — Sizes rack units, switches, NIC links, optics, cables, redundant PDU circuits, and cooling demand.
-- **v4.5** — Adds supplier quote metadata, price dates, validity, discounts, margins, VAT, and final proposal pricing.
-- **v4.4** — Validates CPU/socket fit, CPU/RAM/storage capacity, NICs, PSU/UPS headroom, and GPU server fit.
-- **v4.3** — Improves easy and expert infrastructure sizing with an editable CPU, RAM, storage, NIC, PSU, UPS, and chassis BOM, live cost totals, and Excel export.
-- **v4.2** — Compares 1/3/5-year TCO and utilization-based break-even for on-premises, cloud, and hybrid options.
-- **v4.1** — Adds vLLM, llama.cpp, Ollama, and NIM benchmark commands, result JSON import, calibration factors, and PoC verdicts.
-- **v4.0** — Adds customer and technical proposal modes, generated architecture and placement diagrams, editable Excel, and print-ready PDF outputs.
-- **v3.9** — Adds customer/project estimate versions, change comparison, local save/clone, and JSON export/import.
-- **v3.8** — Adds real-time SLA sizing for RPS, concurrency, TTFT, ITL, queueing, batching, replicas, and the STT→LLM→TTS→lip-sync pipeline.
-- **v3.7** — Added MuseTalk, LivePortrait, SadTalker, and Wav2Lip as a dedicated avatar/lip-sync catalog connected to model search, GPU Advisor, and AI stack placement.
-- **v3.6** — Added STT/TTS to AI stack placement and an avatar-chat preset spanning speech input, LLM response, speech synthesis, and avatar video.
-- **v3.5** — Completed detailed SLA inputs, per-server placement and failover capacity, PCIe/NIC/UPS/cooling BOM, TCO outputs, and measured PoC validation.
-- **v3.4** — Added an editable Excel estimate, purchase/energy/three-year TCO, PDF proposal summary, and Docker Compose draft.
-- **v3.3** — Added PCIe, NVLink/NVSwitch review, NIC, storage, UPS, cooling, backup, and monitoring BOM items.
-- **v3.2** — Added per-server GPU configuration, model placement, and remaining capacity after failure for three plans.
-- **v3.1.1** — Added industry, owner, data-egress policy, QPS, maximum tokens, TTFT/p95, and operating-hours inputs.
-- **v3.1** — Added SI pre-sales sizing with economy, recommended, and scalable infrastructure plans plus CPU, RAM, NVMe, network, power, Excel, and PoC outputs.
-- **v3.0** — Unified Korean pricing, guided recommendations, custom models, parts fit, runtime guidance, and measurement contributions into lowest-cost, balanced, and fastest purchase decisions.
-- **v2.8** — Added browser-based measurement drafts with contributor/environment records and outlier checks.
-- **v2.7** — Added OS-specific runtime difficulty and launch guidance for NVIDIA, AMD, Intel, and Apple.
-- **v2.6** — Added CPU, motherboard, PSU, and case products with socket, length, slot, connector, and power compatibility.
-- **v2.5** — Added a custom-model calculator for Hugging Face URLs, parameters, layers, precision, context, and vision modules.
-- **v2.4** — Added guided GPU recommendations based on workload, speed, budget, condition, form factor, power, and noise.
-- **v2.3** — Added source-linked Korean GPU price snapshots and performance/price and VRAM/price rankings.
-- **v2.2** — Added a user build calculator for model fit, recommended PSU, total system price, and upgrade order across CPU, RAM, PSU, case, and GPU.
-- **v2.0** — Added measurement confidence intervals, Benchmark 2.0, GPU/model deep links, purchase TCO, and Ollama/llama.cpp/vLLM/Docker launch recipes.
-- **v1.5** — Expanded to 115 GPUs and added 10 STT/TTS models, a model-first entry screen, model-request auto PRs, and benchmark coverage.
-- **v1.4** — Added the model-and-budget-first GPU Advisor, price and energy inputs, current-GPU comparisons, and image/video optimizations.
-- **v1.3** — Introduced normalized GPU schemas, laptop TGP scaling, measurement calibration, a dedicated media engine, and GPU detail comparison.
-- **v1.2** — Added AI Stack Placement for assigning multiple models across multiple GPUs with shareable constraints and plan comparison.
-- **v1.1** — Expanded the catalog with embedding, reranker, OCR/VLM workloads plus benchmark and license information.
-- **v1.0** — First public release for checking local LLM compatibility, recommended quantization, and estimated speed from GPU VRAM and runtime settings.
+Speed is a planning range, not a guarantee. Drivers, runtime, context, batching, and offloading can change the result substantially. Validate production decisions with a representative workload. See [Accuracy and limitations](./docs/accuracy-and-limits.md) and [Calculation methodology](./docs/methodology.md).
 
 ## Highlights
 
-- **AI infrastructure sizing** turns customer traffic, availability, and growth assumptions into three infrastructure plans with shareable links, Excel/PDF outputs, and a PoC checklist.
-- **v2.0 Decision Hub** combines measurement confidence, Benchmark 2.0, GPU/model deep links, purchase TCO, and launch recipes.
-- Measurement groups expose sample count, median, range, 95% confidence interval, and estimator error.
-- Purchase Advisor supports new/used prices, KRW conversion, current-GPU resale value, electricity, and ownership period.
-- Launch Assistant generates Ollama, llama.cpp, vLLM, and Docker Compose configurations for the selected model and GPU.
-- GPU and model comparison now supports up to four items, with dedicated mobile cards.
-- 116 desktop, data-center, Apple Silicon, and laptop GPU presets
-- Generative LLM, embedding, reranker, OCR, document/general VLM, image/video generation, avatar/lip-sync, STT, and TTS workloads
-- Separate GPU-first and model/budget-first starting paths
-- GPU details and three-way comparison across VRAM, bandwidth, runnable models, and estimated speed
-- A model-first GPU Advisor ranked by budget, vendor, form factor, value, and monthly energy cost
-- Laptop GPU TGP input with power-limit performance scaling
-- A dedicated image/video engine that accounts for resolution, steps, frames, FPS, LoRA, offloading, Sage/Flash Attention, and TeaCache
-- Measured-data speed calibration and confidence levels for matching GPU/model conditions
-- Data-quality labels for official/estimated specifications, verification date, and measurement count
-- A benchmark coverage dashboard for measured rows, GPUs, models, estimate error, and priority targets
-- Community run feedback with prefilled GPU, model, runtime, and calculated conditions
-- Search-ready static GPU, model, and workload pages with canonical URLs, JSON-LD, sitemap, and robots.txt
-- AI Stack Placement for assigning several models across several GPUs
-- **API cost calculator**: estimates the monthly cost of using OpenAI/Anthropic/Google's hosted APIs instead of buying a GPU, based on each provider's official pricing (9 models across flagship/balanced/economy tiers), with a "self-host vs API" comparison in the infra sizing results using the same usage assumptions.
-- Korean and English interfaces, responsive mobile layouts, keyboard focus, and reduced-motion support
-- [Pre-launch UI regression checklist](./docs/ui-regression-checklist.md) for six fixed viewport sizes and eight smoke-tested user flows
+- 151 NVIDIA, AMD, Intel, Apple Silicon, data-center, and laptop GPU presets, plus custom specifications
+- 332 generative LLM, embedding, reranker, OCR/VLM, image/video, STT, and TTS models
+- Ollama, llama.cpp, vLLM, and MLX settings and run commands
+- Laptop TGP, mixed GPUs, unified memory, and system-RAM offloading
+- Source, verification date, measurement count, and estimate range shown separately
+- Korean and English UI, responsive layouts, keyboard navigation, and reduced motion
 
-## Automated contribution pipelines
+<details>
+<summary><strong>Advanced tools</strong></summary>
 
-GPU and benchmark submissions start from GitHub Issues.
+- Model-first GPU recommendations by budget, form factor, and power
+- Multi-model GPU placement for LLM, RAG, VLM, image, and voice stacks
+- AI infrastructure sizing from users, concurrency, and SLA targets
+- API, rented-GPU, and self-hosted cost comparison
+- Excel, PDF, Docker Compose, and shareable outputs
 
-- [Request a GPU](https://github.com/jaeseok614/llm-gpu-checker-ko/issues/new?template=gpu-request.yml): validates official manufacturer sources, schema, duplicates, and laptop TGP, then shows a change preview and creates a data PR after approval.
-- [Report a benchmark](https://github.com/jaeseok614/llm-gpu-checker-ko/issues/new?template=benchmark-report.yml): validates measurement conditions and units, then creates a data PR when labeled `benchmark-ready`.
-- [Request a model](https://github.com/jaeseok614/llm-gpu-checker-ko/issues/new?template=model-request.yml): validates the model card, license source, and duplicates, then creates a workload-specific data PR when labeled `model-ready`.
-- Every GPU follows a normalized schema for vendor, architecture, memory type, usable memory, runtimes, and form factor.
-- The Pages build stamps asset URLs with the commit hash to prevent stale browser caches.
+</details>
 
-## How to use it
+## GPU of the week
 
-1. Select a GPU. For a laptop GPU, enter its actual TGP.
-2. Choose a workload and runtime conditions.
-3. Review compatibility, recommended precision, VRAM composition, estimated speed, and confidence.
-4. Compare GPUs in the hardware details panel or open AI Stack Placement for multi-model deployments.
+A GitHub Action refreshes a GPU-specific share card and Korean/English post copy every Monday at 09:00 KST.
 
-All values are estimates and can vary with hardware, runtime, drivers, and input data. External references, user measurements, and project measurements are labeled separately.
+- [Latest GPU spotlight](./docs/spotlights/latest.md)
+- [Spotlight archive](./docs/spotlights/README.md)
+
+## Latest updates
+
+- **v7.33.0** — Unified the README and English product message, added a 10-second demo and new social preview, clarified measurement versus estimation, and started weekly GPU spotlights.
+- **v7.32.0** — Restored a predictable GPU-first entry flow and prepared the public launch materials.
+- **v7.31.0** — Simplified quick recommendations and improved result URLs and sharing previews.
+
+See the full [changelog](./CHANGELOG.md).
+
+## Contribute
+
+- [Request a GPU](https://github.com/jaeseok614/ai-hardware-fit/issues/new?template=gpu-request.yml)
+- [Request a model](https://github.com/jaeseok614/ai-hardware-fit/issues/new?template=model-request.yml)
+- [Report a benchmark](https://github.com/jaeseok614/ai-hardware-fit/issues/new?template=benchmark-report.yml)
+- [Report a calculation or workflow problem](https://github.com/jaeseok614/ai-hardware-fit/issues/new?template=product-feedback.yml)
 
 ## Local development
 
@@ -204,29 +106,6 @@ npm run check
 npm run test:visual
 ```
 
-`npm run check` validates syntax, GPU/model data, request automation, the static build, and calculation tests. `npm run test:visual` uses Chromium when Playwright is installed to verify six viewport sizes. `npm run build:static` writes the deployable site to `_site/`.
-
-## Documentation
-
-- [Calculation methodology](./docs/methodology.md)
-- [Accuracy and limitations](./docs/accuracy-and-limits.md)
-- [Data sources](./docs/data-sources.md)
-- [GPU contribution pipeline](./docs/gpu-contribution-pipeline.md)
-- [v1.4 GPU Advisor methodology and limitations](./docs/v1.4-advisor-methodology.md)
-- [v1.5 catalog, audio, and dashboard](./docs/v1.5-catalog-audio-dashboard.md)
-- [v2.0 decision platform](./docs/v2.0-decision-platform.md)
-- [v2.2 user build calculator](./docs/v2.2-build-calculator.md)
-- [v3.0 purchase decision studio methodology](./docs/v3.0-decision-studio.md)
-- [v7.0 release notes](./docs/releases/v7.0.0.md)
-- [v7.5 release notes](./docs/releases/v7.5.0.md)
-- [v7.0 60-second demo and launch copy](./docs/promotion/v7.0-launch-kit.md)
-- [v5.0 release notes](./docs/releases/v5.0.0.md)
-- [v4.9 release notes](./docs/releases/v4.9.0.md)
-- [v4.8 release notes](./docs/releases/v4.8.0.md)
-- [v4.8 launch copy and two-week metrics sheet](./docs/promotion/v4.8-launch-kit.md)
-- [Editable AI infrastructure estimate example](./docs/examples/si-sizing-example.xlsx)
-- [AI infrastructure proposal PDF example](./docs/examples/ai-infra-proposal-example.pdf)
-- [Contributing](./CONTRIBUTING.md)
-- [Changelog](./CHANGELOG.md)
+Key docs: [Data sources](./docs/data-sources.md) · [GPU contribution pipeline](./docs/gpu-contribution-pipeline.md) · [Changelog](./CHANGELOG.md) · [Contributing](./CONTRIBUTING.md)
 
 Repository code is distributed under the [MIT License](./LICENSE); each listed AI model retains its own license.

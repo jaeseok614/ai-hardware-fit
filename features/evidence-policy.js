@@ -93,7 +93,7 @@
       template: "gpu-request.yml",
       title: `[GPU source] ${gpu?.name || ""}`,
     });
-    return `https://github.com/jaeseok614/llm-gpu-checker-ko/issues/new?${params}`;
+    return `https://github.com/jaeseok614/ai-hardware-fit/issues/new?${params}`;
   }
 
   window.AIHardwareEvidence = { PRIORITY_GPU_IDS, OFFICIAL_SOURCE_OVERRIDES, sourceStatus, audit, issueUrl };

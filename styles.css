@@ -8825,6 +8825,15 @@ body.guide-modal-open {
   overflow-wrap: anywhere;
 }
 
+.simple-pick-specs .evidence-badge {
+  margin-top: 3px;
+  border-left: 3px solid currentColor;
+  padding: 5px 7px;
+  background: var(--surface-soft);
+  font-size: 10.5px;
+  line-height: 1.4;
+}
+
 .evidence-badge.is-estimate,
 .price-state.is-launch {
   color: var(--yellow);
@@ -8832,8 +8841,13 @@ body.guide-modal-open {
 
 .evidence-badge.is-user,
 .evidence-badge.is-external,
+.evidence-badge.is-measured,
 .price-state.is-market {
   color: var(--green);
+}
+
+.evidence-badge.is-related {
+  color: var(--blue);
 }
 
 .price-state.is-quote {

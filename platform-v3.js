@@ -454,7 +454,7 @@ function renderStudioCustom() {
         <div><dt>${en ? "Runtime" : "런타임"}</dt><dd>${result.runtimeGb.toFixed(1)} GB</dd></div>
       </dl>
       <div class="custom-gpu-list">${result.candidates.length ? result.candidates.map((gpu) => `<span>${platformEscape(shortGpuName(gpu.name))}</span>`).join("") : `<span>${en ? "Multi-GPU or CPU offload required" : "멀티 GPU 또는 CPU 오프로딩 필요"}</span>`}</div>
-      <a class="primary-button" href="https://github.com/jaeseok614/llm-gpu-checker-ko/issues/new?title=${encodeURIComponent(`[Model] ${studioState.customName || "Custom model"}`)}&body=${issueBody}" target="_blank" rel="noopener noreferrer">${en ? "Submit this model" : "이 계산을 모델 제보로 전환"}</a>
+      <a class="primary-button" href="https://github.com/jaeseok614/ai-hardware-fit/issues/new?title=${encodeURIComponent(`[Model] ${studioState.customName || "Custom model"}`)}&body=${issueBody}" target="_blank" rel="noopener noreferrer">${en ? "Submit this model" : "이 계산을 모델 제보로 전환"}</a>
     </div>`;
 }
 
@@ -2296,7 +2296,7 @@ function bindDecisionStudio() {
       `Speed: ${speed} tok/s`, `Environment: ${data.get("environment")}`, `Evidence: ${data.get("sourceUrl")}`,
       `Outlier check: ${outlier ? "REVIEW REQUIRED" : "pass"}`,
     ].join("\n");
-    const issueUrl = `https://github.com/jaeseok614/llm-gpu-checker-ko/issues/new?title=${encodeURIComponent(`[Benchmark] ${data.get("modelName")} on ${gpu?.name || gpuId}`)}&body=${encodeURIComponent(body)}`;
+    const issueUrl = `https://github.com/jaeseok614/ai-hardware-fit/issues/new?title=${encodeURIComponent(`[Benchmark] ${data.get("modelName")} on ${gpu?.name || gpuId}`)}&body=${encodeURIComponent(body)}`;
     const row = {
       contributor: String(data.get("contributor")), modelName: String(data.get("modelName")), gpuId,
       gpuName: gpu?.name || gpuId, runtime: String(data.get("runtime")), precision: String(data.get("precision")),

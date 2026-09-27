@@ -1341,6 +1341,8 @@ function getEstimateConfidence(model, estimate, hardware) {
       label: en ? "Medium" : "보통",
       className: "confidence-medium",
       spread: 0.18,
+      evidenceKind: "related",
+      evidenceCount: benchmarkRows.length,
       reason: en
         ? "User/project measurements for this same model under other run conditions can be used as a reference."
         : "같은 모델의 다른 실행 조건 사용자/자체 측정을 참고할 수 있습니다.",
@@ -1352,6 +1354,8 @@ function getEstimateConfidence(model, estimate, hardware) {
       label: en ? "Medium" : "보통",
       className: "confidence-medium",
       spread: 0.18,
+      evidenceKind: "external",
+      evidenceCount: 1,
       reason: en
         ? "Calibrated against this model's external public OCR/VLM reference figures."
         : "모델별 OCR/VLM 외부 공개 참고값을 기준으로 보정합니다.",
@@ -1362,6 +1366,8 @@ function getEstimateConfidence(model, estimate, hardware) {
     label: en ? "Low" : "낮음",
     className: "confidence-low",
     spread: 0.32,
+    evidenceKind: "formula",
+    evidenceCount: 0,
     reason: en
       ? "Estimated from a formula based on parameters, VRAM, and bandwidth, without user/project measurements for this model."
       : "모델별 사용자/자체 측정 없이 파라미터, VRAM, 대역폭 기반 계산식으로 추정합니다.",

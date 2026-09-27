@@ -17,7 +17,7 @@ Open-source GPU fit calculator for local AI models — VRAM, quantization, speed
 ## Website
 
 ```
-https://jaeseok614.github.io/llm-gpu-checker-ko/
+https://jaeseok614.github.io/ai-hardware-fit/
 ```
 
 ## Topics

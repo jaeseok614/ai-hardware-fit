@@ -191,7 +191,7 @@ try {
   await page.locator(".simple-pick-card-toggle").first().click();
   const feedbackLinks = await page.locator("[data-run-feedback]").evaluateAll((links) => links.map((link) => link.href));
   check(feedbackLinks.length === 2, "Success/failure feedback links are missing");
-  check(feedbackLinks.every((url) => url.includes("github.com/jaeseok614/llm-gpu-checker-ko/issues/new")), "Feedback does not open the repository issue form");
+  check(feedbackLinks.every((url) => url.includes("github.com/jaeseok614/ai-hardware-fit/issues/new")), "Feedback does not open the repository issue form");
   const feedbackBodies = feedbackLinks.map((url) => new URL(url).searchParams.get("body") || "");
   check(feedbackBodies.every((body) => /런타임: PyTorch/.test(body) && !/llama\.?cpp/i.test(body)), "TTS feedback contains an unrelated LLM runtime");
 

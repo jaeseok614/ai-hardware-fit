@@ -1,6 +1,6 @@
 /** Privacy-conscious community measurement intake without a backend. */
 (() => {
-  const ISSUE_URL = "https://github.com/jaeseok614/llm-gpu-checker-ko/issues/new";
+  const ISSUE_URL = "https://github.com/jaeseok614/ai-hardware-fit/issues/new";
   const SAFE_KEYS = new Set([
     "outcome", "status", "model", "modelName", "gpu", "runtime", "workload", "setting",
     "quantization", "precision", "context", "contextTokens", "speed", "tokensPerSecond",

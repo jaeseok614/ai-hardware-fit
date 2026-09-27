@@ -81,7 +81,7 @@ test("v7.1 key catalog survives Korean-English-Korean round trips", () => {
   app.setUiLanguage("ko");
   const korean = app.document.querySelector("#brandSubtitle").textContent;
   app.setUiLanguage("en");
-  assert.equal(app.document.querySelector("#brandSubtitle").textContent, "Open-source GPU and model fit calculator");
+  assert.equal(app.document.querySelector("#brandSubtitle").textContent, "Can my GPU run this?");
   app.setUiLanguage("ko");
   assert.equal(app.document.querySelector("#brandSubtitle").textContent, korean);
   assert.ok(app.AIHardwareI18n.audit().keyedNodes >= 20);
@@ -362,6 +362,23 @@ test("quick recommendations keep purpose choices and models inside the selected 
     .dispatchEvent(new app.MouseEvent("click", { bubbles: true }));
 });
 
+test("English promise and recommendation cards state the evidence level", () => {
+  app.eval('setUiLanguage("en"); selectPrimaryGpu("rtx3060-12"); activeWorkload = "generative"; appMode = "simple"; render();');
+  assert.equal(app.document.getElementById("onboardingTitle").textContent.trim(), "Can my GPU run this?");
+  assert.equal(app.document.title, "Can my GPU run this? — AI Hardware Fit");
+
+  const cards = [...app.document.querySelectorAll("#simpleModeResult .simple-pick-card")];
+  const evidence = [...app.document.querySelectorAll("#simpleModeResult .evidence-badge")]
+    .map((badge) => badge.textContent.trim());
+  assert.ok(cards.length > 0, "expected quick recommendations");
+  assert.equal(evidence.length, cards.length, "expected an evidence label on every quick recommendation");
+  assert.ok(evidence.every((label) => label.startsWith("VRAM: formula · Speed:")));
+  assert.ok(evidence.every((label) => /range ±\d+%$/.test(label)));
+  assert.ok(evidence.some((label) => /calibrated|exact-condition|related|public reference|no matching measurements, calculated/.test(label)));
+
+  app.eval('setUiLanguage("ko");');
+});
+
 test("community run feedback keeps visible hardware conditions in a privacy-conscious issue link", () => {
   const feedback = app.AIHardwareCommunityFeedback;
   assert.match(feedback.buttons("ko"), /실행됐어요/);
@@ -377,7 +394,7 @@ test("community run feedback keeps visible hardware conditions in a privacy-cons
     requiredGb: "4.2 GB",
     estimatedSpeed: "실시간",
   });
-  assert.match(url, /github\.com\/jaeseok614\/llm-gpu-checker-ko\/issues\/new/);
+  assert.match(url, /github\.com\/jaeseok614\/ai-hardware-fit\/issues\/new/);
   const feedbackBody = new URL(url).searchParams.get("body");
   assert.match(feedbackBody, /XTTS-v2/);
   assert.match(feedbackBody, /RTX 3060/);
@@ -1055,7 +1072,7 @@ test("price and evidence states avoid presenting estimates as live market prices
   const marketText = app.document.getElementById("decisionStudioBody").textContent;
   assert.match(marketText, /출처 연결 시세/);
   assert.match(read("platform-v3.js"), /공개 국내 시세 없음/);
-  assert.match(read("app.js"), /예상 오차/);
+  assert.match(read("app.js"), /범위 ±/);
 });
 
 test("enterprise-only GPUs and studio pick-card prices disclose their basis in the actual DOM", () => {

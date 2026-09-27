@@ -1,0 +1,43 @@
+name: Weekly GPU Spotlight
+
+on:
+  schedule:
+    # Monday 09:00 KST (00:00 UTC)
+    - cron: "0 0 * * 1"
+  workflow_dispatch:
+    inputs:
+      gpu:
+        description: "Optional GPU id, for example rtx3060-12"
+        required: false
+        type: string
+
+permissions:
+  contents: write
+
+concurrency:
+  group: weekly-gpu-spotlight
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Generate this week's GPU card and post copy
+        env:
+          SPOTLIGHT_GPU: ${{ inputs.gpu }}
+        run: node scripts/generate-weekly-spotlight.mjs
+      - name: Commit generated content
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/spotlights
+          if git diff --cached --quiet; then
+            echo "No spotlight changes to publish."
+            exit 0
+          fi
+          git commit -m "content: publish weekly GPU spotlight"
+          git push

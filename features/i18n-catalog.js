@@ -2,7 +2,7 @@
 (() => {
   const catalog = {
     "brand.name": { ko: "AI Hardware Fit", en: "AI Hardware Fit" },
-    "brand.subtitle": { ko: "GPU·모델 적합성 계산기", en: "Open-source GPU and model fit calculator" },
+    "brand.subtitle": { ko: "GPU·모델 적합성 계산기", en: "Can my GPU run this?" },
     "nav.methodology": { ko: "계산 기준", en: "Methodology" },
     "nav.sources": { ko: "데이터 출처", en: "Data sources" },
     "nav.benchmarks": { ko: "벤치마크", en: "Benchmarks" },
@@ -37,8 +37,8 @@
     "core.more.title": { ko: "고급 도구", en: "Advanced tools" },
     "core.more.note": { ko: "배치·비용·벤치마크", en: "Placement, cost, benchmarks" },
     "onboarding.kicker": { ko: "내 GPU 기준으로 확인", en: "Check against your GPU" },
-    "onboarding.title": { ko: "GPU 이름 하나로 실행 가능한 AI 모델을 확인하세요", en: "See which AI models run with just your GPU name" },
-    "onboarding.note": { ko: "VRAM 적합성, 권장 양자화, 예상 속도를 한 화면에서 비교합니다.", en: "Compare VRAM fit, recommended quantization, and estimated speed in one view." },
+    "onboarding.title": { ko: "GPU 이름 하나로 실행 가능한 AI 모델을 확인하세요", en: "Can my GPU run this?" },
+    "onboarding.note": { ko: "VRAM 적합성, 권장 양자화, 예상 속도를 한 화면에서 비교합니다.", en: "Pick a GPU to see 3 models that fit, their quantization, VRAM, speed range, and run command." },
     "onboarding.trust": { ko: "서비스 특징", en: "Service characteristics" },
     "onboarding.account": { ko: "회원가입 없이", en: "No account required" },
     "onboarding.local": { ko: "입력값은 브라우저 안에", en: "Inputs stay in your browser" },

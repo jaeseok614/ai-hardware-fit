@@ -6,7 +6,7 @@ import vm from "node:vm";
 const outputDir = "_site";
 const excluded = new Set([".git", ".github", "node_modules", "_site", "work", "outputs",
   "tests", "scripts", "package.json", "package-lock.json", "lighthouserc.cjs", ".gitignore"]);
-const baseUrl = (process.env.SITE_URL || "https://jaeseok614.github.io/llm-gpu-checker-ko").replace(/\/$/, "");
+const baseUrl = (process.env.SITE_URL || "https://jaeseok614.github.io/ai-hardware-fit").replace(/\/$/, "");
 let version = process.env.GITHUB_SHA?.slice(0, 12) || "";
 
 if (!version) {
@@ -117,7 +117,7 @@ ${alternate ? `<link rel="alternate" hreflang="${en ? "ko" : "en"}" href="${esca
 <link rel="alternate" hreflang="${lang}" href="${escapeHtml(canonical)}">
 <meta property="og:type" content="website"><meta property="og:title" content="${escapeHtml(title)} — AI Hardware Fit">
 <meta property="og:description" content="${escapeHtml(description)}"><meta property="og:url" content="${escapeHtml(canonical)}">
-<meta property="og:image" content="https://raw.githubusercontent.com/jaeseok614/llm-gpu-checker-ko/main/docs/social-preview.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/jaeseok614/ai-hardware-fit/main/docs/social-preview.png">
 <script type="application/ld+json">${JSON.stringify(schema).replace(/</g, "\\u003c")}</script>
 <style>
 :root{color-scheme:light dark;font-family:system-ui,-apple-system,"Noto Sans KR",sans-serif}*{box-sizing:border-box}body{margin:0;background:#f4f7f9;color:#17212a}main{width:min(860px,calc(100% - 32px));margin:48px auto;padding:32px;border:1px solid #ccd6dd;border-radius:16px;background:#fff;box-shadow:0 16px 45px #17212a12}.eyebrow{color:#12658c;font-size:13px;font-weight:800}h1{margin:8px 0 12px;font-size:clamp(26px,5vw,42px)}p{line-height:1.7;color:#52616d}.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin:24px 0}.fact{padding:14px;border-radius:10px;background:#edf4f7}.fact span{display:block;color:#60717c;font-size:12px}.fact strong{display:block;margin-top:5px;overflow-wrap:anywhere}.actions{display:flex;flex-wrap:wrap;gap:9px;margin-top:26px}.actions a{display:inline-flex;min-height:44px;align-items:center;padding:0 16px;border:1px solid #176f99;border-radius:9px;color:#0b5f87;font-weight:800;text-decoration:none}.actions a.primary{background:#176f99;color:#fff}nav a{color:#176f99}@media(prefers-color-scheme:dark){body{background:#11171b;color:#edf4f7}main{background:#192126;border-color:#34434c}.fact{background:#232e35}p,.fact span{color:#aebbc3}}
@@ -127,7 +127,7 @@ ${alternate ? `<link rel="alternate" hreflang="${en ? "ko" : "en"}" href="${esca
 <p>${escapeHtml(description)}</p>
 <div class="facts">${facts.map(([label, value]) => `<div class="fact"><span>${escapeHtml(label)}</span><strong>${escapeHtml(value)}</strong></div>`).join("")}</div>
 ${body}
-<div class="actions"><a class="primary" href="${escapeHtml(appUrl)}">${en ? "Open in calculator" : "계산기에서 바로 확인"}</a>${sourceUrl ? `<a href="${escapeHtml(sourceUrl)}" target="_blank" rel="noreferrer">${en ? "Official / registered source" : "공식·등록 출처"}</a>` : ""}<a href="https://github.com/jaeseok614/llm-gpu-checker-ko">GitHub</a></div>
+<div class="actions"><a class="primary" href="${escapeHtml(appUrl)}">${en ? "Open in calculator" : "계산기에서 바로 확인"}</a>${sourceUrl ? `<a href="${escapeHtml(sourceUrl)}" target="_blank" rel="noreferrer">${en ? "Official / registered source" : "공식·등록 출처"}</a>` : ""}<a href="https://github.com/jaeseok614/ai-hardware-fit">GitHub</a></div>
 </main></body></html>`;
 }
 

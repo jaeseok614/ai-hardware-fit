@@ -32,7 +32,7 @@ if (remoteMode) {
     try {
       const response = await fetch(url, {
         redirect: "follow",
-        headers: { "user-agent": "llm-gpu-checker-ko-data-audit/7.5" },
+        headers: { "user-agent": "ai-hardware-fit-data-audit/7.5" },
         signal: AbortSignal.timeout(25000),
       });
       return { url, ok: response.ok, status: response.status };

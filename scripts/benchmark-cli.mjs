@@ -441,7 +441,7 @@ async function main() {
   }
 
   console.log(`\nGitHub Benchmark report:
-https://github.com/jaeseok614/llm-gpu-checker-ko/issues/new?template=benchmark-report.yml
+https://github.com/jaeseok614/ai-hardware-fit/issues/new?template=benchmark-report.yml
 
 아래 JSON을 Benchmark report에 직접 붙여넣어 주세요. CLI는 결과를 자동 전송하지 않습니다.
 sourceUrl은 이슈를 올린 뒤 이슈 자신의 URL로 바꿔주세요.

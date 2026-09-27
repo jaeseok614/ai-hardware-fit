@@ -1,5 +1,5 @@
 (() => {
-  const REPO = "https://github.com/jaeseok614/llm-gpu-checker-ko";
+  const REPO = "https://github.com/jaeseok614/ai-hardware-fit";
   const COPY = {
     ko: { feedback: "써보고 불편한 점 보내기" },
     en: { feedback: "Send workflow feedback" },

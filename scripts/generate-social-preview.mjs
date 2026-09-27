@@ -28,19 +28,19 @@ function main() {
   strokeRect(83, 69, 30, 30, colors.bg, 4);
   rect(91, 77, 14, 14, colors.greenSoft);
   text(148, 67, "AI HARDWARE FIT", 3, colors.white);
-  text(148, 101, "OPEN SOURCE GPU SIZING", 2, colors.mutedOnDark);
+  text(148, 101, "OPEN SOURCE / NO SIGNUP", 2, colors.mutedOnDark);
 
   rect(72, 164, 72, 5, colors.mint);
-  text(72, 192, "PICK A GPU.", 5, colors.white);
-  text(72, 254, "GET A MODEL SHORTLIST.", 4, colors.white);
-  text(72, 326, "VRAM FIT / QUANTIZATION / SPEED", 2, colors.mutedOnDark);
-  text(72, 386, "152 GPUS / 332 AI MODELS", 3, colors.mint);
+  text(72, 192, "CAN MY GPU", 5, colors.white);
+  text(72, 254, "RUN THIS?", 5, colors.white);
+  text(72, 326, "3 MODELS / QUANT / RUN COMMAND", 2, colors.mutedOnDark);
+  text(72, 386, "151 GPU PRESETS / 332 AI MODELS", 3, colors.mint);
   rect(72, 448, 520, 1, [57, 82, 95]);
-  text(72, 477, "NO SIGNUP / LOCAL CALC / OPEN DATA", 2, colors.white);
+  text(72, 477, "MEASURED / REFERENCED / CALCULATED", 2, colors.white);
 
   rect(690, 58, 526, 524, colors.panel);
   strokeRect(690, 58, 526, 524, colors.line, 2);
-  text(726, 91, "SELECTED GPU", 2, colors.blue);
+  text(726, 91, "PICK A GPU. GET AN ANSWER.", 2, colors.blue);
   text(726, 126, "RTX 5070 TI / 16 GB", 3, colors.ink);
   rect(726, 174, 454, 2, colors.line);
 
@@ -49,7 +49,7 @@ function main() {
   infoRow(726, 402, "03", "SPEED", "WHAT TO EXPECT?");
 
   rect(726, 520, 454, 38, colors.blue);
-  text(754, 531, "RESULT FIRST / DETAILS ON DEMAND", 2, colors.white);
+  text(754, 531, "AI-HARDWARE-FIT / FREE ON GITHUB", 2, colors.white);
 
   writePng("docs/social-preview.png");
 }

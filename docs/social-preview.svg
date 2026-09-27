@@ -1,25 +1,14 @@
-<svg width="1280" height="640" viewBox="0 0 1280 640" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="AI Hardware Fit social preview">
-  <rect width="1280" height="640" fill="#F4F6F8"/>
-  <rect x="64" y="56" width="1152" height="528" rx="8" fill="#FFFFFF" stroke="#D9E0E7" stroke-width="2"/>
-  <rect x="104" y="98" width="92" height="92" rx="8" fill="#E8F1FB" stroke="#164A7B" stroke-width="6"/>
-  <rect x="130" y="124" width="40" height="40" rx="6" fill="#E5F4EE" stroke="#13795B" stroke-width="6"/>
-  <text x="230" y="132" font-family="Arial, sans-serif" font-size="28" font-weight="700" fill="#164A7B">AI Hardware Fit</text>
-  <text x="230" y="208" font-family="Arial, sans-serif" font-size="58" font-weight="800" fill="#18212B">내 GPU에서 돌아가는 AI 모델 찾기</text>
-  <text x="230" y="268" font-family="Arial, sans-serif" font-size="28" font-weight="600" fill="#667382">LLM · Embedding · Reranker · OCR · VLM</text>
-
-  <rect x="104" y="336" width="242" height="116" rx="6" fill="#E5F4EE"/>
-  <text x="130" y="382" font-family="Arial, sans-serif" font-size="28" font-weight="800" fill="#13795B">90 GPUs</text>
-  <text x="130" y="420" font-family="Arial, sans-serif" font-size="22" fill="#18212B">RTX · GB10 · H100</text>
-  <rect x="376" y="336" width="242" height="116" rx="6" fill="#E8F1FB"/>
-  <text x="402" y="382" font-family="Arial, sans-serif" font-size="28" font-weight="800" fill="#164A7B">286 Models</text>
-  <text x="402" y="420" font-family="Arial, sans-serif" font-size="22" fill="#18212B">147 LLMs</text>
-  <rect x="648" y="336" width="242" height="116" rx="6" fill="#EEEAFD"/>
-  <text x="674" y="382" font-family="Arial, sans-serif" font-size="28" font-weight="800" fill="#5F4BB6">RAG Fit</text>
-  <text x="674" y="420" font-family="Arial, sans-serif" font-size="22" fill="#18212B">Batch · Context</text>
-  <rect x="920" y="336" width="242" height="116" rx="6" fill="#FFF4D6"/>
-  <text x="946" y="382" font-family="Arial, sans-serif" font-size="28" font-weight="800" fill="#9A6700">OCR/VLM</text>
-  <text x="946" y="420" font-family="Arial, sans-serif" font-size="22" fill="#18212B">DPI · pages/s</text>
-
-  <rect x="104" y="496" width="1058" height="48" rx="4" fill="#18212B"/>
-  <text x="130" y="528" font-family="Arial, sans-serif" font-size="23" font-weight="700" fill="#FFFFFF">jaeseok614.github.io/llm-gpu-checker-ko</text>
+<svg width="1280" height="640" viewBox="0 0 1280 640" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Can my GPU run this? AI Hardware Fit social preview">
+  <rect width="1280" height="640" fill="#071f2d"/><rect width="18" height="640" fill="#83d8bd"/>
+  <text x="72" y="94" font-family="Arial, sans-serif" font-size="30" font-weight="800" fill="#f8fcfd">AI HARDWARE FIT</text>
+  <text x="72" y="128" font-family="Arial, sans-serif" font-size="19" fill="#bcd2dc">OPEN SOURCE / NO SIGNUP</text><rect x="72" y="164" width="72" height="5" fill="#83d8bd"/>
+  <text x="72" y="238" font-family="Arial, sans-serif" font-size="60" font-weight="900" fill="#f8fcfd">CAN MY GPU</text><text x="72" y="304" font-family="Arial, sans-serif" font-size="60" font-weight="900" fill="#f8fcfd">RUN THIS?</text>
+  <text x="72" y="350" font-family="Arial, sans-serif" font-size="21" fill="#bcd2dc">3 MODELS / QUANT / RUN COMMAND</text><text x="72" y="420" font-family="Arial, sans-serif" font-size="30" font-weight="800" fill="#83d8bd">151 GPU PRESETS / 332 AI MODELS</text>
+  <line x1="72" x2="592" y1="449" y2="449" stroke="#39525f"/><text x="72" y="494" font-family="Arial, sans-serif" font-size="19" fill="#f8fcfd">MEASURED / REFERENCED / CALCULATED</text>
+  <rect x="690" y="58" width="526" height="524" fill="#fafcfd" stroke="#c6d3dc" stroke-width="2"/>
+  <text x="726" y="112" font-family="Arial, sans-serif" font-size="20" font-weight="700" fill="#125b7f">PICK A GPU. GET AN ANSWER.</text><text x="726" y="154" font-family="Arial, sans-serif" font-size="31" font-weight="800" fill="#122734">RTX 5070 TI / 16 GB</text><line x1="726" x2="1180" y1="176" y2="176" stroke="#c6d3dc"/>
+  <text x="726" y="238" font-family="Arial, sans-serif" font-size="28" font-weight="800" fill="#122734">01  MODEL FIT</text><text x="798" y="270" font-family="Arial, sans-serif" font-size="18" fill="#586c78">CAN IT RUN?</text>
+  <text x="726" y="338" font-family="Arial, sans-serif" font-size="28" font-weight="800" fill="#122734">02  QUANT</text><text x="798" y="370" font-family="Arial, sans-serif" font-size="18" fill="#586c78">WHICH SETTING?</text>
+  <text x="726" y="438" font-family="Arial, sans-serif" font-size="28" font-weight="800" fill="#122734">03  SPEED</text><text x="798" y="470" font-family="Arial, sans-serif" font-size="18" fill="#586c78">WHAT TO EXPECT?</text>
+  <rect x="726" y="520" width="454" height="38" fill="#125b7f"/><text x="752" y="545" font-family="Arial, sans-serif" font-size="17" font-weight="700" fill="#f8fcfd">AI-HARDWARE-FIT / FREE ON GITHUB</text>
 </svg>

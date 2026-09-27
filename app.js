@@ -550,7 +550,7 @@ function setUiLanguage(language) {
   window.history.replaceState({}, "", url);
   document.documentElement.lang = uiLanguage;
   document.title = uiLanguage === "en"
-    ? "AI Hardware Fit — Find AI models for your GPU"
+    ? "Can my GPU run this? — AI Hardware Fit"
     : "AI Hardware Fit — 내 GPU에서 돌아가는 AI 모델 찾기";
   syncAdvisorCurrencyInputs();
   applyV15Translations();
@@ -914,7 +914,7 @@ function normalizeGpuSearchText(value) {
 
 function gpuRequestUrl(name = "") {
   const title = `[GPU] ${String(name || "").trim()}`;
-  return `https://github.com/jaeseok614/llm-gpu-checker-ko/issues/new?template=gpu-request.yml&title=${encodeURIComponent(title)}`;
+  return `https://github.com/jaeseok614/ai-hardware-fit/issues/new?template=gpu-request.yml&title=${encodeURIComponent(title)}`;
 }
 
 function refreshGpuNotFoundUi(rawValue) {
@@ -2933,6 +2933,49 @@ function getQuickRecommendationEstimates() {
   );
 }
 
+function quickEvidenceSummary(confidence) {
+  const en = uiLanguage === "en";
+  const uncertainty = Math.round((confidence.spread || 0.4) * 100);
+  if (confidence.sampleCount) {
+    return {
+      kind: "measured",
+      label: en
+        ? `VRAM: formula · Speed: calibrated with ${confidence.sampleCount} measurement${confidence.sampleCount === 1 ? "" : "s"} · range ±${uncertainty}%`
+        : `VRAM 계산식 · 속도: 이 GPU 실측 ${confidence.sampleCount}건 보정 · 범위 ±${uncertainty}%`,
+    };
+  }
+  if (confidence.matchedRow) {
+    return {
+      kind: "measured",
+      label: en
+        ? `VRAM: formula · Speed: exact-condition measurement · range ±${uncertainty}%`
+        : `VRAM 계산식 · 속도: 동일 조건 실측 · 범위 ±${uncertainty}%`,
+    };
+  }
+  if (confidence.evidenceKind === "related") {
+    return {
+      kind: "related",
+      label: en
+        ? `VRAM: formula · Speed: ${confidence.evidenceCount} related measurement${confidence.evidenceCount === 1 ? "" : "s"} · range ±${uncertainty}%`
+        : `VRAM 계산식 · 속도: 다른 조건 실측 ${confidence.evidenceCount}건 참고 · 범위 ±${uncertainty}%`,
+    };
+  }
+  if (confidence.evidenceKind === "external") {
+    return {
+      kind: "related",
+      label: en
+        ? `VRAM: formula · Speed: public reference · range ±${uncertainty}%`
+        : `VRAM 계산식 · 속도: 공개 참고값 기반 · 범위 ±${uncertainty}%`,
+    };
+  }
+  return {
+    kind: "estimate",
+    label: en
+      ? `VRAM: formula · Speed: no matching measurements, calculated · range ±${uncertainty}%`
+      : `VRAM 계산식 · 속도: 일치 실측 없음, 계산 추정 · 범위 ±${uncertainty}%`,
+  };
+}
+
 function renderSimpleMode(hardware, allEstimates) {
   const gpuReadout = $("simpleModeGpuReadout");
   if (gpuReadout) {
@@ -2995,15 +3038,7 @@ function renderSimpleMode(hardware, allEstimates) {
 
   target.innerHTML = picks.map((estimate, index) => {
     const confidence = getEstimateConfidence(estimate.model, estimate, hardware);
-    const evidence = window.AIHardwareUI?.evidenceState({
-      kind: confidence.sampleCount ? "user" : confidence.matchedRow ? "external" : "estimate",
-      sampleCount: confidence.sampleCount || (confidence.matchedRow ? 1 : 0),
-      reason: confidence.reason,
-    }) || {
-      label: uiLanguage === "en" ? "Calculated estimate" : "계산 추정",
-      errorPct: Math.round((confidence.spread || .4) * 100),
-      reason: confidence.reason,
-    };
+    const evidence = quickEvidenceSummary(confidence);
     const meta = GRADE_META[estimate.grade];
     const licensePolicy = getLicensePolicy(estimate.model);
     const reasons = buildSimpleRecommendationReasons(estimate, 3);
@@ -3025,7 +3060,7 @@ function renderSimpleMode(hardware, allEstimates) {
             <span>${escapeHtml(estimate.model.maker)} · ${escapeHtml(licenseCommercialLabel(licensePolicy))}</span>
             <span>VRAM ${formatGb(estimate.requiredGb)}</span>
             <span>${escapeHtml(formatSpeedRange(estimate, confidence))}</span>
-            <span class="evidence-badge is-${escapeAttr(evidence.kind || "estimate")}" title="${escapeAttr(evidence.reason)}">${escapeHtml(evidence.label)} · ${uiLanguage === "en" ? "expected error" : "예상 오차"} ±${Math.round((confidence.spread || evidence.errorPct / 100 || .4) * 100)}%</span>
+            <span class="evidence-badge is-${escapeAttr(evidence.kind)}" title="${escapeAttr(confidence.reason)}">${escapeHtml(evidence.label)}</span>
           </span>
           ${reasons.length ? `<span class="simple-pick-reasons">${reasons.map((reason) => `<span>${escapeHtml(reason)}</span>`).join("")}</span>` : ""}
         </button>
@@ -3799,7 +3834,7 @@ ${escapeHtml(buildMlxCommand(model, estimate.quant, hardware))}` : ""}</code></p
         ${renderExternalLink("Hugging Face", `https://huggingface.co/models?search=${encodeURIComponent(model.name)}`)}
         ${renderExternalLink("Ollama", `https://ollama.com/search?q=${encodeURIComponent(model.name)}`)}
         ${renderExternalLink(en ? "Search official docs" : "공식 문서 검색", `https://www.google.com/search?q=${encodeURIComponent(`${model.name} official`)}`)}
-        ${renderExternalLink(en ? "Report a spec issue" : "스펙 오류 신고", BENCHMARK_META.reportUrl || "https://github.com/jaeseok614/llm-gpu-checker-ko/issues/new/choose")}
+        ${renderExternalLink(en ? "Report a spec issue" : "스펙 오류 신고", BENCHMARK_META.reportUrl || "https://github.com/jaeseok614/ai-hardware-fit/issues/new/choose")}
       </div>
     </section>
   `;
@@ -3956,7 +3991,7 @@ function buildNonGenerativeDetailBodyHtml(model, hardware) {
       <div class="external-links">
         ${model.sourceUrl ? renderExternalLink(en ? "Official/model card" : "공식/모델 카드", model.sourceUrl) : ""}
         ${renderExternalLink(en ? "Search Hugging Face" : "Hugging Face 검색", `https://huggingface.co/models?search=${encodeURIComponent(model.name)}`)}
-        ${renderExternalLink(en ? "Report a spec issue" : "스펙 오류 신고", BENCHMARK_META.reportUrl || "https://github.com/jaeseok614/llm-gpu-checker-ko/issues/new/choose")}
+        ${renderExternalLink(en ? "Report a spec issue" : "스펙 오류 신고", BENCHMARK_META.reportUrl || "https://github.com/jaeseok614/ai-hardware-fit/issues/new/choose")}
       </div>
     </section>
   `;
@@ -4439,7 +4474,7 @@ function renderBenchmarkMiniRows(rows, reference, qualityBenchmark) {
       : "이 모델의 외부 공개 참고값과 사용자/자체 측정값은 아직 없습니다. 상세 수치는 계산 추정으로만 표시합니다."}</small>
     ${BENCHMARK_META.reportingPaused
       ? `<small>${escapeHtml(BENCHMARK_META.reportingStatus || (en ? "New benchmark submissions temporarily paused" : "신규 벤치마크 제보 일시 중단"))}</small>`
-      : `<div class="external-links evidence-links">${renderExternalLink(en ? "Report a benchmark" : "벤치마크 제보", BENCHMARK_META.reportUrl || "https://github.com/jaeseok614/llm-gpu-checker-ko/issues/new/choose")}</div>`}
+      : `<div class="external-links evidence-links">${renderExternalLink(en ? "Report a benchmark" : "벤치마크 제보", BENCHMARK_META.reportUrl || "https://github.com/jaeseok614/ai-hardware-fit/issues/new/choose")}</div>`}
   `;
 }
 

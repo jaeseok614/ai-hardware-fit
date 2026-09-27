@@ -20,14 +20,14 @@
       : `Requested item: ${name}\nOfficial source URL: \nReason / use case: `;
     const params = new URLSearchParams({ template, title });
     if (kind === "price") params.set("body", body);
-    return `https://github.com/jaeseok614/llm-gpu-checker-ko/issues/new?${params}`;
+    return `https://github.com/jaeseok614/ai-hardware-fit/issues/new?${params}`;
   }
 
   function statusUrl(status = "open") {
     const query = status === "completed"
-      ? "repo:jaeseok614/llm-gpu-checker-ko is:issue is:closed label:data"
-      : "repo:jaeseok614/llm-gpu-checker-ko is:issue is:open label:data";
-    return `https://github.com/jaeseok614/llm-gpu-checker-ko/issues?q=${encodeURIComponent(query)}`;
+      ? "repo:jaeseok614/ai-hardware-fit is:issue is:closed label:data"
+      : "repo:jaeseok614/ai-hardware-fit is:issue is:open label:data";
+    return `https://github.com/jaeseok614/ai-hardware-fit/issues?q=${encodeURIComponent(query)}`;
   }
 
   function duplicateSummary(query, gpus = [], models = []) {
