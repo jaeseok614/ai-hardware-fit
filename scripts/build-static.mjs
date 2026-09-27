@@ -25,6 +25,11 @@ for (const entry of fs.readdirSync(".")) {
   fs.cpSync(entry, path.join(outputDir, entry), { recursive: true });
 }
 
+const spotlightSource = path.join("docs", "spotlights");
+if (fs.existsSync(spotlightSource)) {
+  fs.cpSync(spotlightSource, path.join(outputDir, "spotlights"), { recursive: true });
+}
+
 const indexPath = path.join(outputDir, "index.html");
 const index = fs.readFileSync(indexPath, "utf8").replaceAll("__CACHE_VERSION__", version);
 fs.writeFileSync(indexPath, index);
