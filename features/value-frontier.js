@@ -138,12 +138,18 @@ function renderChart(target, entries, metric, en) {
   const xTicks = [0, 0.25, 0.5, 0.75, 1].map((ratio) => Math.round(maxX * ratio));
   const yTicks = [0, 0.25, 0.5, 0.75, 1].map((ratio) => minY + (maxY - minY) * ratio);
 
-  target.innerHTML = `<svg viewBox="0 0 ${width} ${height}" aria-hidden="true" focusable="false">
+  target.innerHTML = `<svg viewBox="0 0 ${width} ${height}" focusable="false">
     ${xTicks.map((tick) => `<line class="frontier-grid" x1="${x(tick)}" y1="${margin.top}" x2="${x(tick)}" y2="${height - margin.bottom}"></line><text class="frontier-axis-label" x="${x(tick)}" y="${height - 23}" text-anchor="middle">${tick}GB</text>`).join("")}
     ${yTicks.map((tick) => `<line class="frontier-grid" x1="${margin.left}" y1="${y(tick)}" x2="${width - margin.right}" y2="${y(tick)}"></line><text class="frontier-axis-label" x="${margin.left - 9}" y="${y(tick) + 4}" text-anchor="end">${tick.toFixed(tick < 10 ? 1 : 0)}</text>`).join("")}
     ${available > 0 ? `<line class="frontier-gpu-line" x1="${x(selectedX)}" y1="${margin.top}" x2="${x(selectedX)}" y2="${height - margin.bottom}"></line><text class="frontier-gpu-label" x="${Math.min(width - 120, x(selectedX) + 5)}" y="${margin.top + 13}">${escapeHtml(en ? `Your GPU ${available.toFixed(1)}GB` : `내 GPU ${available.toFixed(1)}GB`)}</text>` : ""}
     ${frontier.length > 1 ? `<polyline class="frontier-line" points="${line}"></polyline>` : ""}
-    ${entries.map((entry) => `<a href="${escapeAttr(entry.sourceUrl || "#")}" ${entry.sourceUrl ? "target=\"_blank\" rel=\"noreferrer\"" : ""}><circle class="frontier-point ${entry.onFrontier ? "is-frontier" : "is-dominated"}" cx="${x(entry.requiredGb)}" cy="${y(entry.score)}" r="${entry.onFrontier ? 6 : 4}"><title>${escapeHtml(`${entry.name} · ${entry.requiredGb.toFixed(1)}GB · ${metric} ${entry.score}`)}</title></circle></a>`).join("")}
+    ${entries.map((entry) => {
+      const pointLabel = `${entry.name} · ${entry.requiredGb.toFixed(1)}GB · ${metric} ${entry.score}`;
+      const circle = `<circle class="frontier-point ${entry.onFrontier ? "is-frontier" : "is-dominated"}" cx="${x(entry.requiredGb)}" cy="${y(entry.score)}" r="${entry.onFrontier ? 6 : 4}"><title>${escapeHtml(pointLabel)}</title></circle>`;
+      return entry.sourceUrl
+        ? `<a href="${escapeAttr(entry.sourceUrl)}" target="_blank" rel="noreferrer" aria-label="${escapeAttr(pointLabel)}">${circle}</a>`
+        : circle;
+    }).join("")}
     ${frontier.map((entry, index) => `<text class="frontier-model-label" x="${Math.min(width - 145, x(entry.requiredGb) + 8)}" y="${y(entry.score) + (index % 2 ? 16 : -8)}">${escapeHtml(entry.name.length > 24 ? `${entry.name.slice(0, 22)}…` : entry.name)}</text>`).join("")}
     <text class="frontier-axis-title" x="${margin.left + plotWidth / 2}" y="${height - 3}" text-anchor="middle">${en ? "Estimated VRAM required" : "예상 필요 VRAM"}</text>
     <text class="frontier-axis-title" transform="translate(15 ${margin.top + plotHeight / 2}) rotate(-90)" text-anchor="middle">${escapeHtml(metric)}</text>
