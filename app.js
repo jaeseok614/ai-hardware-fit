@@ -521,6 +521,7 @@ function setCoreTaskMode(mode, options = {}) {
     openPlacementPlanner([], { showBuilder: false, seedHardware: true });
     return;
   }
+  if (simpleExpandedKey) closeSimpleRecommendationPanel({ restoreFocus: false });
   coreTaskMode = mode === "modelFinder" || mode === "infra" || mode === "community" || mode === "apiCost" || mode === "ontologyCost" ? mode : "finder";
   if (options.restart && coreTaskMode === "modelFinder") {
     window.AIHardwareGpuAdvisor?.startNewSearch({ sync: false, render: false });

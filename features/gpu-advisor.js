@@ -39,7 +39,7 @@ function ensureGpuAdvisorPanel() {
         <label class="field advisor-model-select-field"><span id="advisorModelLabel"></span><select id="advisorModel"></select><small id="advisorModelCount" aria-live="polite"></small></label>
         <div class="empty-state advisor-model-empty" id="advisorModelEmpty" hidden>
           <p id="advisorModelEmptyText"></p>
-          <button type="button" class="ghost-button" data-advisor-reset></button>
+          <button type="button" class="ghost-button" data-advisor-reset>조건 초기화</button>
         </div>
       </div>
       <div class="gpu-advisor-controls advisor-wizard-panel" data-advisor-step-panel="2" hidden>
