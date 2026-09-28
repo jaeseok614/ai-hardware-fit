@@ -1,4 +1,6 @@
 /** Extracted in v7.1 to keep the core bundle focused. */
+let advisorWizardStep = 1;
+
 function ensureGpuAdvisorPanel() {
   if (!$("benchmarkDashboard") && $("benchmarkSheet")) {
     const dashboard = document.createElement("section");
@@ -30,23 +32,35 @@ function ensureGpuAdvisorPanel() {
         <p id="gpuAdvisorDescription"></p>
       </div>
     </div>
-    <div class="gpu-advisor-controls">
-      <label class="field"><span id="advisorModelCategoryLabel"></span><select id="advisorModelCategory"></select></label>
-      <label class="field advisor-model-search-field"><span id="advisorModelSearchLabel"></span><input id="advisorModelSearch" type="search" autocomplete="off"></label>
-      <label class="field advisor-model-select-field"><span id="advisorModelLabel"></span><select id="advisorModel"></select><small id="advisorModelCount" aria-live="polite"></small></label>
-      <label class="field"><span id="advisorBudgetLabel"></span><input id="advisorBudgetUsd" data-currency="KRW" type="number" min="0" max="200000000" step="100000" value="2800000"></label>
-      <details class="advisor-detailed-settings">
-        <summary><span class="advisor-detail-summary"></span></summary>
-        <div class="advisor-detail-grid">
-          <label class="field"><span id="advisorCurrentPriceLabel"></span><input id="advisorCurrentPriceUsd" data-currency="KRW" type="number" min="0" max="200000000" step="100000" value="0"></label>
-          <label class="field"><span id="advisorElectricityLabel"></span><input id="advisorElectricityRate" data-currency="KRW" type="number" min="0" max="2000" step="10" value="150"></label>
-          <label class="field"><span id="advisorHoursLabel"></span><input id="advisorHoursMonth" type="number" min="1" max="744" step="1" value="120"></label>
-          <label class="field"><span id="advisorVendorLabel"></span><select id="advisorVendor"><option value="all">All</option><option>NVIDIA</option><option>AMD</option><option>Intel</option><option>Apple</option></select></label>
-          <label class="field"><span id="advisorFormFactorLabel"></span><select id="advisorFormFactor"><option value="all">All</option><option value="desktop">Desktop</option><option value="laptop">Laptop</option><option value="datacenter">Data center</option><option value="integrated">Unified memory</option></select></label>
-        </div>
-      </details>
+    <div class="advisor-wizard" data-advisor-step="1">
+      <div class="gpu-advisor-controls advisor-wizard-panel" data-advisor-step-panel="1">
+        <label class="field"><span id="advisorModelCategoryLabel"></span><select id="advisorModelCategory"></select></label>
+        <label class="field advisor-model-search-field"><span id="advisorModelSearchLabel"></span><input id="advisorModelSearch" type="search" autocomplete="off"></label>
+        <label class="field advisor-model-select-field"><span id="advisorModelLabel"></span><select id="advisorModel"></select><small id="advisorModelCount" aria-live="polite"></small></label>
+      </div>
+      <div class="gpu-advisor-controls advisor-wizard-panel" data-advisor-step-panel="2" hidden>
+        <label class="field advisor-budget-field"><span id="advisorBudgetLabel"></span><input id="advisorBudgetUsd" data-currency="KRW" type="number" min="0" max="200000000" step="100000" value="2800000"></label>
+        <details class="advisor-detailed-settings">
+          <summary><span class="advisor-detail-summary"></span></summary>
+          <div class="advisor-detail-grid">
+            <label class="field"><span id="advisorCurrentPriceLabel"></span><input id="advisorCurrentPriceUsd" data-currency="KRW" type="number" min="0" max="200000000" step="100000" value="0"></label>
+            <label class="field"><span id="advisorElectricityLabel"></span><input id="advisorElectricityRate" data-currency="KRW" type="number" min="0" max="2000" step="10" value="150"></label>
+            <label class="field"><span id="advisorHoursLabel"></span><input id="advisorHoursMonth" type="number" min="1" max="744" step="1" value="120"></label>
+            <label class="field"><span id="advisorVendorLabel"></span><select id="advisorVendor"><option value="all">All</option><option>NVIDIA</option><option>AMD</option><option>Intel</option><option>Apple</option></select></label>
+            <label class="field"><span id="advisorFormFactorLabel"></span><select id="advisorFormFactor"><option value="all">All</option><option value="desktop">Desktop</option><option value="laptop">Laptop</option><option value="datacenter">Data center</option><option value="integrated">Unified memory</option></select></label>
+          </div>
+        </details>
+      </div>
+      <div class="advisor-wizard-panel" data-advisor-step-panel="3" hidden>
+        <div class="gpu-advisor-result" id="gpuAdvisorResult" role="region" aria-live="polite"></div>
+      </div>
+      <div class="advisor-wizard-navigation">
+        <button type="button" class="ghost-button" data-advisor-back>← 이전</button>
+        <span id="advisorWizardPosition" aria-live="polite"></span>
+        <button type="button" class="primary-button" data-advisor-next>예산 입력 →</button>
+        <button type="button" class="ghost-button" data-advisor-restart hidden>처음부터</button>
+      </div>
     </div>
-    <div class="gpu-advisor-result" id="gpuAdvisorResult" role="region" aria-live="polite"></div>
   `;
   results.parentNode.insertBefore(panel, results);
   // Model results belong directly below the workload tabs. GPU details are
@@ -59,6 +73,9 @@ function ensureGpuAdvisorPanel() {
     .map((category) => `<option value="${category.id}">${escapeHtml(category.en)}</option>`)
     .join("");
   refreshAdvisorModelOptions();
+  panel.querySelector("[data-advisor-back]")?.addEventListener("click", () => setAdvisorWizardStep(advisorWizardStep - 1, { scroll: true }));
+  panel.querySelector("[data-advisor-next]")?.addEventListener("click", () => setAdvisorWizardStep(advisorWizardStep + 1, { scroll: true }));
+  panel.querySelector("[data-advisor-restart]")?.addEventListener("click", () => setAdvisorWizardStep(1, { scroll: true }));
 }
 
 function syncAdvisorCurrencyInputs() {
@@ -140,6 +157,68 @@ function refreshAdvisorModelOptions(preferredKey = $("advisorModel")?.value) {
   return models;
 }
 
+function normalizeAdvisorWizardStep(step) {
+  return Math.max(1, Math.min(3, Number(step) || 1));
+}
+
+function applyAdvisorWizardUi({ scroll = false } = {}) {
+  const panel = $("gpuAdvisorPanel");
+  if (!panel) return;
+  advisorWizardStep = normalizeAdvisorWizardStep(advisorWizardStep);
+  const en = uiLanguage === "en";
+  const wizard = panel.querySelector("[data-advisor-step]");
+  if (wizard) wizard.dataset.advisorStep = String(advisorWizardStep);
+  panel.dataset.advisorStep = String(advisorWizardStep);
+  panel.querySelectorAll("[data-advisor-step-panel]").forEach((section) => {
+    section.hidden = Number(section.dataset.advisorStepPanel) !== advisorWizardStep;
+  });
+  const back = panel.querySelector("[data-advisor-back]");
+  const next = panel.querySelector("[data-advisor-next]");
+  const restart = panel.querySelector("[data-advisor-restart]");
+  if (back) {
+    back.textContent = en ? "← Back" : "← 이전";
+    back.disabled = advisorWizardStep === 1;
+  }
+  if (next) {
+    next.hidden = advisorWizardStep === 3;
+    next.textContent = advisorWizardStep === 1
+      ? (en ? "Set budget →" : "예산 입력 →")
+      : (en ? "Compare GPUs →" : "GPU 3안 비교 →");
+    next.disabled = advisorWizardStep === 1 && !getModelByKey($("advisorModel")?.value);
+  }
+  if (restart) {
+    restart.hidden = advisorWizardStep !== 3;
+    restart.textContent = en ? "Start over" : "처음부터";
+  }
+  if ($("advisorWizardPosition")) {
+    $("advisorWizardPosition").textContent = en ? `Step ${advisorWizardStep} of 3` : `${advisorWizardStep}/3 단계`;
+  }
+  window.AIHardwareGuide?.render("modelFinder", advisorWizardStep - 1);
+  if (scroll) panel.scrollIntoView?.({ behavior: "smooth", block: "start" });
+}
+
+function setAdvisorWizardStep(step, { sync = true, scroll = false, render = true } = {}) {
+  advisorWizardStep = normalizeAdvisorWizardStep(step);
+  if (render) renderGpuAdvisor();
+  else applyAdvisorWizardUi({ scroll });
+  if (sync && typeof syncUrlState === "function") syncUrlState();
+  if (scroll && render) $("gpuAdvisorPanel")?.scrollIntoView?.({ behavior: "smooth", block: "start" });
+}
+
+function startNewAdvisorSearch({ sync = false, render = false } = {}) {
+  advisorWizardStep = 1;
+  if (render) renderGpuAdvisor();
+  else applyAdvisorWizardUi();
+  if (sync && typeof syncUrlState === "function") syncUrlState();
+}
+
+window.AIHardwareGpuAdvisor = {
+  getStep: () => advisorWizardStep,
+  restoreStep: (step) => { advisorWizardStep = normalizeAdvisorWizardStep(step); },
+  setStep: setAdvisorWizardStep,
+  startNewSearch: startNewAdvisorSearch,
+};
+
 
 function renderGpuAdvisor() {
   const panel = $("gpuAdvisorPanel");
@@ -186,6 +265,7 @@ function renderGpuAdvisor() {
       : ["기본", "Sage/Flash Attention", "TeaCache", "Attention + TeaCache"];
     [...$("mediaOptimization").options].forEach((option, index) => { option.textContent = optionLabels[index]; });
   }
+  applyAdvisorWizardUi();
 
   const model = getModelByKey($("advisorModel").value);
   if (!model) {

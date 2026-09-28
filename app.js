@@ -502,7 +502,7 @@ function openPlacementPlanner(modelKeys = [], { showBuilder = false, seedHardwar
   if (typeof panel?.scrollIntoView === "function") panel.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
-function setCoreTaskMode(mode) {
+function setCoreTaskMode(mode, options = {}) {
   if (mode === "apiCost" && !window.AIHardwareApiCost && typeof window.loadApiCostEstimator === "function") {
     window.AIHardwareUI?.announce(uiLanguage === "en" ? "Loading the cost comparison…" : "비용 비교 화면을 불러오는 중입니다.");
     window.loadApiCostEstimator().then(() => setCoreTaskMode("apiCost")).catch(() => {});
@@ -518,6 +518,12 @@ function setCoreTaskMode(mode) {
     return;
   }
   coreTaskMode = mode === "modelFinder" || mode === "infra" || mode === "community" || mode === "apiCost" || mode === "ontologyCost" ? mode : "finder";
+  if (options.restart && coreTaskMode === "modelFinder") {
+    window.AIHardwareGpuAdvisor?.startNewSearch({ sync: false, render: false });
+  }
+  if (options.restart && coreTaskMode === "infra") {
+    window.AIHardwareInfrastructure?.startNewEstimate({ sync: false, render: false });
+  }
   refreshCoreTaskUi();
   render();
   if (coreTaskMode === "infra" && typeof renderDecisionStudio === "function") renderDecisionStudio();
@@ -1173,10 +1179,11 @@ function bindEvents() {
     button.addEventListener("click", () => {
       if (button.dataset.coreTask === "infra" && typeof window.loadInfrastructureStudio === "function") {
         window.AIHardwareUI?.announce(uiLanguage === "en" ? "Loading the infrastructure workspace…" : "인프라 견적 화면을 불러오는 중입니다.");
-        window.loadInfrastructureStudio().then(() => setCoreTaskMode("infra")).catch(() => {});
+        window.loadInfrastructureStudio().then(() => setCoreTaskMode("infra", { restart: true })).catch(() => {});
         return;
       }
-      setCoreTaskMode(button.dataset.coreTask);
+      const task = button.dataset.coreTask;
+      setCoreTaskMode(task, { restart: task === "modelFinder" || task === "infra" });
     });
   });
   document.querySelectorAll("[data-demo-gpu]").forEach((button) => {
@@ -1226,6 +1233,7 @@ function bindEvents() {
         refreshAdvisorModelOptions();
       }
       renderGpuAdvisor();
+      window.AIHardwareGpuAdvisor?.setStep(3, { sync: true, scroll: false });
       window.AIHardwareUI?.announce(uiLanguage === "en"
         ? "Loaded the Qwen 32B GPU recommendation example."
         : "Qwen 32B용 GPU 추천 예시를 불러왔습니다.");
@@ -5189,9 +5197,14 @@ function syncUrlState() {
     params.set("pgModels", JSON.stringify([...placementSelectedKeys]));
     params.set("pgConfig", JSON.stringify([...placementSelectedKeys].map((key) => [key, getPlacementModelConfig(key)])));
   }
-  ["hub", "detail", "build", "studio", "studioState", "scenario", "users"].forEach((key) => {
+  ["hub", "detail", "build"].forEach((key) => {
     if (existingParams.get(key)) params.set(key, existingParams.get(key));
   });
+  if (coreTaskMode === "infra") {
+    ["studio", "studioState", "scenario", "users", "schema"].forEach((key) => {
+      if (existingParams.get(key)) params.set(key, existingParams.get(key));
+    });
+  }
 
   const dropDefault = (key, value) => {
     if (params.get(key) === String(value)) params.delete(key);
@@ -5260,9 +5273,12 @@ function syncUrlState() {
   }
 
   if (coreTaskMode !== "modelFinder") {
-    ["advisorModel", "advisorCategory", "advisorSearch", "budget", "currentPrice", "electricity", "hours", "advisorVendor", "advisorForm"]
+    ["advisorModel", "advisorCategory", "advisorSearch", "advisorStep", "budget", "currentPrice", "electricity", "hours", "advisorVendor", "advisorForm"]
       .forEach((key) => params.delete(key));
   } else {
+    const advisorStep = window.AIHardwareGpuAdvisor?.getStep?.() || 1;
+    if (advisorStep > 1) params.set("advisorStep", String(advisorStep));
+    else params.delete("advisorStep");
     dropDefault("advisorCategory", "all");
     dropDefault("currentPrice", 0);
     dropDefault("advisorVendor", "all");
@@ -5344,6 +5360,7 @@ function applyUrlState() {
   setValueIfPresent("advisorHoursMonth", params.get("hours"));
   setSelectIfValid("advisorVendor", params.get("advisorVendor"));
   setSelectIfValid("advisorFormFactor", params.get("advisorForm"));
+  window.AIHardwareGpuAdvisor?.restoreStep(coreTaskMode === "modelFinder" ? params.get("advisorStep") : 1);
   setSelectIfValid("compareGpuA", params.get("compareA"));
   setSelectIfValid("compareGpuB", params.get("compareB"));
   setSelectIfValid("compareGpuC", params.get("compareC"));

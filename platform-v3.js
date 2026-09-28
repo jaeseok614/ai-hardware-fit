@@ -2439,6 +2439,36 @@ function restoreStudioState() {
   if (!["consulting", "recommend", "market", "custom", "parts", "runtime", "community"].includes(studioState.tab)) studioState.tab = "consulting";
 }
 
+function setInfrastructureWizardStep(step, { sync = true, render = true, scroll = false } = {}) {
+  studioState.siInputMode = "simple";
+  studioState.tab = "consulting";
+  studioState.siReadOnly = false;
+  studioState.siWizardStep = Math.max(1, Math.min(4, Number(step) || 1));
+  if (sync) syncStudioUrl();
+  if (render) renderDecisionStudio();
+  if (scroll) $("decisionStudio")?.scrollIntoView?.({ behavior: "smooth", block: "start" });
+}
+
+function startNewInfrastructureEstimate({ sync = false, render = false } = {}) {
+  studioState.tab = "consulting";
+  studioState.siInputMode = "simple";
+  studioState.siWizardStep = 1;
+  studioState.siReadOnly = false;
+  applySimpleSizingModelPreset();
+  const url = new URL(window.location.href);
+  ["studio", "studioState", "scenario", "users", "schema"].forEach((key) => url.searchParams.delete(key));
+  if (url.searchParams.get("view") === "proposal") url.searchParams.delete("view");
+  history.replaceState({}, "", url);
+  if (sync) syncStudioUrl();
+  if (render) renderDecisionStudio();
+}
+
+window.AIHardwareInfrastructure = {
+  getWizardStep: () => Math.max(1, Math.min(4, Number(studioState.siWizardStep) || 1)),
+  setWizardStep: setInfrastructureWizardStep,
+  startNewEstimate: startNewInfrastructureEstimate,
+};
+
 function initDecisionStudio() {
   restoreStudioState();
   if (studioState.siInputMode === "simple") applySimpleSizingModelPreset();

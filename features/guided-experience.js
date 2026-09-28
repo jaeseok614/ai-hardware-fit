@@ -102,12 +102,18 @@
   let currentMode = "finder";
   let started = false;
 
-  // Only the "finder" flow's 3 steps map onto a single click target each
-  // (change GPU / show the 3-pick view / show the full catalog) -- the other
-  // flows (modelFinder/placement/infra's own multi-step wizards) don't have
-  // an equally simple "jump to this step" action yet, so their <li>s stay
-  // plain, non-interactive labels for now.
+  // Finder, modelFinder, and infra all expose real step controls. Keep the
+  // shared journey bar wired to those controls so its highlighted step never
+  // drifts away from the content shown below it.
   function goToJourneyStep(index) {
+    if (currentMode === "modelFinder") {
+      window.AIHardwareGpuAdvisor?.setStep(index + 1, { sync: true, scroll: true });
+      return;
+    }
+    if (currentMode === "infra") {
+      window.AIHardwareInfrastructure?.setWizardStep(index + 1, { sync: true, render: true, scroll: true });
+      return;
+    }
     if (currentMode !== "finder") return;
     if (index === 0) {
       const panel = document.getElementById("gpuChangePanel");
@@ -128,7 +134,7 @@
     if (!target) return;
     const copy = COPY[language];
     const steps = copy[currentMode];
-    const clickable = currentMode === "finder";
+    const clickable = ["finder", "modelFinder", "infra"].includes(currentMode);
     // The <li> itself must keep its implicit "listitem" role -- axe's `list`
     // rule flags the parent <ol> as broken if role="button" overrides that
     // (a role="button" child no longer counts as a listitem, so the <ol>
@@ -220,7 +226,7 @@
   function firstInputSelector(mode) {
     if (mode === "finder") return document.getElementById("onboardingScreen")?.hidden ? "#gpuPreset" : "#onboardingQuickpicks";
     if (mode === "modelFinder") return "#advisorModelSearch";
-    if (mode === "infra") return "#siServiceType";
+    if (mode === "infra") return "#decisionStudio [data-si-preset]";
     return null;
   }
 

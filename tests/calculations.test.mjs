@@ -1019,6 +1019,33 @@ describe("v1.3 GPU platform upgrades", () => {
 });
 
 describe("v1.4 advisor and media optimization", () => {
+  test("model-first recommendations use real model, budget, and result screens", () => {
+    const fresh = loadApp("https://example.com/?mode=modelFinder&lang=ko");
+    const panel = fresh.document.getElementById("gpuAdvisorPanel");
+    const visibleStep = () => [...panel.querySelectorAll("[data-advisor-step-panel]")]
+      .find((section) => !section.hidden)?.dataset.advisorStepPanel;
+
+    assert.equal(panel.dataset.advisorStep, "1");
+    assert.equal(visibleStep(), "1");
+    assert.match(fresh.document.querySelector("#workspaceJourney .is-current")?.textContent || "", /모델 선택/);
+
+    panel.querySelector("[data-advisor-next]").click();
+    assert.equal(panel.dataset.advisorStep, "2");
+    assert.equal(visibleStep(), "2");
+    assert.equal(new URL(fresh.location.href).searchParams.get("advisorStep"), "2");
+
+    panel.querySelector("[data-advisor-next]").click();
+    assert.equal(panel.dataset.advisorStep, "3");
+    assert.equal(visibleStep(), "3");
+    assert.ok(panel.querySelectorAll(".gpu-advisor-card").length > 0);
+    assert.match(fresh.document.querySelector("#workspaceJourney .is-current")?.textContent || "", /GPU 3안 비교/);
+
+    fresh.document.querySelector('[data-core-task="modelFinder"]').click();
+    assert.equal(panel.dataset.advisorStep, "1");
+    assert.equal(visibleStep(), "1");
+    assert.equal(new URL(fresh.location.href).searchParams.has("advisorStep"), false);
+  });
+
   test("ranks model-first GPU recommendations with budget and energy cost", () => {
     const fresh = loadApp("https://example.com/?gpu=rtx4090-24&lang=en&mode=modelFinder");
     const panel = fresh.document.getElementById("gpuAdvisorPanel");
@@ -1201,6 +1228,21 @@ describe("v2.2 user build calculator", () => {
 });
 
 describe("v3.7 infrastructure sizing and multimodal stack", () => {
+  test("a fresh infra-tab click starts at service selection while shared result links stay on their requested step", () => {
+    const staleState = encodeURIComponent(JSON.stringify({ siInputMode: "simple", siWizardStep: 4 }));
+    const clicked = loadApp(`https://example.com/?mode=infra&lang=ko&studio=consulting&schema=3&studioState=${staleState}`, {}, { platformV2: true });
+    assert.equal(clicked.eval("studioState.siWizardStep"), 4);
+    clicked.document.querySelector('[data-core-task="modelFinder"]').click();
+    clicked.document.querySelector('[data-core-task="infra"]').click();
+    assert.equal(clicked.eval("studioState.siWizardStep"), 1);
+    assert.equal(clicked.document.getElementById("decisionStudio").dataset.wizardStep, "1");
+    assert.equal(new URL(clicked.location.href).searchParams.has("studioState"), false);
+
+    const shared = loadApp(`https://example.com/?mode=infra&lang=ko&studio=consulting&studioState=${staleState}`, {}, { platformV2: true });
+    assert.equal(shared.eval("studioState.siWizardStep"), 4);
+    assert.equal(shared.document.getElementById("decisionStudio").dataset.wizardStep, "4");
+  });
+
   test("opens infrastructure sizing as a separate beginner-first workspace", () => {
     const platform = loadApp("https://example.com/?gpu=rtx5070ti-16&lang=ko", {}, { platformV2: true });
     assert.equal(platform.document.querySelectorAll(".core-task-actions [data-core-task]").length, 7);

@@ -239,7 +239,8 @@ test("workspace journey steps are clickable and navigate between finder steps", 
   assert.equal(app.document.activeElement.id, "gpuPresetTrigger");
 
   app.eval('gpuChangeExpanded = false; refreshGpuChangePanel(); setCoreTaskMode("infra");');
-  assert.equal(app.document.querySelectorAll("#workspaceJourney [data-journey-step]").length, 0);
+  assert.equal(app.document.querySelectorAll("#workspaceJourney [data-journey-step]").length, 4);
+  assert.match(app.document.querySelector("#workspaceJourney .is-current")?.textContent || "", /서비스 선택/);
   app.eval('setCoreTaskMode("finder"); appMode = "simple"; render();');
 });
 
