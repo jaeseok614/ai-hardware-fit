@@ -83,9 +83,9 @@ A GitHub Action refreshes a GPU-specific share card and Korean/English post copy
 
 ## Latest updates
 
+- **v7.34.0** — Removed remaining Korean copy from the English UI and updated AI service auto-selection to recent models with cited benchmark evidence.
 - **v7.33.0** — Unified the README and English product message, added a 10-second demo and new social preview, clarified measurement versus estimation, and started weekly GPU spotlights.
 - **v7.32.0** — Restored a predictable GPU-first entry flow and prepared the public launch materials.
-- **v7.31.0** — Simplified quick recommendations and improved result URLs and sharing previews.
 
 See the full [changelog](./CHANGELOG.md).
 

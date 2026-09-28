@@ -393,6 +393,7 @@ const ENGLISH_UI_REPLACEMENTS = [
   ["레이아웃", "Layout"],
   ["상업 이용·수정·배포", "Commercial use, modification, and distribution"],
   ["오픈소스", "Open source"],
+  ["기여하기", "Contribute"],
   ["파라미터", "Parameters"],
   ["처리 유형", "Workload type"],
   ["구조", "Architecture"],

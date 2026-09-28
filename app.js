@@ -552,6 +552,7 @@ function setUiLanguage(language) {
   document.title = uiLanguage === "en"
     ? "Can my GPU run this? — AI Hardware Fit"
     : "AI Hardware Fit — 내 GPU에서 돌아가는 AI 모델 찾기";
+  refreshGpuCatalogLabels();
   syncAdvisorCurrencyInputs();
   applyV15Translations();
   const dictionary = UI_TRANSLATIONS[uiLanguage];
@@ -664,6 +665,7 @@ function setUiLanguage(language) {
     renderHardwareCapabilities(languageHardware, languageEstimates);
   }
   if (hasPrimaryGpuSelection) renderGpuAdvisor();
+  syncGpuPresetTriggerLabel();
   window.AIHardwareLocalization?.apply(uiLanguage);
   document.dispatchEvent(new CustomEvent("ai-hardware-languagechange", { detail: { language: uiLanguage } }));
 }
@@ -806,28 +808,29 @@ function init() {
 
 function populateSelects() {
   $("gpuPreset").innerHTML = [
-    `<option value="">GPU를 선택하세요</option>`,
+    `<option value="">${uiLanguage === "en" ? "Select a GPU" : "GPU를 선택하세요"}</option>`,
     ...GPU_PRESETS.map(
-      (gpu) => `<option value="${escapeAttr(gpu.id)}">${escapeHtml(gpu.name)}</option>`,
+      (gpu) => `<option value="${escapeAttr(gpu.id)}">${escapeHtml(localizedGpuName(gpu.name))}</option>`,
     ),
   ].join("");
   $("gpuPreset").value = "";
   renderGpuPresetOptionList();
   $("secondaryGpuPreset").innerHTML = [
-    `<option value="none">사용 안 함</option>`,
+    `<option value="none">${uiLanguage === "en" ? "Not used" : "사용 안 함"}</option>`,
     ...GPU_PRESETS
       .filter((gpu) => gpu.id !== "custom")
-      .map((gpu) => `<option value="${escapeAttr(gpu.id)}">${escapeHtml(gpu.name)}</option>`),
-    `<option value="__search__">GPU 모델명 검색</option>`,
+      .map((gpu) => `<option value="${escapeAttr(gpu.id)}">${escapeHtml(localizedGpuName(gpu.name))}</option>`),
+    `<option value="__search__">${uiLanguage === "en" ? "Search by GPU model" : "GPU 모델명 검색"}</option>`,
   ].join("");
   $("secondaryGpuPreset").value = "none";
   const compareOptions = GPU_PRESETS
     .filter((gpu) => gpu.id !== "custom")
-    .map((gpu) => `<option value="${escapeAttr(gpu.id)}">${escapeHtml(gpu.name)}</option>`)
+    .map((gpu) => `<option value="${escapeAttr(gpu.id)}">${escapeHtml(localizedGpuName(gpu.name))}</option>`)
     .join("");
-  if ($("compareGpuA")) $("compareGpuA").innerHTML = `<option value="">비교 GPU 선택</option>${compareOptions}`;
-  if ($("compareGpuB")) $("compareGpuB").innerHTML = `<option value="">비교 GPU 선택</option>${compareOptions}`;
-  if ($("compareGpuC")) $("compareGpuC").innerHTML = `<option value="">비교 GPU 선택</option>${compareOptions}`;
+  const comparePlaceholder = uiLanguage === "en" ? "Select a GPU to compare" : "비교 GPU 선택";
+  if ($("compareGpuA")) $("compareGpuA").innerHTML = `<option value="">${comparePlaceholder}</option>${compareOptions}`;
+  if ($("compareGpuB")) $("compareGpuB").innerHTML = `<option value="">${comparePlaceholder}</option>${compareOptions}`;
+  if ($("compareGpuC")) $("compareGpuC").innerHTML = `<option value="">${comparePlaceholder}</option>${compareOptions}`;
   populateGpuPresetDatalist();
   renderOnboardingQuickPicks();
 
@@ -885,8 +888,47 @@ function populateGpuPresetDatalist() {
   if (!fixedList) return;
   fixedList.innerHTML = GPU_PRESETS
     .filter((gpu) => gpu.id !== "custom")
-    .map((gpu) => `<option value="${escapeAttr(gpu.name)}"></option>`)
+    .map((gpu) => `<option value="${escapeAttr(localizedGpuName(gpu.name))}"></option>`)
     .join("");
+}
+
+const GPU_NAME_EN_REPLACEMENTS = [
+  ["구형·저가형 추론용", "legacy · budget inference"],
+  ["구형·저전력 추론용", "legacy · low-power inference"],
+  ["구형·개인용", "legacy · personal use"],
+  ["채굴카드", "mining card"],
+  ["통합메모리", "unified memory"],
+  ["직접 입력", "Custom specifications"],
+];
+
+function localizedGpuName(name) {
+  let value = String(name || "");
+  if (uiLanguage !== "en") return value;
+  GPU_NAME_EN_REPLACEMENTS.forEach(([source, translated]) => {
+    value = value.replaceAll(source, translated);
+  });
+  return value;
+}
+
+function refreshGpuCatalogLabels() {
+  const relabelGpuOptions = (select, placeholders = {}) => {
+    if (!select) return;
+    [...select.options].forEach((option) => {
+      const gpu = GPU_PRESETS.find((item) => item.id === option.value);
+      if (gpu) option.textContent = localizedGpuName(gpu.name);
+      else if (Object.prototype.hasOwnProperty.call(placeholders, option.value)) option.textContent = placeholders[option.value];
+    });
+  };
+  relabelGpuOptions($("gpuPreset"), { "": uiLanguage === "en" ? "Select a GPU" : "GPU를 선택하세요" });
+  relabelGpuOptions($("secondaryGpuPreset"), {
+    none: uiLanguage === "en" ? "Not used" : "사용 안 함",
+    __search__: uiLanguage === "en" ? "Search by GPU model" : "GPU 모델명 검색",
+  });
+  [$("compareGpuA"), $("compareGpuB"), $("compareGpuC")].forEach((select) => relabelGpuOptions(select, {
+    "": uiLanguage === "en" ? "Select a GPU to compare" : "비교 GPU 선택",
+  }));
+  populateGpuPresetDatalist();
+  renderGpuPresetOptionList();
 }
 
 function findGpuPresetByName(name, allowCustom = true) {
@@ -895,10 +937,10 @@ function findGpuPresetByName(name, allowCustom = true) {
   const presets = allowCustom ? GPU_PRESETS : GPU_PRESETS.filter((gpu) => gpu.id !== "custom");
   const normalized = normalizeGpuSearchText(trimmed);
   const direct = (
-    presets.find((gpu) => gpu.name === trimmed) ||
-    presets.find((gpu) => gpu.name.toLowerCase() === trimmed.toLowerCase()) ||
-    presets.find((gpu) => [gpu.id, gpu.name, ...(gpu.aliases || [])].some((value) => normalizeGpuSearchText(value) === normalized)) ||
-    presets.find((gpu) => [gpu.name, ...(gpu.aliases || [])].some((value) => normalizeGpuSearchText(value).includes(normalized))) ||
+    presets.find((gpu) => gpu.name === trimmed || localizedGpuName(gpu.name) === trimmed) ||
+    presets.find((gpu) => [gpu.name, localizedGpuName(gpu.name)].some((value) => value.toLowerCase() === trimmed.toLowerCase())) ||
+    presets.find((gpu) => [gpu.id, gpu.name, localizedGpuName(gpu.name), ...(gpu.aliases || [])].some((value) => normalizeGpuSearchText(value) === normalized)) ||
+    presets.find((gpu) => [gpu.name, localizedGpuName(gpu.name), ...(gpu.aliases || [])].some((value) => normalizeGpuSearchText(value).includes(normalized))) ||
     null
   );
   if (direct) return direct;
@@ -929,7 +971,7 @@ function refreshGpuNotFoundUi(rawValue) {
   // normalizeGpuSearchText() strips "+" and spaces, so "max" only equals "aimax395"
   // via substring, never via ===.
   const known = GPU_PRESETS.some((gpu) => gpu.id !== "custom"
-    && [gpu.id, gpu.name, ...(gpu.aliases || [])].some((value) => {
+    && [gpu.id, gpu.name, localizedGpuName(gpu.name), ...(gpu.aliases || [])].some((value) => {
       const normalizedValue = normalizeGpuSearchText(value);
       return normalizedValue === normalized || normalizedValue.includes(normalized);
     }));
@@ -955,7 +997,7 @@ function refreshGpuNotFoundUi(rawValue) {
         : gpu.formFactor === intent.formFactor)),
   }) || [];
   suggestions.innerHTML = matches.length
-    ? `${uiLanguage === "en" ? "<span>Did you mean?</span>" : "<span>혹시 이 GPU인가요?</span>"}${matches.map((gpu) => `<button type="button" class="ghost-button" data-suggest-gpu="${escapeAttr(gpu.id)}">${escapeHtml(gpu.name)}</button>`).join("")}`
+    ? `${uiLanguage === "en" ? "<span>Did you mean?</span>" : "<span>혹시 이 GPU인가요?</span>"}${matches.map((gpu) => `<button type="button" class="ghost-button" data-suggest-gpu="${escapeAttr(gpu.id)}">${escapeHtml(localizedGpuName(gpu.name))}</button>`).join("")}`
     : "";
 }
 
@@ -990,7 +1032,7 @@ function renderGpuPresetOptionList() {
   const list = $("gpuPresetList");
   if (!list) return;
   list.innerHTML = GPU_PRESETS.map(
-    (gpu) => `<li role="option" class="gpu-preset-option" data-gpu-preset-option="${escapeAttr(gpu.id)}" id="gpuPresetOption-${escapeAttr(gpu.id)}">${escapeHtml(gpu.name)}</li>`,
+    (gpu) => `<li role="option" class="gpu-preset-option" data-gpu-preset-option="${escapeAttr(gpu.id)}" id="gpuPresetOption-${escapeAttr(gpu.id)}">${escapeHtml(localizedGpuName(gpu.name))}</li>`,
   ).join("");
 }
 
@@ -1008,7 +1050,7 @@ function syncGpuPresetTriggerLabel() {
   // apiCost trigger it). Writing preset.name here directly would show the
   // raw, untranslated brand name after every pick while in Korean mode.
   const optionEl = value ? $(`gpuPresetOption-${value}`) : null;
-  label.textContent = preset ? (optionEl?.textContent ?? preset.name) : "GPU를 선택하세요";
+  label.textContent = preset ? (optionEl?.textContent ?? localizedGpuName(preset.name)) : (uiLanguage === "en" ? "Select a GPU" : "GPU를 선택하세요");
   $("gpuPresetList")?.querySelectorAll("[data-gpu-preset-option]").forEach((item) => {
     const isSelected = item.dataset.gpuPresetOption === value;
     item.classList.toggle("is-selected", isSelected);
@@ -2659,16 +2701,23 @@ function renderGpuRuntimeFacts(hardware) {
   const preset = hardware.preset;
   const benchmarks = getGpuBenchmarkRows(preset);
   const measured = benchmarks.map(getBenchmarkNumericValue).filter(Boolean);
-  let benchmarkFact = benchmarks.length ? `실측 ${benchmarks.length}건` : "실측 제보 대기";
+  const en = uiLanguage === "en";
+  let benchmarkFact = benchmarks.length
+    ? (en ? `${benchmarks.length} measured result${benchmarks.length === 1 ? "" : "s"}` : `실측 ${benchmarks.length}건`)
+    : (en ? "Awaiting measured results" : "실측 제보 대기");
   if (measured.length && measured.every((item) => item.unit === measured[0].unit)) {
     const values = measured.map((item) => item.value).sort((a, b) => a - b);
     const middle = Math.floor(values.length / 2);
     const median = values.length % 2 ? values[middle] : (values[middle - 1] + values[middle]) / 2;
-    benchmarkFact = `실측 ${values.length}건 · 중앙값 ${formatMetricNumber(median, measured[0].unit, true)}`;
+    benchmarkFact = en
+      ? `${values.length} measured result${values.length === 1 ? "" : "s"} · median ${formatMetricNumber(median, measured[0].unit, true)}`
+      : `실측 ${values.length}건 · 중앙값 ${formatMetricNumber(median, measured[0].unit, true)}`;
   }
   const facts = [
     preset.vendor,
-    preset.memoryType === "unified" ? `통합메모리 · GPU 계산 기준 ${formatGb(preset.gpuUsableMemoryGb || preset.vram)}` : "전용 VRAM",
+    preset.memoryType === "unified"
+      ? (en ? `Unified memory · ${formatGb(preset.gpuUsableMemoryGb || preset.vram)} used for GPU calculations` : `통합메모리 · GPU 계산 기준 ${formatGb(preset.gpuUsableMemoryGb || preset.vram)}`)
+      : (en ? "Dedicated VRAM" : "전용 VRAM"),
     ...(preset.runtimes || []),
     benchmarkFact,
   ].filter(Boolean);
@@ -2758,10 +2807,14 @@ function buildHardwareBasis(hardware) {
     const workload = getWorkloadSettings();
     const precision = getPrecisionLabel(workload.precisionId, OCR_PRECISIONS);
     if (activeWorkload === "imageGeneration") {
-      return `${workload.width}x${workload.height} · ${workload.steps}스텝 · LoRA ${workload.loraCount}개 · ${precision}`;
+      return uiLanguage === "en"
+        ? `${workload.width}x${workload.height} · ${workload.steps} steps · ${workload.loraCount} LoRA${workload.loraCount === 1 ? "" : "s"} · ${precision}`
+        : `${workload.width}x${workload.height} · ${workload.steps}스텝 · LoRA ${workload.loraCount}개 · ${precision}`;
     }
     if (activeWorkload === "videoGeneration" || activeWorkload === "avatarGeneration") {
-      return `${workload.width}x${workload.height} · ${workload.frames}프레임/${workload.fps}fps · ${workload.steps}스텝 · ${precision}`;
+      return uiLanguage === "en"
+        ? `${workload.width}x${workload.height} · ${workload.frames} frames/${workload.fps}fps · ${workload.steps} steps · ${precision}`
+        : `${workload.width}x${workload.height} · ${workload.frames}프레임/${workload.fps}fps · ${workload.steps}스텝 · ${precision}`;
     }
     return uiLanguage === "en"
       ? `${workload.width}x${workload.height} · batch ${workload.batchSize} pages · ${ocrFeatureLabel(workload.featureSet)} · ${precision}`
@@ -2769,7 +2822,9 @@ function buildHardwareBasis(hardware) {
   }
 
   const quant = QUANTS.find((item) => item.id === $("quantization").value);
-  const quantLabel = quant ? quant.label : (uiLanguage === "en" ? "Auto" : "자동 추천");
+  const quantLabel = quant
+    ? (uiLanguage === "en" && quant.id === "auto" ? "Auto" : quant.label)
+    : (uiLanguage === "en" ? "Auto" : "자동 추천");
   return uiLanguage === "en"
     ? `${formatContext(hardware.context)} · ${hardware.concurrency} concurrent · ${RUNTIME_LABELS[hardware.runtime] || hardware.runtime} · ${quantLabel}`
     : `${formatContext(hardware.context)} · 동시 ${hardware.concurrency}명 · ${RUNTIME_LABELS[hardware.runtime] || hardware.runtime} · ${quantLabel}`;
@@ -2779,10 +2834,10 @@ function renderCalculationBasisStrip(hardware) {
   if (!hasPrimaryGpuSelection) {
     $("calculationBasisStrip").innerHTML = `
       <div>
-        <span>추천 시작하기</span>
-        <strong>위에서 사용할 GPU를 먼저 선택해 주세요.</strong>
+        <span>${uiLanguage === "en" ? "Get started" : "추천 시작하기"}</span>
+        <strong>${uiLanguage === "en" ? "Select the GPU to use above first." : "위에서 사용할 GPU를 먼저 선택해 주세요."}</strong>
       </div>
-      <button type="button" class="primary-button" data-open-settings>GPU 선택</button>
+      <button type="button" class="primary-button" data-open-settings>${uiLanguage === "en" ? "Select GPU" : "GPU 선택"}</button>
     `;
     return;
   }
@@ -2790,23 +2845,23 @@ function renderCalculationBasisStrip(hardware) {
   const basis = buildHardwareBasis(hardware);
   $("calculationBasisStrip").innerHTML = `
     <div>
-      <span>현재 계산 기준</span>
-      <strong>${escapeHtml(formatHardwareName(hardware, true))} · 가용 VRAM ${formatGb(hardware.availableVram)} · ${escapeHtml(basis)}</strong>
+      <span>${uiLanguage === "en" ? "Current settings" : "현재 계산 기준"}</span>
+      <strong>${escapeHtml(formatHardwareName(hardware, true))} · ${uiLanguage === "en" ? "Available VRAM" : "가용 VRAM"} ${formatGb(hardware.availableVram)} · ${escapeHtml(basis)}</strong>
     </div>
-    <button type="button" class="ghost-button" data-open-settings>조건 변경</button>
+    <button type="button" class="ghost-button" data-open-settings>${uiLanguage === "en" ? "Change settings" : "조건 변경"}</button>
   `;
 }
 
 function formatHardwareName(hardware, compact = false) {
-  const primaryName = compact ? shortGpuName(hardware.preset.name) : hardware.preset.name;
+  const primaryName = compact ? shortGpuName(hardware.preset.name) : localizedGpuName(hardware.preset.name);
   const primary = `${primaryName}${hardware.primaryCount > 1 ? ` ×${hardware.primaryCount}` : ""}`;
   if (!hardware.secondaryPreset) return primary;
-  const secondaryName = compact ? shortGpuName(hardware.secondaryPreset.name) : hardware.secondaryPreset.name;
+  const secondaryName = compact ? shortGpuName(hardware.secondaryPreset.name) : localizedGpuName(hardware.secondaryPreset.name);
   return `${primary} + ${secondaryName}${hardware.secondaryCount > 1 ? ` ×${hardware.secondaryCount}` : ""}`;
 }
 
 function shortGpuName(name) {
-  return String(name || "")
+  return localizedGpuName(name)
     .replace(/^NVIDIA\s+/i, "")
     .replace(/^GeForce\s+/i, "")
     .replace(/\s+/g, " ")
@@ -3020,8 +3075,8 @@ function renderSimpleMode(hardware, allEstimates) {
     exploreActions.hidden = true;
     target.innerHTML = `
       <div class="empty-state">
-        <strong>현재 조건에 맞는 모델이 없습니다.</strong>
-        <span>GPU 설정이나 우선순위를 바꿔 다시 확인해 보세요.</span>
+        <strong>${uiLanguage === "en" ? "No models match the current settings." : "현재 조건에 맞는 모델이 없습니다."}</strong>
+        <span>${uiLanguage === "en" ? "Change the GPU settings or priority and try again." : "GPU 설정이나 우선순위를 바꿔 다시 확인해 보세요."}</span>
         <button type="button" class="primary-button" data-reset-simple-filters>${uiLanguage === "en" ? "Reset recommendation filters" : "추천 조건 초기화"}</button>
       </div>
     `;
@@ -3267,21 +3322,22 @@ function renderResults(estimates, allEstimates = []) {
     return;
   }
 
-  const shownCount = estimates.length.toLocaleString("ko-KR");
-  const totalCount = allEstimates.length.toLocaleString("ko-KR");
+  const locale = uiLanguage === "en" ? "en-US" : "ko-KR";
+  const shownCount = estimates.length.toLocaleString(locale);
+  const totalCount = allEstimates.length.toLocaleString(locale);
   $("resultMeta").textContent = estimates.length === allEstimates.length
-    ? `모델 ${shownCount}개`
-    : `전체 ${totalCount}개 중 ${shownCount}개 표시`;
+    ? (uiLanguage === "en" ? `${shownCount} model${estimates.length === 1 ? "" : "s"}` : `모델 ${shownCount}개`)
+    : (uiLanguage === "en" ? `Showing ${shownCount} of ${totalCount}` : `전체 ${totalCount}개 중 ${shownCount}개 표시`);
 
   if (!estimates.length) {
     $("modelResults").className = "model-results";
     $("modelResults").innerHTML = `
       <div class="empty-state">
-        <strong>현재 조건에 맞는 모델이 없습니다.</strong>
-        <span>등급, 작업, 공급사, 라이선스 또는 검색어를 줄이면 후보가 다시 표시됩니다.</span>
+        <strong>${uiLanguage === "en" ? "No models match the current settings." : "현재 조건에 맞는 모델이 없습니다."}</strong>
+        <span>${uiLanguage === "en" ? "Relax the grade, task, provider, license, or search filters to see candidates again." : "등급, 작업, 공급사, 라이선스 또는 검색어를 줄이면 후보가 다시 표시됩니다."}</span>
         <div class="empty-actions">
-          <button type="button" class="ghost-button" data-empty-action="include-conditional">조건부 모델 포함</button>
-          <button type="button" class="ghost-button" data-empty-action="clear">필터 초기화</button>
+          <button type="button" class="ghost-button" data-empty-action="include-conditional">${uiLanguage === "en" ? "Include conditional models" : "조건부 모델 포함"}</button>
+          <button type="button" class="ghost-button" data-empty-action="clear">${uiLanguage === "en" ? "Reset filters" : "필터 초기화"}</button>
         </div>
       </div>
     `;

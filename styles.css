@@ -7370,6 +7370,40 @@ body.community-task-active #benchmarkSheet {
   background: var(--surface-soft);
 }
 
+.si-model-selection-evidence {
+  display: grid;
+  gap: 10px;
+  margin-top: 14px;
+  padding: 13px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: var(--surface-soft);
+}
+
+.si-model-selection-evidence > div {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.si-model-selection-evidence > div > span {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+
+.si-model-selection-evidence b {
+  color: var(--muted);
+  font-size: 11px;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.si-model-selection-evidence a {
+  color: var(--blue);
+  overflow-wrap: anywhere;
+}
+
 .si-expert-form {
   margin-top: 14px;
   border: 1px solid var(--line);
@@ -7760,7 +7794,8 @@ body.community-task-active #benchmarkSheet {
 @media (max-width: 560px) {
   .core-task-actions,
   .si-choice-grid,
-  .si-auto-parts {
+  .si-auto-parts,
+  .si-model-selection-evidence > div {
     grid-template-columns: 1fr;
   }
   .si-wizard-head {

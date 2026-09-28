@@ -1396,6 +1396,7 @@ mergeModelMetadata({
   "Qwen3.8 27B": {
     releaseDate: "2026-08-14",
     sourceUrl: "https://huggingface.co/Qwen/Qwen3.8-27B",
+    qualityBenchmark: quality("LiveCodeBench v6 90.3", "LiveCodeBench v6", 90.3, "https://huggingface.co/Qwen/Qwen3.8-27B", "공식 카드"),
   },
   "GLM-5.3-Flash": {
     releaseDate: "2026-08-20",
@@ -1403,7 +1404,8 @@ mergeModelMetadata({
   },
   "Qwen3.8-Flash-Next": {
     releaseDate: "2026-08-25",
-    sourceUrl: "https://llm-stats.com/models/qwen3.8-flash-next",
+    sourceUrl: "https://huggingface.co/Qwen/Qwen3.8-Flash-Next",
+    qualityBenchmark: quality("SWE-bench Pro 62.5", "SWE-bench Pro", 62.5, "https://huggingface.co/Qwen/Qwen3.8-Flash-Next", "공식 카드"),
   },
   "Muse Glimmer 30B": {
     releaseDate: "2026-08-18",
@@ -1412,6 +1414,7 @@ mergeModelMetadata({
   "MiMo-V2.6 Distill Qwen 9B": {
     releaseDate: "2026-09-22",
     sourceUrl: "https://huggingface.co/XiaomiMiMo/MiMo-V2.6-Distill-Qwen-9B",
+    qualityBenchmark: quality("SWE-bench Pro 44.6", "SWE-bench Pro (avg@3)", 44.6, "https://huggingface.co/XiaomiMiMo/MiMo-V2.6-Distill-Qwen-9B", "공식 기술 보고서"),
   },
   "Xing4.0 29B A4B": {
     releaseDate: "2026-09-16",

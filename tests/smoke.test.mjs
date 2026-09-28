@@ -1006,6 +1006,50 @@ test("infrastructure sizing uses three steps and three decision cards", () => {
   assert.equal(app.document.querySelector(".si-expert-form").open, true);
 });
 
+test("easy infrastructure sizing selects recent, benchmark-backed models by size and modality", () => {
+  app.eval(`
+    setUiLanguage("ko");
+    setCoreTaskMode("infra");
+    updateStudio("siInputMode", "simple");
+    updateStudio("siServiceType", "rag");
+    updateStudio("siQualityPreset", "economy");
+    applySimpleSizingPreset();
+    renderDecisionStudio();
+  `);
+  assert.equal(app.eval("siSelectedModel().name"), "MiMo-V2.6 Distill Qwen 9B");
+
+  app.eval('updateStudio("siQualityPreset", "balanced"); applySimpleSizingPreset(); renderDecisionStudio();');
+  assert.equal(app.eval("siSelectedModel().name"), "Qwen3.8 27B");
+  assert.match(app.document.querySelector(".si-model-selection-evidence").textContent, /2026-08-14/);
+  assert.match(app.document.querySelector(".si-model-selection-evidence").textContent, /LiveCodeBench v6 90\.3/);
+  assert.equal(
+    app.document.querySelector(".si-model-selection-evidence a").href,
+    "https://huggingface.co/Qwen/Qwen3.8-27B",
+  );
+
+  app.eval('updateStudio("siQualityPreset", "quality"); applySimpleSizingPreset(); renderDecisionStudio();');
+  assert.equal(app.eval("siSelectedModel().name"), "Qwen3.5 122B A10B");
+  assert.match(app.document.querySelector(".si-model-selection-evidence").textContent, /MMLU-Pro 86\.7/);
+  assert.match(app.document.querySelector(".si-model-selection-evidence").textContent, /토큰당 10B 활성/);
+
+  app.eval('updateStudio("siQualityPreset", "balanced"); renderDecisionStudio();');
+  app.document.querySelector('[data-si-preset="document-vlm"]').click();
+  assert.equal(app.eval("siSelectedModel().name"), "Qwen3.5 27B");
+  assert.match(app.document.querySelector(".si-model-selection-evidence").textContent, /네이티브 비전 입력/);
+
+  app.eval('setUiLanguage("en"); renderDecisionStudio();');
+  assert.doesNotMatch(app.document.querySelector(".si-model-selection-evidence").textContent, /[가-힣]/);
+  assert.match(app.document.querySelector(".si-model-selection-evidence").textContent, /Public benchmark|Service fit/);
+
+  app.eval(`
+    setUiLanguage("ko");
+    updateStudio("siServiceType", "rag");
+    updateStudio("siQualityPreset", "balanced");
+    applySimpleSizingPreset();
+    renderDecisionStudio();
+  `);
+});
+
 test("easy infrastructure sizing advances one screen at a time", () => {
   app.eval('updateStudio("siInputMode", "simple"); updateStudio("siWizardStep", 1);');
   for (let step = 1; step <= 4; step += 1) {
@@ -1145,6 +1189,7 @@ test("English mode updates the primary navigation and infrastructure wizard", ()
   assert.match(app.document.querySelector('[data-demo-infra="ontology-batch"]').textContent, /Ontology construction batch estimate/);
   assert.doesNotMatch(app.document.querySelector(".core-task-actions").textContent, /[가-힣]/);
   assert.match(app.document.querySelector(".si-simple-wizard").textContent, /three steps/i);
+  assert.doesNotMatch(app.document.querySelector(".si-simple-wizard").textContent, /[가-힣]/);
   assert.match(app.document.querySelector("[data-guide-examples-title]").textContent, /Try examples/);
   assert.match(app.document.querySelector("[data-showcase-feedback]").textContent, /Send workflow feedback/);
   app.document.querySelector('[data-si-input-mode="expert"]').click();
@@ -1213,6 +1258,30 @@ test("switching to English re-translates the GPU comparison detail panel", () =>
   assert.match(detailEn, /Data completeness/);
   assert.match(detailEn, /Specification evidence/);
   assert.doesNotMatch(detailEn, /[가-힣]/, "no Korean text should remain in the detail panel after switching to English");
+
+  app.eval('setUiLanguage("ko");');
+});
+
+test("English GPU names and recommendation empty states contain no Korean", () => {
+  app.eval('selectPrimaryGpu("m4max-128"); setCoreTaskMode("finder"); setUiLanguage("en");');
+  const datalistValues = [...app.document.querySelectorAll("#gpuFixedPresetOptions option")].map((option) => option.value);
+  assert.ok(datalistValues.includes("Apple M4 Max 128GB unified memory"));
+  assert.ok(datalistValues.every((value) => !/[가-힣]/.test(value)));
+  assert.doesNotMatch(app.document.getElementById("gpuPresetList").textContent, /[가-힣]/);
+  assert.equal(app.eval('findGpuPresetByName("Apple M4 Max 128GB unified memory").id'), "m4max-128");
+
+  app.eval("renderSimpleMode(getHardware(), []);");
+  assert.match(app.document.getElementById("simpleModeResult").textContent, /No models match the current settings/);
+  assert.doesNotMatch(app.document.getElementById("simpleModeResult").textContent, /[가-힣]/);
+
+  app.eval("renderResults([], []);");
+  assert.match(app.document.getElementById("modelResults").textContent, /Reset filters/);
+  assert.doesNotMatch(app.document.getElementById("modelResults").textContent, /[가-힣]/);
+
+  app.eval("renderGpuRuntimeFacts(getHardware()); renderCalculationBasisStrip(getHardware());");
+  assert.match(app.document.getElementById("gpuRuntimeFacts").textContent, /Unified memory/);
+  assert.doesNotMatch(app.document.getElementById("gpuRuntimeFacts").textContent, /[가-힣]/);
+  assert.doesNotMatch(app.document.getElementById("calculationBasisStrip").textContent, /[가-힣]/);
 
   app.eval('setUiLanguage("ko");');
 });

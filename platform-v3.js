@@ -753,10 +753,39 @@ function siEnterpriseGpus() {
   return ids.map((id) => GPU_PRESETS.find((gpu) => gpu.id === id)).filter(Boolean);
 }
 
+// Beginner-mode recommendations are intentionally curated by parameter class,
+// release recency, public evaluation evidence, and modality. Raw benchmark
+// numbers from different harnesses are never compared as if they were one
+// leaderboard; the score is shown as supporting evidence for the chosen model.
+const SI_MODEL_RECOMMENDATIONS = {
+  text: {
+    economy: ["MiMo-V2.6 Distill Qwen 9B", "Granite 4.2 8B", "Qwen3 8B"],
+    balanced: ["Qwen3.8 27B", "Granite 4.2 30B", "Qwen3.6 27B", "Qwen3 32B"],
+    quality: ["Qwen3.5 122B A10B", "Qwen3-Next 80B A3B Instruct", "Mistral Medium 3.5 128B"],
+  },
+  vision: {
+    economy: ["MiMo-V2.6 Distill Qwen 9B", "Ministral 3 8B", "Gemma 4 E4B IT Thinking"],
+    balanced: ["Qwen3.5 27B", "Gemma 4 26B A4B IT Thinking", "Muse Glimmer 30B"],
+    quality: ["Qwen3.5 122B A10B", "Mistral Medium 3.5 128B", "Mistral Small 4 119B A6B"],
+  },
+};
+
+function siRecommendationTrack() {
+  return ["ocr", "image", "video", "avatar"].includes(studioState.siServiceType) ? "vision" : "text";
+}
+
+function siRecommendedModel() {
+  const models = getAllModels();
+  const track = SI_MODEL_RECOMMENDATIONS[siRecommendationTrack()] || SI_MODEL_RECOMMENDATIONS.text;
+  const candidates = track[studioState.siQualityPreset] || track.balanced;
+  return candidates.map((name) => models.find((model) => model.name === name)).find(Boolean)
+    || models.find((model) => model.name === "Qwen3.8 27B")
+    || studioSelectedModel();
+}
+
 function siSelectedModel() {
   return getModelByKey(studioState.modelKey)
-    || getAllModels().find((item) => item.name === "Qwen2.5 32B Instruct")
-    || studioSelectedModel();
+    || siRecommendedModel();
 }
 
 function siSizingPlan(gpu, model, profile) {
@@ -791,8 +820,12 @@ function siSizingPlan(gpu, model, profile) {
     expectedErrorPct,
     evidenceKind: sampleCount ? "external" : "estimate",
     confidenceReason: sampleCount
-      ? `동일 GPU·모델의 출처 연결 외부 참고값 ${sampleCount}건을 사용했습니다.`
-      : "동일 GPU·모델·런타임 실측 자료가 없어 VRAM과 메모리 대역폭으로 계산했습니다.",
+      ? (uiLanguage === "en"
+        ? `Used ${sampleCount} source-linked external reference${sampleCount === 1 ? "" : "s"} for the same GPU and model.`
+        : `동일 GPU·모델의 출처 연결 외부 참고값 ${sampleCount}건을 사용했습니다.`)
+      : (uiLanguage === "en"
+        ? "No measurements match the same GPU, model, and runtime; this estimate uses VRAM and memory bandwidth."
+        : "동일 GPU·모델·런타임 실측 자료가 없어 VRAM과 메모리 대역폭으로 계산했습니다."),
     speedLow: base.singleStreamSpeed * (1 - expectedErrorPct / 100),
     speedHigh: base.singleStreamSpeed * (1 + expectedErrorPct / 100),
     placement: `${model.name} · ${profile.id === "economy" ? "tensor parallel" : "replica + tensor parallel"}`,
@@ -812,15 +845,13 @@ function calculateSiSizing() {
   return { model, plans };
 }
 
-function applySimpleSizingPreset() {
-  const models = getAllModels();
-  const names = {
-    economy: ["Qwen3 8B", "Qwen2.5 7B Instruct"],
-    balanced: ["Qwen2.5 32B Instruct", "Qwen3 32B"],
-    quality: ["Llama 3.3 70B Instruct", "Qwen2.5 72B Instruct"],
-  };
-  const selected = names[studioState.siQualityPreset].map((name) => models.find((model) => model.name === name)).find(Boolean);
+function applySimpleSizingModelPreset() {
+  const selected = siRecommendedModel();
   if (selected) studioState.modelKey = modelKey(selected);
+}
+
+function applySimpleSizingPreset() {
+  applySimpleSizingModelPreset();
   const users = Math.max(1, Number(studioState.siUserPreset) || 10);
   studioState.siTotalUsers = users;
   studioState.siConcurrency = Math.max(1, Math.ceil(users * (users <= 10 ? .2 : users <= 50 ? .12 : .1)));
@@ -1294,6 +1325,49 @@ function planLabel(plan, en) {
   return en ? plan.en : plan.ko;
 }
 
+function siModelSelectionEvidence(model, en) {
+  const benchmark = model.qualityBenchmark;
+  const params = Number(model.params || 0);
+  const active = Number(model.active || params);
+  const distilled = /distill/i.test(model.name);
+  const isMoe = params > 0 && active > 0 && active < params * .75;
+  const architecture = distilled
+    ? (en ? `${params}B distilled/SFT checkpoint` : `${params}B 증류·SFT 체크포인트`)
+    : isMoe
+      ? (en ? `${params}B total · ${active}B active/token` : `총 ${params}B · 토큰당 ${active}B 활성`)
+      : (en ? `${params}B dense model` : `${params}B dense 모델`);
+  const context = Number(model.context || 0);
+  const serviceFit = {
+    rag: en
+      ? `Primary RAG/chat model · up to ${context}K context in the catalog`
+      : `RAG·챗봇 주 모델 · 카탈로그 기준 최대 ${context}K 컨텍스트`,
+    ocr: en
+      ? `${model.tags?.includes("vision") ? "Native vision input" : "Document reasoning"} for OCR/VLM workflows`
+      : `OCR·VLM 워크플로용 ${model.tags?.includes("vision") ? "네이티브 비전 입력" : "문서 추론"}`,
+    image: en
+      ? "Primary orchestration/vision model; size the image generator separately in detailed settings"
+      : "워크플로 조정·비전 주 모델이며 이미지 생성기는 상세 견적에서 별도 산정",
+    video: en
+      ? "Primary orchestration/vision model; size the video generator separately in detailed settings"
+      : "워크플로 조정·비전 주 모델이며 영상 생성기는 상세 견적에서 별도 산정",
+    voice: en
+      ? "Primary conversation model; STT and TTS capacity require separate validation"
+      : "대화 주 모델이며 STT·TTS 용량은 별도 검증 필요",
+    avatar: en
+      ? "Primary conversation/vision model; STT, TTS, and lip sync require separate validation"
+      : "대화·비전 주 모델이며 STT·TTS·립싱크는 별도 검증 필요",
+  }[studioState.siServiceType] || (en ? "Primary service model" : "서비스 주 모델");
+  return {
+    release: model.releaseDate
+      ? (en ? `Released ${model.releaseDate} · current shortlist` : `${model.releaseDate} 공개 · 최신 후보군`)
+      : (en ? "Release date needs verification" : "공개일 추가 검증 필요"),
+    benchmark: benchmark?.label || (en ? "No public benchmark linked" : "연결된 공개 벤치마크 없음"),
+    benchmarkUrl: benchmark?.sourceUrl || model.sourceUrl || "",
+    architecture,
+    serviceFit,
+  };
+}
+
 function renderSimpleSizingWizard(model, plans) {
   const en = uiLanguage === "en";
   const step = Math.max(1, Math.min(4, Number(studioState.siWizardStep) || 1));
@@ -1327,6 +1401,7 @@ function renderSimpleSizingWizard(model, plans) {
   const nextEvidence = evidenceCoverage?.priority.find((row) => row.source.id !== "official");
   const selectedFit = siPlanFit(recommended);
   const selectedPrice = calculateSiCommercial(recommended).finalPrice;
+  const modelEvidence = siModelSelectionEvidence(model, en);
   return `<section class="si-simple-wizard" data-step="${step}">
     <div class="si-wizard-head"><div><span class="section-kicker">${en ? "EASY ESTIMATE" : "간편 견적"}</span><h3>${en ? "Complete the estimate in three steps" : "3단계로 간편 견적을 완성하세요"}</h3><p>${en ? "Choose only a service, users, and priority. The model and every component are selected automatically." : "서비스·사용자 수·우선순위만 고르세요. 모델과 모든 장비는 자동으로 선택합니다."}</p></div><button type="button" class="ghost-button" data-si-input-mode="expert">${en ? "Open detailed settings" : "상세 설정 열기"}</button></div>
     <ol class="si-wizard-progress" aria-label="${en ? "Estimate progress" : "견적 진행 단계"}">${[
@@ -1343,7 +1418,7 @@ function renderSimpleSizingWizard(model, plans) {
     <div class="si-wizard-step" data-si-step-panel="3"><strong>3. ${en ? "Set a budget or quality priority" : "예산 또는 품질 우선순위를 정하세요"}</strong><small class="si-step-hint">${en ? "A budget is optional. Choose the most important trade-off." : "예산은 선택 사항입니다. 가장 중요한 기준 하나를 고르세요."}</small><div class="si-simple-budget"><label><span>${en ? "Maximum hardware budget (USD, optional)" : "최대 하드웨어 예산 (원, 선택)"}</span><input id="siBudgetKrw" type="number" min="0" step="${en ? 100 : 1000000}" value="${studioDisplayFromKrw(studioState.siBudgetKrw)}" placeholder="${en ? "0 = no budget limit" : "0 = 예산 제한 없음"}"></label><div class="si-choice-grid">${quality.map(([id,title,note]) => `<button type="button" data-si-quality="${id}" class="${studioState.siQualityPreset === id ? "is-active" : ""}"><b>${title}</b><small>${note}</small></button>`).join("")}</div></div></div>
     <div class="si-wizard-result" data-si-step-panel="4">
       <div class="simple-verdict ${selectedFit.valid ? "is-fit" : "is-review"}"><span>${selectedFit.valid ? (en ? "RECOMMENDED" : "추천 가능") : (en ? "REVIEW NEEDED" : "조건 검토 필요")}</span><strong>${studioMoney(selectedPrice)}</strong><small>${en ? "Estimated total · not a binding supplier quote" : "총 예상 가격 · 공급사 확정 견적 아님"}</small></div>
-      <div class="si-auto-result"><div><span>${en ? "Automatically selected model and option" : "자동 선택 모델·구성안"}</span><strong>${platformEscape(model.name)} · ${planLabel(recommended, en)}</strong><small>${budget > 0 && !budgetMatches.length ? (en ? "No option fits the budget exactly; showing the lowest-cost option." : "예산 안에 들어오는 구성이 없어 최저비용안을 표시합니다.") : (en ? "You can change every assumption in detailed settings." : "상세 설정에서 모든 가정을 수정할 수 있습니다.")}${budget > 0 && !budgetMatches.length && studioState.siQualityPreset !== "economy" ? ` <button type="button" class="link-button" data-si-quality="economy">${en ? "Recalculate with a lighter model →" : "더 가벼운 모델로 다시 계산 →"}</button>` : ""}</small></div><div class="si-auto-parts"><span><b>GPU</b>${platformEscape(shortGpuName(recommended.gpu.name))} × ${recommended.gpuCount}</span><span><b>CPU</b>${parts.cpu}</span><span><b>RAM</b>${parts.memory}</span><span><b>Storage</b>${parts.storage}</span><span><b>Network</b>${parts.nic}</span><span><b>${en ? "Server / power" : "서버·전원"}</b>${parts.server} · ${parts.power}</span></div><p>${en ? "Why: the selected model memory, expected concurrency, failover, growth reserve, and optional budget determine the parts automatically." : "선정 이유: 모델 메모리, 예상 동시 사용자, 장애 대비, 성장 여유와 선택 예산을 기준으로 부품을 자동 선택했습니다."}</p></div>
+      <div class="si-auto-result"><div><span>${en ? "Automatically selected model and option" : "자동 선택 모델·구성안"}</span><strong>${platformEscape(model.name)} · ${planLabel(recommended, en)}</strong><small>${budget > 0 && !budgetMatches.length ? (en ? "No option fits the budget exactly; showing the lowest-cost option." : "예산 안에 들어오는 구성이 없어 최저비용안을 표시합니다.") : (en ? "You can change every assumption in detailed settings." : "상세 설정에서 모든 가정을 수정할 수 있습니다.")}${budget > 0 && !budgetMatches.length && studioState.siQualityPreset !== "economy" ? ` <button type="button" class="link-button" data-si-quality="economy">${en ? "Recalculate with a lighter model →" : "더 가벼운 모델로 다시 계산 →"}</button>` : ""}</small></div><div class="si-auto-parts"><span><b>GPU</b>${platformEscape(shortGpuName(recommended.gpu.name))} × ${recommended.gpuCount}</span><span><b>CPU</b>${parts.cpu}</span><span><b>RAM</b>${parts.memory}</span><span><b>Storage</b>${parts.storage}</span><span><b>Network</b>${parts.nic}</span><span><b>${en ? "Server / power" : "서버·전원"}</b>${parts.server} · ${parts.power}</span></div><section class="si-model-selection-evidence"><strong>${en ? "Why this model" : "이 모델을 고른 이유"}</strong><div><span><b>${en ? "Recency" : "최신성"}</b>${platformEscape(modelEvidence.release)}</span><span><b>${en ? "Public benchmark" : "공개 벤치마크"}</b>${modelEvidence.benchmarkUrl ? `<a href="${platformEscape(modelEvidence.benchmarkUrl)}" target="_blank" rel="noopener noreferrer">${platformEscape(modelEvidence.benchmark)} ↗</a>` : platformEscape(modelEvidence.benchmark)}</span><span><b>${en ? "Architecture" : "구조·효율"}</b>${platformEscape(modelEvidence.architecture)}</span><span><b>${en ? "Service fit" : "서비스 적합성"}</b>${platformEscape(modelEvidence.serviceFit)}</span></div><small>${en ? "Benchmark scores are supporting evidence, not a universal ranking. Compare scores only within the same benchmark and evaluation setup." : "벤치마크 점수는 선정 근거 중 하나이며 범용 순위가 아닙니다. 같은 벤치마크·평가 설정 안에서만 비교하세요."}</small></section><p>${en ? "Why this hardware: model memory, expected concurrency, failover, growth reserve, and optional budget determine the parts automatically." : "하드웨어 선정 이유: 모델 메모리, 예상 동시 사용자, 장애 대비, 성장 여유와 선택 예산을 기준으로 부품을 자동 선택했습니다."}</p></div>
       ${priceCoverage ? `<aside class="price-coverage-note"><div><span class="section-kicker">v6.7 PRICE DATA</span><strong>${en ? `${priceCoverage.sourced} of ${priceCoverage.addressable} retail-available GPUs have dated Korean market sources` : `소매 구매 가능한 GPU ${priceCoverage.addressable}개 중 ${priceCoverage.sourced}개에 날짜·출처가 있는 국내 시세`}</strong><small>${en ? `Fresh ${priceCoverage.fresh} · aging ${priceCoverage.aging} · stale ${priceCoverage.stale}. Missing prices require a supplier quote or direct input. ${priceCoverage.enterpriseOnly} enterprise-only GPUs (H100/A100/MI300X-class) are excluded from this figure -- they have no normal consumer retail channel. USD conversion uses an editable planning rate of ₩${studioExchangeRate().toLocaleString()}/USD, not a live FX quote.` : `최근 30일 ${priceCoverage.fresh}개 · 31~90일 ${priceCoverage.aging}개 · 90일 초과 ${priceCoverage.stale}개. 없는 가격은 공급사 견적·직접 입력 대상으로 구분합니다. 기업용 전용 GPU(H100/A100/MI300X급) ${priceCoverage.enterpriseOnly}개는 일반 소매 채널이 없어 이 수치에서 제외했습니다. 달러 환산은 실시간 환율이 아닌 편집 가능한 계획값 ${studioExchangeRate().toLocaleString()}원/USD를 사용합니다.`}</small></div><a class="ghost-button" href="${platformEscape(window.AIHardwareCatalogRequests.issueUrl("price", recommended.gpu.name))}" target="_blank" rel="noopener noreferrer">${en ? "Report a price" : "가격 제보"}</a></aside>` : ""}
       ${evidenceCoverage ? `<aside class="evidence-coverage-note ${nextEvidence ? "is-review" : ""}"><div><span class="section-kicker">v6.3 SOURCE TRUST</span><strong>${en ? `${evidenceCoverage.official} model-specific official sources · ${evidenceCoverage.family} family sources` : `모델별 공식 출처 ${evidenceCoverage.official}개 · 제품군 출처 ${evidenceCoverage.family}개`}</strong><small>${nextEvidence ? (en ? `Next priority: ${nextEvidence.gpu.name}. Family-level and missing sources are clearly marked.` : `다음 우선 검증: ${nextEvidence.gpu.name}. 제품군·누락 출처는 공식 모델 출처와 구분합니다.`) : (en ? "All priority GPUs have model-specific official sources." : "우선 검증 GPU의 모델별 공식 출처가 모두 연결되었습니다.")}</small></div>${nextEvidence ? `<a class="ghost-button" href="${platformEscape(window.AIHardwareEvidence.issueUrl(nextEvidence.gpu))}" target="_blank" rel="noopener noreferrer">${en ? "Improve source" : "출처 보강"}</a>` : ""}</aside>` : ""}
       <div class="simple-result-actions"><a class="primary-button" href="#siPlans">${en ? "Compare the three options" : "경제형·권장형·확장형 비교"}</a><button type="button" class="ghost-button" data-si-proposal>${en ? "Open customer summary" : "고객 공유 요약 열기"}</button><button type="button" class="ghost-button" data-si-input-mode="expert">${en ? "Edit detailed assumptions" : "상세 가정 수정"}</button></div>
@@ -2041,7 +2116,12 @@ function bindDecisionStudio() {
   $("siStreaming")?.addEventListener("change", (event) => updateStudio("siStreaming", event.target.checked));
   $("siAutoscale")?.addEventListener("change", (event) => updateStudio("siAutoscale", event.target.checked));
   $("siSeparateNetworks")?.addEventListener("change", (event) => updateStudio("siSeparateNetworks", event.target.checked));
-  document.querySelectorAll("[data-si-input-mode]").forEach((button) => button.addEventListener("click", () => updateStudio("siInputMode", button.dataset.siInputMode)));
+  document.querySelectorAll("[data-si-input-mode]").forEach((button) => button.addEventListener("click", () => {
+    studioState.siInputMode = button.dataset.siInputMode;
+    if (studioState.siInputMode === "simple") applySimpleSizingModelPreset();
+    syncStudioUrl();
+    renderDecisionStudio();
+  }));
   document.querySelector("[data-si-wizard-next]")?.addEventListener("click", () => {
     studioState.siWizardStep = Math.min(4, Number(studioState.siWizardStep || 1) + 1);
     syncStudioUrl();
@@ -2172,6 +2252,7 @@ function bindDecisionStudio() {
       siRetentionDays: preset.retention, siSecurity: preset.security, siServiceType: preset.serviceType || "rag",
       siUserPreset: preset.users, siBaselineProfile: "production",
     };
+    applySimpleSizingModelPreset();
     syncStudioUrl();
     renderDecisionStudio();
   }));
@@ -2360,6 +2441,7 @@ function restoreStudioState() {
 
 function initDecisionStudio() {
   restoreStudioState();
+  if (studioState.siInputMode === "simple") applySimpleSizingModelPreset();
   renderDecisionStudio();
   window.addEventListener("ai-hardware-fit:infra-demo", (event) => {
     const scenarioId = event.detail?.scenario;
@@ -2387,7 +2469,7 @@ function initDecisionStudio() {
       siSecurity: preset.security,
       siServiceType: preset.serviceType || "rag",
     };
-    applySimpleSizingPreset();
+    applySimpleSizingModelPreset();
     syncStudioUrl();
     renderDecisionStudio();
     window.AIHardwareUI?.announce(uiLanguage === "en"
