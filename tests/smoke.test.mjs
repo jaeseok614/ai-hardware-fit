@@ -1426,6 +1426,15 @@ test("VRAM-quality frontier compares one benchmark at a time and marks Pareto-ef
   app.eval('setUiLanguage("en"); AIHardwareBenchmark.renderSheet();');
   assert.match(app.document.getElementById("valueFrontierTitle").textContent, /Best local model/);
   assert.doesNotMatch(app.document.getElementById("valueFrontier").textContent, /[가-힣]/);
+
+  // The real lazy-loader applies the generic localization sweep immediately
+  // after the frontier renders. Static nodes in this panel were captured from
+  // index.html in Korean, so the sweep must translate those captured sources
+  // instead of restoring Korean over the feature's English render.
+  app.eval('translateDynamicUi("en"); window.AIHardwareLocalization?.apply("en");');
+  assert.match(app.document.getElementById("valueFrontierTitle").textContent, /Best local model/);
+  assert.equal(app.document.getElementById("valueFrontierChart").getAttribute("aria-label").includes("프런티어"), false);
+  assert.doesNotMatch(app.document.getElementById("valueFrontier").textContent, /[가-힣]/);
 });
 
 test("the header logo acts as a home link, resetting to the default beginner mode", () => {

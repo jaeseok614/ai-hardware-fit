@@ -765,6 +765,17 @@ const ENGLISH_UI_REPLACEMENTS = [
   ],
   ["VRAM 여유 우선", "VRAM headroom first"],
   ["벤치마크 시트", "Benchmark sheet"],
+  ["내 VRAM에서 가장 성능 좋은 로컬 모델", "Best local model for your VRAM"],
+  [
+    "같은 공개 벤치마크끼리만 Q4_K_M 예상 VRAM과 성능을 비교합니다.",
+    "Compare estimated Q4_K_M VRAM and quality only within the same published benchmark.",
+  ],
+  ["비교 지표", "Benchmark"],
+  [
+    "기준: Q4_K_M · 4K context · 동시 요청 1 · llama.cpp. 점수는 각 모델 제작자가 공개한 값이며, 시험 세부 조건은 출처에서 확인하세요.",
+    "Baseline: Q4_K_M · 4K context · 1 concurrent request · llama.cpp. Scores are source-reported; check each source for evaluation details.",
+  ],
+  ["VRAM 대비 모델 벤치마크 성능 차트", "Model benchmark performance by VRAM"],
   ["모델 상세 분석", "Model details"],
   ["모델 비교", "Model comparison"],
   ["자체 평가", "self-reported"],
