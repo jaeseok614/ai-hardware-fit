@@ -37,6 +37,10 @@ function ensureGpuAdvisorPanel() {
         <label class="field"><span id="advisorModelCategoryLabel"></span><select id="advisorModelCategory"></select></label>
         <label class="field advisor-model-search-field"><span id="advisorModelSearchLabel"></span><input id="advisorModelSearch" type="search" autocomplete="off"></label>
         <label class="field advisor-model-select-field"><span id="advisorModelLabel"></span><select id="advisorModel"></select><small id="advisorModelCount" aria-live="polite"></small></label>
+        <div class="empty-state advisor-model-empty" id="advisorModelEmpty" hidden>
+          <p id="advisorModelEmptyText"></p>
+          <button type="button" class="ghost-button" data-advisor-reset></button>
+        </div>
       </div>
       <div class="gpu-advisor-controls advisor-wizard-panel" data-advisor-step-panel="2" hidden>
         <label class="field advisor-budget-field"><span id="advisorBudgetLabel"></span><input id="advisorBudgetUsd" data-currency="KRW" type="number" min="0" max="200000000" step="100000" value="2800000"></label>
@@ -76,6 +80,12 @@ function ensureGpuAdvisorPanel() {
   panel.querySelector("[data-advisor-back]")?.addEventListener("click", () => setAdvisorWizardStep(advisorWizardStep - 1, { scroll: true }));
   panel.querySelector("[data-advisor-next]")?.addEventListener("click", () => setAdvisorWizardStep(advisorWizardStep + 1, { scroll: true }));
   panel.querySelector("[data-advisor-restart]")?.addEventListener("click", () => setAdvisorWizardStep(1, { scroll: true }));
+  $("advisorModelEmpty")?.querySelector("[data-advisor-reset]")?.addEventListener("click", () => {
+    $("advisorModelCategory").value = "all";
+    $("advisorModelSearch").value = "";
+    refreshAdvisorModelOptions();
+    renderGpuAdvisor();
+  });
 }
 
 function syncAdvisorCurrencyInputs() {
@@ -393,6 +403,11 @@ function renderGpuAdvisor() {
     node.textContent = en ? "Detailed constraints" : "상세 조건";
   });
   if ($("advisorModelSearch")) $("advisorModelSearch").placeholder = en ? "Name, provider, or tag" : "이름·제공사·태그 부분검색";
+  if ($("advisorModelEmptyText")) $("advisorModelEmptyText").textContent = en
+    ? "No matching model. Try another category or search term."
+    : "일치하는 모델이 없습니다. 종류나 검색어를 바꿔보세요.";
+  const modelEmptyReset = $("advisorModelEmpty")?.querySelector("[data-advisor-reset]");
+  if (modelEmptyReset) modelEmptyReset.textContent = en ? "Reset conditions" : "조건 초기화";
   [...($("advisorModelCategory")?.options || [])].forEach((option) => {
     const category = ADVISOR_MODEL_CATEGORIES.find((item) => item.id === option.value);
     if (category) option.textContent = en ? category.en : category.ko;
@@ -416,15 +431,11 @@ function renderGpuAdvisor() {
 
   const model = getModelByKey($("advisorModel").value);
   if (!model) {
-    $("gpuAdvisorResult").innerHTML = `<div class="empty-state"><p>${en ? "No matching model. Try another category or search term." : "일치하는 모델이 없습니다. 종류나 검색어를 바꿔보세요."}</p><button type="button" class="ghost-button" data-advisor-reset>${en ? "Reset conditions" : "조건 초기화"}</button></div>`;
-    $("gpuAdvisorResult").querySelector("[data-advisor-reset]")?.addEventListener("click", () => {
-      $("advisorModelCategory").value = "all";
-      $("advisorModelSearch").value = "";
-      refreshAdvisorModelOptions();
-      renderGpuAdvisor();
-    });
+    if ($("advisorModelEmpty")) $("advisorModelEmpty").hidden = false;
+    $("gpuAdvisorResult").innerHTML = `<div class="empty-state"><p>${en ? "No matching model. Try another category or search term." : "일치하는 모델이 없습니다. 종류나 검색어를 바꿔보세요."}</p></div>`;
     return;
   }
+  if ($("advisorModelEmpty")) $("advisorModelEmpty").hidden = true;
   syncAdvisorCurrencyInputs();
   const pricing = window.AIHardwarePricing;
   const advisorCurrency = $("advisorBudgetUsd").dataset.currency || "USD";
