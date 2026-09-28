@@ -43,6 +43,15 @@
 | [RTX 4090 24GB](https://jaeseok614.github.io/ai-hardware-fit/?lang=en&gpu=rtx4090-24) | Larger-model options for 24 GB VRAM |
 | [Start with a model](https://jaeseok614.github.io/ai-hardware-fit/?lang=en&mode=modelFinder) | Compare GPUs by budget, power, and form factor |
 
+## Best local model for your VRAM
+
+The benchmark workspace now includes a **VRAM–quality frontier**. It estimates required memory at `Q4_K_M · 4K context · 1 concurrent request · llama.cpp` and compares models only within the same source-reported benchmark instead of mixing unrelated scores.
+
+- Best score and runner-up for 8, 12, 16, 24, 32, 48, 80, and 128 GB
+- Pareto frontier: no lower-VRAM model in the group has an equal or higher score
+- Your selected GPU's usable-VRAM line and a source link for every score
+- [Open the interactive chart](https://jaeseok614.github.io/ai-hardware-fit/?lang=en#benchmarkSheet) · [Latest weekly change report](./docs/model-value/latest.md)
+
 ## Can I trust the numbers?
 
 Every result separates **VRAM math** from **speed evidence**.
@@ -80,12 +89,13 @@ A GitHub Action refreshes a GPU-specific share card and Korean/English post copy
 
 - [Latest GPU spotlight](./docs/spotlights/latest.md)
 - [Spotlight archive](./docs/spotlights/README.md)
+- [Latest VRAM/model value report](./docs/model-value/latest.md)
 
 ## Latest updates
 
+- **v7.36.0** — Added a same-benchmark VRAM–quality frontier, VRAM-tier recommendations, and a weekly model-value change report.
 - **v7.35.0** — Split model-first GPU recommendations into three real screens and made a fresh AI service sizing entry start at step one.
 - **v7.34.0** — Removed remaining Korean copy from the English UI and updated AI service auto-selection to recent models with cited benchmark evidence.
-- **v7.33.0** — Unified the README and English product message, added a 10-second demo and new social preview, clarified measurement versus estimation, and started weekly GPU spotlights.
 
 See the full [changelog](./CHANGELOG.md).
 

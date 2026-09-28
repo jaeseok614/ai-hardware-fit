@@ -1,0 +1,1177 @@
+{
+  "date": "2026-09-28",
+  "baseline": "Q4_K_M · 4K context · concurrency 1 · llama.cpp",
+  "metric": "MMLU-Pro",
+  "models": [
+    {
+      "name": "A.X 4.0 72B",
+      "releaseDate": "2025-07-03",
+      "metric": "KMMLU",
+      "score": 78.32,
+      "requiredGb": 57.14
+    },
+    {
+      "name": "A.X 4.0 Light 7B",
+      "releaseDate": "2025-07-03",
+      "metric": "MMLU (자체 평가, CoT)",
+      "score": 75.43,
+      "requiredGb": 6.64
+    },
+    {
+      "name": "Aya Expanse 32B",
+      "releaseDate": "2024-10-23",
+      "metric": "MMLU-Pro (Open LLM Leaderboard 연동)",
+      "score": 45.41,
+      "requiredGb": 26.06
+    },
+    {
+      "name": "Aya Expanse 8B",
+      "releaseDate": "2024-10-23",
+      "metric": "MMLU-Pro (Open LLM Leaderboard 연동)",
+      "score": 33.74,
+      "requiredGb": 7.42
+    },
+    {
+      "name": "CodeLlama 13B Instruct",
+      "releaseDate": "2023-08-24",
+      "metric": "HumanEval pass@1",
+      "score": 42.683,
+      "requiredGb": 11.3
+    },
+    {
+      "name": "CodeLlama 34B Instruct",
+      "releaseDate": "2023-08-24",
+      "metric": "HumanEval pass@1",
+      "score": 41.5,
+      "requiredGb": 27.61
+    },
+    {
+      "name": "CodeLlama 7B Instruct",
+      "releaseDate": "2023-08-24",
+      "metric": "HumanEval pass@1",
+      "score": 34.756,
+      "requiredGb": 6.64
+    },
+    {
+      "name": "Codestral 22B",
+      "releaseDate": "2024-05-29",
+      "metric": "HumanEval pass@1",
+      "score": 81.1,
+      "requiredGb": 18.29
+    },
+    {
+      "name": "Command R 35B",
+      "releaseDate": "2024-03-11",
+      "metric": "MMLU (Open LLM Leaderboard)",
+      "score": 68.2,
+      "requiredGb": 28.39
+    },
+    {
+      "name": "Command R+ 104B",
+      "releaseDate": "2024-04-04",
+      "metric": "MMLU",
+      "score": 75.7,
+      "requiredGb": 80.95
+    },
+    {
+      "name": "DeepSeek Coder V2 236B",
+      "releaseDate": "2024-06-17",
+      "metric": "HumanEval pass@1",
+      "score": 90.2,
+      "requiredGb": 159.02
+    },
+    {
+      "name": "DeepSeek Coder V2 Lite 16B",
+      "releaseDate": "2024-06-17",
+      "metric": "HumanEval pass@1",
+      "score": 81.1,
+      "requiredGb": 12.41
+    },
+    {
+      "name": "DeepSeek R1",
+      "releaseDate": "2025-01-20",
+      "metric": "MMLU-Pro (EM)",
+      "score": 84,
+      "requiredGb": 442.34
+    },
+    {
+      "name": "DeepSeek R1 Distill Llama 70B",
+      "releaseDate": "2025-01-20",
+      "metric": "AIME 2024 pass@1",
+      "score": 70,
+      "requiredGb": 55.58
+    },
+    {
+      "name": "DeepSeek R1 Distill Llama 8B",
+      "releaseDate": "2025-01-20",
+      "metric": "AIME 2024 pass@1",
+      "score": 50.4,
+      "requiredGb": 7.42
+    },
+    {
+      "name": "DeepSeek R1 Distill Qwen 14B",
+      "releaseDate": "2025-01-20",
+      "metric": "AIME 2024 pass@1",
+      "score": 69.7,
+      "requiredGb": 12.08
+    },
+    {
+      "name": "DeepSeek R1 Distill Qwen 32B",
+      "releaseDate": "2025-01-20",
+      "metric": "AIME 2024 pass@1",
+      "score": 72.6,
+      "requiredGb": 26.06
+    },
+    {
+      "name": "DeepSeek R1 Distill Qwen 7B",
+      "releaseDate": "2025-01-20",
+      "metric": "AIME 2024 pass@1",
+      "score": 55.5,
+      "requiredGb": 6.64
+    },
+    {
+      "name": "DeepSeek V3",
+      "releaseDate": "2024-12-26",
+      "metric": "MMLU-Pro (EM)",
+      "score": 75.9,
+      "requiredGb": 442.34
+    },
+    {
+      "name": "DeepSeek V3.2",
+      "releaseDate": "2025-12-01",
+      "metric": "GPQA Diamond",
+      "score": 82.4,
+      "requiredGb": 451.41
+    },
+    {
+      "name": "DeepSeek V4-Flash",
+      "releaseDate": "2026-04-24",
+      "metric": "MMLU-Pro (EM, 5-shot, base model)",
+      "score": 68.3,
+      "requiredGb": 189.4
+    },
+    {
+      "name": "DeepSeek V4-Pro",
+      "releaseDate": "2026-04-24",
+      "metric": "MMLU-Pro (EM, 5-shot, base model)",
+      "score": 73.5,
+      "requiredGb": 1045.41
+    },
+    {
+      "name": "Devstral 2 123B",
+      "releaseDate": "2025-12-09",
+      "metric": "SWE-bench Verified",
+      "score": 72.2,
+      "requiredGb": 94.97
+    },
+    {
+      "name": "Devstral Small 24B",
+      "releaseDate": "2025-05-21",
+      "metric": "SWE-bench Verified",
+      "score": 46.8,
+      "requiredGb": 19.85
+    },
+    {
+      "name": "EEVE Korean 10.8B",
+      "releaseDate": "2024-02-22",
+      "metric": "LogicKor overall",
+      "score": 5.86,
+      "requiredGb": 9.59
+    },
+    {
+      "name": "EXAONE 3.5 2.4B Instruct",
+      "releaseDate": "2024-12-09",
+      "metric": "LiveBench",
+      "score": 33,
+      "requiredGb": 3.06
+    },
+    {
+      "name": "EXAONE 3.5 7.8B Instruct",
+      "releaseDate": "2024-12-09",
+      "metric": "LiveBench",
+      "score": 39.8,
+      "requiredGb": 7.26
+    },
+    {
+      "name": "EXAONE 4.0 1.2B",
+      "releaseDate": "2025-07-15",
+      "metric": "MMLU-Pro",
+      "score": 59.3,
+      "requiredGb": 2.03
+    },
+    {
+      "name": "EXAONE 4.0 32B",
+      "releaseDate": "2025-07-15",
+      "metric": "MMLU-Pro",
+      "score": 81.8,
+      "requiredGb": 25.24
+    },
+    {
+      "name": "EXAONE Deep 32B",
+      "releaseDate": "2025-02-06",
+      "metric": "AIME 2024 pass@1",
+      "score": 72.1,
+      "requiredGb": 26.06
+    },
+    {
+      "name": "EXAONE Deep 7.8B",
+      "releaseDate": "2025-02-06",
+      "metric": "AIME 2024 pass@1",
+      "score": 70,
+      "requiredGb": 7.26
+    },
+    {
+      "name": "Falcon 40B Instruct",
+      "releaseDate": "2023-05-25",
+      "metric": "Open LLM Leaderboard 평균(ARC/HellaSwag/MMLU/TruthfulQA)",
+      "score": 63.2,
+      "requiredGb": 32.28
+    },
+    {
+      "name": "Falcon 7B Instruct",
+      "releaseDate": "2023-05-25",
+      "metric": "Open LLM Leaderboard 평균(ARC/HellaSwag/MMLU/TruthfulQA)",
+      "score": 48.4,
+      "requiredGb": 6.64
+    },
+    {
+      "name": "Gemma 2 27B IT",
+      "releaseDate": "2024-06-27",
+      "metric": "MMLU-Pro",
+      "score": 56.9,
+      "requiredGb": 22.18
+    },
+    {
+      "name": "Gemma 2 2B IT",
+      "releaseDate": "2024-07-31",
+      "metric": "MMLU-Pro",
+      "score": 15.6,
+      "requiredGb": 2.75
+    },
+    {
+      "name": "Gemma 2 9B IT",
+      "releaseDate": "2024-06-27",
+      "metric": "MMLU-Pro",
+      "score": 46.8,
+      "requiredGb": 8.19
+    },
+    {
+      "name": "Gemma 3 12B IT",
+      "releaseDate": "2025-03-12",
+      "metric": "MMLU-Pro",
+      "score": 60.6,
+      "requiredGb": 10.52
+    },
+    {
+      "name": "Gemma 3 1B IT",
+      "releaseDate": "2025-03-12",
+      "metric": "MMLU-Pro",
+      "score": 14.7,
+      "requiredGb": 1.98
+    },
+    {
+      "name": "Gemma 3 27B IT",
+      "releaseDate": "2025-03-12",
+      "metric": "MMLU-Pro",
+      "score": 67.5,
+      "requiredGb": 22.18
+    },
+    {
+      "name": "Gemma 3 4B IT",
+      "releaseDate": "2025-03-12",
+      "metric": "MMLU-Pro",
+      "score": 43.6,
+      "requiredGb": 4.31
+    },
+    {
+      "name": "Gemma 4 12B IT Thinking",
+      "releaseDate": "2026-06-03",
+      "metric": "MMLU-Pro",
+      "score": 77.2,
+      "requiredGb": 10.52
+    },
+    {
+      "name": "Gemma 4 26B A4B IT Thinking",
+      "releaseDate": "2026-03-31",
+      "metric": "MMMLU multilingual Q&A",
+      "score": 82.6,
+      "requiredGb": 18.85
+    },
+    {
+      "name": "Gemma 4 31B IT Thinking",
+      "releaseDate": "2026-03-31",
+      "metric": "MMMLU multilingual Q&A",
+      "score": 85.2,
+      "requiredGb": 25.28
+    },
+    {
+      "name": "Gemma 4 E2B IT Thinking",
+      "releaseDate": "2026-03-31",
+      "metric": "MMMLU multilingual Q&A",
+      "score": 60,
+      "requiredGb": 4.91
+    },
+    {
+      "name": "Gemma 4 E4B IT Thinking",
+      "releaseDate": "2026-03-31",
+      "metric": "MMMLU multilingual Q&A",
+      "score": 69.4,
+      "requiredGb": 7.1
+    },
+    {
+      "name": "GLM-4 9B Chat",
+      "releaseDate": "2024-06-05",
+      "metric": "MMLU",
+      "score": 72.4,
+      "requiredGb": 8.19
+    },
+    {
+      "name": "GLM-4.5 Air 106B A12B",
+      "releaseDate": "2025-07-28",
+      "metric": "12-benchmark aggregate",
+      "score": 59.8,
+      "requiredGb": 73.97
+    },
+    {
+      "name": "GLM-5.2",
+      "releaseDate": "2026-06-16",
+      "metric": "GPQA Diamond",
+      "score": 91.2,
+      "requiredGb": 495.74
+    },
+    {
+      "name": "GPT-OSS 120B",
+      "releaseDate": "2025-08-05",
+      "metric": "MMLU (high reasoning effort)",
+      "score": 90,
+      "requiredGb": 80.48
+    },
+    {
+      "name": "GPT-OSS 20B",
+      "releaseDate": "2025-08-05",
+      "metric": "MMLU (high reasoning effort)",
+      "score": 85.3,
+      "requiredGb": 15.95
+    },
+    {
+      "name": "Granite 4.1 3B",
+      "releaseDate": "2026-04-29",
+      "metric": "MMLU (5-shot)",
+      "score": 67.02,
+      "requiredGb": 3.53
+    },
+    {
+      "name": "Granite 4.1 8B",
+      "releaseDate": "2026-04-29",
+      "metric": "MMLU (5-shot)",
+      "score": 73.84,
+      "requiredGb": 7.42
+    },
+    {
+      "name": "Granite 4.2 30B",
+      "releaseDate": "2026-08-25",
+      "metric": "MMLU-Pro",
+      "score": 77.6,
+      "requiredGb": 24.51
+    },
+    {
+      "name": "Granite 4.2 3B",
+      "releaseDate": "2026-08-25",
+      "metric": "MMLU-Pro",
+      "score": 67.84,
+      "requiredGb": 3.53
+    },
+    {
+      "name": "Granite 4.2 8B",
+      "releaseDate": "2026-08-25",
+      "metric": "MMLU-Pro",
+      "score": 74.04,
+      "requiredGb": 7.42
+    },
+    {
+      "name": "HyperCLOVAX SEED Think 14B",
+      "releaseDate": "2025-07-21",
+      "metric": "Korean/culture benchmark average",
+      "score": 0.7269,
+      "requiredGb": 12.65
+    },
+    {
+      "name": "InternVL2.5 26B",
+      "releaseDate": "2024-12-10",
+      "metric": "MMMU (val)",
+      "score": 60,
+      "requiredGb": 21.4
+    },
+    {
+      "name": "InternVL2.5 78B",
+      "releaseDate": "2024-12-10",
+      "metric": "MMMU (val)",
+      "score": 70.1,
+      "requiredGb": 61.76
+    },
+    {
+      "name": "InternVL2.5 8B",
+      "releaseDate": "2024-12-10",
+      "metric": "MMMU (val)",
+      "score": 56,
+      "requiredGb": 7.42
+    },
+    {
+      "name": "Jamba 1.5 Large",
+      "releaseDate": "2024-08-22",
+      "metric": "Arena Hard",
+      "score": 65.4,
+      "requiredGb": 73.57
+    },
+    {
+      "name": "Jamba 1.5 Mini",
+      "releaseDate": "2024-08-22",
+      "metric": "Arena Hard",
+      "score": 46.1,
+      "requiredGb": 10.52
+    },
+    {
+      "name": "Kanana 1.5 8B Instruct",
+      "releaseDate": "2025-05-23",
+      "metric": "KMMLU (0-shot, CoT)",
+      "score": 48.28,
+      "requiredGb": 7.42
+    },
+    {
+      "name": "Kimi K2",
+      "releaseDate": "2025-07-11",
+      "metric": "MMLU-Pro",
+      "score": 81,
+      "requiredGb": 655.08
+    },
+    {
+      "name": "Kimi K2 Thinking",
+      "releaseDate": "2025-11-08",
+      "metric": "MMLU-Pro (no tools)",
+      "score": 84.6,
+      "requiredGb": 655.08
+    },
+    {
+      "name": "Kimi K2.7 Code",
+      "releaseDate": "2026-06-12",
+      "metric": "SWE-bench Verified (벤더 자체 발표)",
+      "score": 60.4,
+      "requiredGb": 655.08
+    },
+    {
+      "name": "Kimi K3",
+      "releaseDate": "2026-07-26",
+      "metric": "MMLU-Pro",
+      "score": 78.5,
+      "requiredGb": 1827.96
+    },
+    {
+      "name": "Laguna XS 2.1 33B A3B",
+      "releaseDate": "2026-07-02",
+      "metric": "SWE-bench Verified",
+      "score": 70.9,
+      "requiredGb": 24.14
+    },
+    {
+      "name": "Ling 3.0 Flash",
+      "releaseDate": "2026-08-07",
+      "metric": "SWE-Bench Multilingual (resolved %)",
+      "score": 72.4,
+      "requiredGb": 85.01
+    },
+    {
+      "name": "Liquid LFM 3B",
+      "releaseDate": "2024-09-30",
+      "metric": "MMLU (5-shot)",
+      "score": 66.16,
+      "requiredGb": 3.53
+    },
+    {
+      "name": "Liquid LFM 40B",
+      "releaseDate": "2024-09-30",
+      "metric": "MMLU (5-shot, MoE)",
+      "score": 78.76,
+      "requiredGb": 32.28
+    },
+    {
+      "name": "Llama 3.1 405B Instruct",
+      "releaseDate": "2024-07-23",
+      "metric": "MMLU-Pro (CoT, 5-shot)",
+      "score": 73.3,
+      "requiredGb": 303.09
+    },
+    {
+      "name": "Llama 3.1 70B Instruct",
+      "releaseDate": "2024-07-23",
+      "metric": "MMLU-Pro (CoT, 5-shot)",
+      "score": 66.4,
+      "requiredGb": 55.58
+    },
+    {
+      "name": "Llama 3.1 8B Instruct",
+      "releaseDate": "2024-07-23",
+      "metric": "MMLU-Pro (CoT, 5-shot)",
+      "score": 48.3,
+      "requiredGb": 7.42
+    },
+    {
+      "name": "Llama 3.1 Nemotron 70B",
+      "releaseDate": "2024-10-15",
+      "metric": "MMLU-Pro",
+      "score": 62.78,
+      "requiredGb": 55.58
+    },
+    {
+      "name": "Llama 3.2 11B Vision Instruct",
+      "releaseDate": "2024-09-25",
+      "metric": "MMMU (val, CoT)",
+      "score": 50.7,
+      "requiredGb": 9.75
+    },
+    {
+      "name": "Llama 3.2 1B Instruct",
+      "releaseDate": "2024-10-24",
+      "metric": "MMLU (5-shot)",
+      "score": 49.3,
+      "requiredGb": 1.98
+    },
+    {
+      "name": "Llama 3.2 3B Instruct",
+      "releaseDate": "2024-10-24",
+      "metric": "MMLU (5-shot)",
+      "score": 63.4,
+      "requiredGb": 3.69
+    },
+    {
+      "name": "Llama 3.2 90B Vision Instruct",
+      "releaseDate": "2024-09-25",
+      "metric": "MMMU (val, CoT)",
+      "score": 60.3,
+      "requiredGb": 70.62
+    },
+    {
+      "name": "Llama 3.3 70B Instruct",
+      "releaseDate": "2024-12-06",
+      "metric": "MMLU Pro (CoT, 5-shot)",
+      "score": 68.9,
+      "requiredGb": 55.58
+    },
+    {
+      "name": "Llama 4 Maverick 17B Active",
+      "releaseDate": "2025-04-05",
+      "metric": "MMLU Pro instruction",
+      "score": 80.5,
+      "requiredGb": 264.93
+    },
+    {
+      "name": "Llama 4 Scout 17B Active",
+      "releaseDate": "2025-04-05",
+      "metric": "MMLU Pro instruction",
+      "score": 74.3,
+      "requiredGb": 76.36
+    },
+    {
+      "name": "Llama-3-Korean-Bllossom-70B",
+      "releaseDate": "2024-04-25",
+      "metric": "LogicKor overall",
+      "score": 5.85,
+      "requiredGb": 56.2
+    },
+    {
+      "name": "Llama-3-Korean-Bllossom-8B",
+      "releaseDate": "2024-06-18",
+      "metric": "LogicKor overall",
+      "score": 6.93,
+      "requiredGb": 7.42
+    },
+    {
+      "name": "LLaVA 1.6 Mistral 7B",
+      "releaseDate": "2024-01-30",
+      "metric": "MMMU (val)",
+      "score": 35.3,
+      "requiredGb": 6.64
+    },
+    {
+      "name": "LLaVA-NeXT 34B",
+      "releaseDate": "2024-01-30",
+      "metric": "MMMU (val)",
+      "score": 51.1,
+      "requiredGb": 27.61
+    },
+    {
+      "name": "Magistral Small 1.2 24B",
+      "releaseDate": "2025-09-18",
+      "metric": "AIME 2024 pass@1",
+      "score": 86.14,
+      "requiredGb": 19.85
+    },
+    {
+      "name": "MiMo-V2.6 Distill Qwen 9B",
+      "releaseDate": "2026-09-22",
+      "metric": "SWE-bench Pro (avg@3)",
+      "score": 44.6,
+      "requiredGb": 8.51
+    },
+    {
+      "name": "MiniCPM-V 2.6 8B",
+      "releaseDate": "2024-08-06",
+      "metric": "OpenCompass 8개 벤치마크 평균",
+      "score": 65.2,
+      "requiredGb": 7.42
+    },
+    {
+      "name": "Ministral 3 14B",
+      "releaseDate": "2025-12-02",
+      "metric": "MATH maj@1 (Instruct)",
+      "score": 90.4,
+      "requiredGb": 12.08
+    },
+    {
+      "name": "Ministral 3 3B",
+      "releaseDate": "2025-12-02",
+      "metric": "MATH maj@1 (Instruct)",
+      "score": 83,
+      "requiredGb": 3.53
+    },
+    {
+      "name": "Ministral 3 8B",
+      "releaseDate": "2025-12-02",
+      "metric": "MATH maj@1 (Instruct)",
+      "score": 87.6,
+      "requiredGb": 7.42
+    },
+    {
+      "name": "Ministral 3B Instruct",
+      "releaseDate": "2024-10-09",
+      "metric": "HumanEval pass@1",
+      "score": 77.4,
+      "requiredGb": 3.53
+    },
+    {
+      "name": "Mistral 7B Instruct",
+      "releaseDate": "2023-09-27",
+      "metric": "MT-Bench (v0.1)",
+      "score": 6.84,
+      "requiredGb": 6.87
+    },
+    {
+      "name": "Mistral Large 2 123B",
+      "releaseDate": "2024-07-24",
+      "metric": "MMLU (pretrained)",
+      "score": 84,
+      "requiredGb": 94.97
+    },
+    {
+      "name": "Mistral Medium 3.5 128B",
+      "releaseDate": "2026-04-29",
+      "metric": "SWE-bench Verified",
+      "score": 77.6,
+      "requiredGb": 98.66
+    },
+    {
+      "name": "Mistral Nemo 12B Instruct",
+      "releaseDate": "2024-07-18",
+      "metric": "MMLU (5-shot)",
+      "score": 68,
+      "requiredGb": 10.68
+    },
+    {
+      "name": "Mistral Small 3.1 24B",
+      "releaseDate": "2025-03-17",
+      "metric": "MMLU Pro (5-shot CoT)",
+      "score": 66.76,
+      "requiredGb": 19.85
+    },
+    {
+      "name": "Mistral Small 3.2 24B",
+      "releaseDate": "2025-06-20",
+      "metric": "MMLU",
+      "score": 80.5,
+      "requiredGb": 19.85
+    },
+    {
+      "name": "Mixtral 8x22B Instruct",
+      "releaseDate": "2024-04-17",
+      "metric": "GSM8K maj@8",
+      "score": 90.8,
+      "requiredGb": 99.08
+    },
+    {
+      "name": "Mixtral 8x7B Instruct",
+      "releaseDate": "2023-12-11",
+      "metric": "MT-Bench",
+      "score": 8.3,
+      "requiredGb": 34.44
+    },
+    {
+      "name": "Nemotron 3 Super 120B A12B",
+      "releaseDate": "2026-03-11",
+      "metric": "MMLU-Pro",
+      "score": 83.7,
+      "requiredGb": 83.04
+    },
+    {
+      "name": "Nous Hermes 3 Llama 3.1 8B",
+      "releaseDate": "2024-08-15",
+      "metric": "Open LLM Leaderboard MMLU-Pro",
+      "score": 23.77,
+      "requiredGb": 7.42
+    },
+    {
+      "name": "NVIDIA Nemotron 4 15B",
+      "releaseDate": "2024-06-14",
+      "metric": "MMLU (5-shot)",
+      "score": 64.2,
+      "requiredGb": 12.85
+    },
+    {
+      "name": "OLMo 2 13B Instruct",
+      "releaseDate": "2024-11-26",
+      "metric": "10개 벤치마크 평균(AlpacaEval/BBH/GSM8k/MMLU 등)",
+      "score": 62,
+      "requiredGb": 11.3
+    },
+    {
+      "name": "OLMo 2 7B Instruct",
+      "releaseDate": "2024-11-26",
+      "metric": "MMLU",
+      "score": 61.3,
+      "requiredGb": 6.64
+    },
+    {
+      "name": "OLMoE 1B-7B Instruct",
+      "releaseDate": "2024-09-05",
+      "metric": "MMLU",
+      "score": 51.9,
+      "requiredGb": 6.1
+    },
+    {
+      "name": "OpenChat 3.5 7B",
+      "releaseDate": "2024-01-06",
+      "metric": "OpenChat benchmark average",
+      "score": 64.5,
+      "requiredGb": 6.64
+    },
+    {
+      "name": "Phi-3.5 Mini Instruct",
+      "releaseDate": "2024-08-20",
+      "metric": "MMLU (5-shot)",
+      "score": 69,
+      "requiredGb": 4.15
+    },
+    {
+      "name": "Phi-3.5 Vision Instruct",
+      "releaseDate": "2024-08-20",
+      "metric": "MMMU (val)",
+      "score": 43,
+      "requiredGb": 4.46
+    },
+    {
+      "name": "Phi-4 14B",
+      "releaseDate": "2024-12-12",
+      "metric": "MMLU",
+      "score": 84.8,
+      "requiredGb": 12.08
+    },
+    {
+      "name": "Phi-4 Mini Instruct",
+      "releaseDate": "2025-02",
+      "metric": "MMLU-Pro (0-shot, CoT)",
+      "score": 52.8,
+      "requiredGb": 4.15
+    },
+    {
+      "name": "Pixtral 12B",
+      "releaseDate": "2024-09-17",
+      "metric": "MMMU reasoning",
+      "score": 52.5,
+      "requiredGb": 10.52
+    },
+    {
+      "name": "Pixtral Large 124B",
+      "releaseDate": "2024-11-18",
+      "metric": "MMMU (CoT)",
+      "score": 64,
+      "requiredGb": 95.71
+    },
+    {
+      "name": "Qwen2.5 0.5B Instruct",
+      "releaseDate": "2024-09-19",
+      "metric": "MMLU-Pro",
+      "score": 15,
+      "requiredGb": 1.59
+    },
+    {
+      "name": "Qwen2.5 1.5B Instruct",
+      "releaseDate": "2024-09-19",
+      "metric": "MMLU-Pro",
+      "score": 32.4,
+      "requiredGb": 2.37
+    },
+    {
+      "name": "Qwen2.5 14B Instruct",
+      "releaseDate": "2024-09-19",
+      "metric": "MMLU-Pro",
+      "score": 63.7,
+      "requiredGb": 12.62
+    },
+    {
+      "name": "Qwen2.5 32B Instruct",
+      "releaseDate": "2024-09-19",
+      "metric": "MMLU (0-shot, CoT)",
+      "score": 84.4,
+      "requiredGb": 26.45
+    },
+    {
+      "name": "Qwen2.5 3B Instruct",
+      "releaseDate": "2024-09-19",
+      "metric": "MMLU-Pro",
+      "score": 43.7,
+      "requiredGb": 3.53
+    },
+    {
+      "name": "Qwen2.5 72B Instruct",
+      "releaseDate": "2024-09-19",
+      "metric": "MMLU (0-shot, CoT)",
+      "score": 87.14,
+      "requiredGb": 57.14
+    },
+    {
+      "name": "Qwen2.5 7B Instruct",
+      "releaseDate": "2024-09-19",
+      "metric": "MMLU (0-shot, CoT)",
+      "score": 77.23,
+      "requiredGb": 7.1
+    },
+    {
+      "name": "Qwen2.5 Coder 1.5B Instruct",
+      "releaseDate": "2024-11-12",
+      "metric": "HumanEval pass@1",
+      "score": 70.7,
+      "requiredGb": 2.37
+    },
+    {
+      "name": "Qwen2.5 Coder 14B Instruct",
+      "releaseDate": "2024-11-12",
+      "metric": "HumanEval pass@1",
+      "score": 89.6,
+      "requiredGb": 12.08
+    },
+    {
+      "name": "Qwen2.5 Coder 32B Instruct",
+      "releaseDate": "2024-11-12",
+      "metric": "HumanEval pass@1",
+      "score": 92.7,
+      "requiredGb": 26.45
+    },
+    {
+      "name": "Qwen2.5 Coder 3B Instruct",
+      "releaseDate": "2024-11-12",
+      "metric": "HumanEval pass@1",
+      "score": 84.1,
+      "requiredGb": 3.53
+    },
+    {
+      "name": "Qwen2.5 Coder 7B Instruct",
+      "releaseDate": "2024-11-12",
+      "metric": "HumanEval pass@1",
+      "score": 88.4,
+      "requiredGb": 6.64
+    },
+    {
+      "name": "Qwen2.5-VL 32B Instruct",
+      "releaseDate": "2025-03-21",
+      "metric": "OCRBench v2 en/zh",
+      "score": 58.15,
+      "requiredGb": 26.06
+    },
+    {
+      "name": "Qwen2.5-VL 3B Instruct",
+      "releaseDate": "2025-01-26",
+      "metric": "MMMU (val)",
+      "score": 53.1,
+      "requiredGb": 3.53
+    },
+    {
+      "name": "Qwen2.5-VL 72B Instruct",
+      "releaseDate": "2025-01-27",
+      "metric": "OCRBench v2 en/zh",
+      "score": 62.6,
+      "requiredGb": 57.14
+    },
+    {
+      "name": "Qwen2.5-VL 7B Instruct",
+      "releaseDate": "2025-01-26",
+      "metric": "MMMU (val)",
+      "score": 58.6,
+      "requiredGb": 6.64
+    },
+    {
+      "name": "Qwen3 0.6B",
+      "releaseDate": "2025-04-29",
+      "metric": "MMLU-Pro (Base 모델, 5-shot CoT)",
+      "score": 24.74,
+      "requiredGb": 1.67
+    },
+    {
+      "name": "Qwen3 1.7B",
+      "releaseDate": "2025-04-29",
+      "metric": "MMLU-Pro (Base 모델, 5-shot CoT)",
+      "score": 36.76,
+      "requiredGb": 2.52
+    },
+    {
+      "name": "Qwen3 14B",
+      "releaseDate": "2025-04-29",
+      "metric": "MMLU-Pro (Base 모델, 5-shot CoT)",
+      "score": 61.03,
+      "requiredGb": 12.08
+    },
+    {
+      "name": "Qwen3 235B A22B",
+      "releaseDate": "2025-04-29",
+      "metric": "MMLU-Pro",
+      "score": 68.18,
+      "requiredGb": 158.46
+    },
+    {
+      "name": "Qwen3 235B A22B Thinking",
+      "releaseDate": "2025-04-29",
+      "metric": "AIME 2024",
+      "score": 85.7,
+      "requiredGb": 158.46
+    },
+    {
+      "name": "Qwen3 30B A3B",
+      "releaseDate": "2025-04-29",
+      "metric": "MMLU-Pro",
+      "score": 61.49,
+      "requiredGb": 22.08
+    },
+    {
+      "name": "Qwen3 32B",
+      "releaseDate": "2025-04-29",
+      "metric": "MMLU-Pro",
+      "score": 65.54,
+      "requiredGb": 26.06
+    },
+    {
+      "name": "Qwen3 4B",
+      "releaseDate": "2025-04-29",
+      "metric": "MMLU-Pro (Base 모델, 5-shot CoT)",
+      "score": 50.58,
+      "requiredGb": 4.31
+    },
+    {
+      "name": "Qwen3 8B",
+      "releaseDate": "2025-04-29",
+      "metric": "MMLU-Pro (Base 모델, 5-shot CoT)",
+      "score": 56.73,
+      "requiredGb": 7.42
+    },
+    {
+      "name": "Qwen3-Coder 480B A35B Instruct",
+      "releaseDate": "2025-07",
+      "metric": "SWE-bench Pro",
+      "score": 38.7,
+      "requiredGb": 318.39
+    },
+    {
+      "name": "Qwen3-Next 80B A3B Instruct",
+      "releaseDate": "2025-09-10",
+      "metric": "MMLU-Pro",
+      "score": 80.6,
+      "requiredGb": 56.39
+    },
+    {
+      "name": "Qwen3.5 122B A10B",
+      "releaseDate": "2026-02-24",
+      "metric": "MMLU-Pro",
+      "score": 86.7,
+      "requiredGb": 84.16
+    },
+    {
+      "name": "Qwen3.5 27B",
+      "releaseDate": "2026-02-24",
+      "metric": "MMLU-Pro",
+      "score": 86.1,
+      "requiredGb": 22.18
+    },
+    {
+      "name": "Qwen3.5 35B A3B",
+      "releaseDate": "2026-02-24",
+      "metric": "MMLU-Pro",
+      "score": 85.3,
+      "requiredGb": 25.51
+    },
+    {
+      "name": "Qwen3.5 397B A17B",
+      "releaseDate": "2026-02-16",
+      "metric": "MMLU-Pro",
+      "score": 87.8,
+      "requiredGb": 262.99
+    },
+    {
+      "name": "Qwen3.6 27B",
+      "releaseDate": "2026-04-22",
+      "metric": "MMLU-Pro",
+      "score": 86.2,
+      "requiredGb": 22.18
+    },
+    {
+      "name": "Qwen3.6 35B A3B",
+      "releaseDate": "2026-04-16",
+      "metric": "MMLU-Pro",
+      "score": 85.2,
+      "requiredGb": 25.51
+    },
+    {
+      "name": "Qwen3.8 27B",
+      "releaseDate": "2026-08-14",
+      "metric": "LiveCodeBench v6",
+      "score": 90.3,
+      "requiredGb": 22.18
+    },
+    {
+      "name": "Qwen3.8-Flash-Next",
+      "releaseDate": "2026-08-25",
+      "metric": "SWE-bench Pro",
+      "score": 62.5,
+      "requiredGb": 85.74
+    },
+    {
+      "name": "SmolLM2 1.7B Instruct",
+      "releaseDate": "2025-02-05",
+      "metric": "IFEval 평균(prompt/inst)",
+      "score": 56.7,
+      "requiredGb": 2.52
+    },
+    {
+      "name": "SOLAR 10.7B Instruct",
+      "releaseDate": "2023-12-13",
+      "metric": "Open LLM Leaderboard average",
+      "score": 74.2,
+      "requiredGb": 9.51
+    },
+    {
+      "name": "Solar Open 2 250B A15B",
+      "releaseDate": "2026-07-24",
+      "metric": "KMMLU-Pro",
+      "score": 78.4,
+      "requiredGb": 167.55
+    },
+    {
+      "name": "StarCoder2 15B",
+      "releaseDate": "2024-02-28",
+      "metric": "HumanEval pass@1",
+      "score": 46,
+      "requiredGb": 12.85
+    },
+    {
+      "name": "TinyLlama 1.1B Chat",
+      "releaseDate": "2024-01-04",
+      "metric": "TinyLlama reported average",
+      "score": 53.63,
+      "requiredGb": 2.05
+    },
+    {
+      "name": "Trillion 7B Preview",
+      "releaseDate": "2025-06",
+      "metric": "Average performance",
+      "score": 66.5,
+      "requiredGb": 7.23
+    },
+    {
+      "name": "Yi 1.5 34B Chat",
+      "releaseDate": "2024-05",
+      "metric": "MMLU-Pro (Open LLM Leaderboard 연동)",
+      "score": 52.29,
+      "requiredGb": 27.61
+    },
+    {
+      "name": "Yi 1.5 9B Chat",
+      "releaseDate": "2024-05",
+      "metric": "MMLU-Pro (Open LLM Leaderboard 연동)",
+      "score": 45.95,
+      "requiredGb": 8.19
+    },
+    {
+      "name": "Zephyr 7B Beta",
+      "releaseDate": "2023-10-26",
+      "metric": "MT-Bench score",
+      "score": 7.34,
+      "requiredGb": 6.64
+    }
+  ],
+  "frontier": [
+    "Qwen2.5 0.5B Instruct",
+    "EXAONE 4.0 1.2B",
+    "Granite 4.2 3B",
+    "Granite 4.2 8B",
+    "Gemma 4 12B IT Thinking",
+    "Qwen3.6 27B",
+    "Qwen3.5 122B A10B",
+    "Qwen3.5 397B A17B"
+  ],
+  "picks": {
+    "8": [
+      "Granite 4.2 8B",
+      "Granite 4.2 3B"
+    ],
+    "12": [
+      "Gemma 4 12B IT Thinking",
+      "Granite 4.2 8B"
+    ],
+    "16": [
+      "Gemma 4 12B IT Thinking",
+      "Granite 4.2 8B"
+    ],
+    "24": [
+      "Qwen3.6 27B",
+      "Qwen3.5 27B"
+    ],
+    "32": [
+      "Qwen3.6 27B",
+      "Qwen3.5 27B"
+    ],
+    "48": [
+      "Qwen3.6 27B",
+      "Qwen3.5 27B"
+    ],
+    "80": [
+      "Qwen3.6 27B",
+      "Qwen3.5 27B"
+    ],
+    "128": [
+      "Qwen3.5 122B A10B",
+      "Qwen3.6 27B"
+    ]
+  },
+  "familyCounts": {
+    "MMLU-Pro": 31,
+    "HumanEval pass@1": 13,
+    "AIME 2024 pass@1": 8,
+    "MMLU (5-shot)": 8,
+    "MMMU (val)": 8,
+    "MMLU": 6,
+    "MMLU-Pro (Base 모델, 5-shot CoT)": 5,
+    "MMLU-Pro (Open LLM Leaderboard 연동)": 4,
+    "MMMLU multilingual Q&A": 4,
+    "SWE-bench Verified": 4,
+    "LogicKor overall": 3,
+    "MATH maj@1 (Instruct)": 3,
+    "MMLU (0-shot, CoT)": 3,
+    "MMLU-Pro (CoT, 5-shot)": 3,
+    "Arena Hard": 2,
+    "GPQA Diamond": 2,
+    "LiveBench": 2,
+    "MMLU (high reasoning effort)": 2,
+    "MMLU Pro instruction": 2,
+    "MMLU-Pro (EM, 5-shot, base model)": 2,
+    "MMLU-Pro (EM)": 2,
+    "MMMU (val, CoT)": 2,
+    "OCRBench v2 en/zh": 2,
+    "Open LLM Leaderboard 평균(ARC/HellaSwag/MMLU/TruthfulQA)": 2,
+    "SWE-bench Pro": 2
+  }
+}

@@ -43,6 +43,15 @@
 | [RTX 4090 24GB](https://jaeseok614.github.io/ai-hardware-fit/?lang=ko&gpu=rtx4090-24) | 24GB VRAM 기준 대형 모델 후보 |
 | [모델부터 GPU 찾기](https://jaeseok614.github.io/ai-hardware-fit/?lang=ko&mode=modelFinder) | 모델·예산·전력 조건에 맞는 GPU 비교 |
 
+## 내 VRAM에서 가장 성능 좋은 모델
+
+벤치마크 시트에 **VRAM–성능 프런티어**를 추가했습니다. `Q4_K_M · 4K context · 동시 요청 1 · llama.cpp` 기준 필요 VRAM을 계산하고, 서로 다른 벤치마크 점수를 섞지 않은 채 같은 공개 지표 안에서만 비교합니다.
+
+- 8·12·16·24·32·48·80·128GB별 최고 점수 모델과 차선 후보
+- 더 적은 VRAM으로 같거나 높은 점수를 내는 모델이 없는 프런티어 표시
+- 선택한 GPU의 사용 가능 VRAM 기준선과 각 점수의 공식 출처 연결
+- [대화형 차트 열기](https://jaeseok614.github.io/ai-hardware-fit/?lang=ko#benchmarkSheet) · [최신 주간 변경 요약](./docs/model-value/latest.md)
+
 ## 숫자를 믿어도 되나요?
 
 결과 카드에서 **VRAM 계산**과 **속도 근거**를 분리해 표시합니다.
@@ -80,12 +89,13 @@ GitHub Actions가 매주 월요일 오전 9시(KST)에 GPU 한 종의 공유 카
 
 - [최신 GPU 스포트라이트](./docs/spotlights/latest.md)
 - [전체 스포트라이트 아카이브](./docs/spotlights/README.md)
+- [최신 VRAM·모델 가치 리포트](./docs/model-value/latest.md)
 
 ## 최근 업데이트
 
+- **v7.36.0** — 동일 공개 벤치마크 안에서만 비교하는 VRAM–성능 프런티어, VRAM별 추천표와 주간 변경 리포트를 추가했습니다.
 - **v7.35.0** — 모델 기준 GPU 추천을 실제 3단계 화면으로 나누고, AI 서비스 견적을 새로 누르면 항상 1단계부터 시작하도록 정리했습니다.
 - **v7.34.0** — 영문 화면에 남던 한국어를 정리하고 AI 서비스 자동 추천을 최신·벤치마크 근거 모델로 교체했습니다.
-- **v7.33.0** — README와 영문 메시지를 하나의 약속으로 통일하고 10초 데모, 새 소셜 프리뷰, 명확한 실측/추정 표시와 주간 GPU 스포트라이트를 추가했습니다.
 
 전체 기록은 [CHANGELOG](./CHANGELOG.md)에서 확인할 수 있습니다.
 

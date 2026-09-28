@@ -69,6 +69,7 @@ before(() => {
     read("features/model-placement.js"),
     read("features/api-cost-estimator.js"),
     read("features/ontology-cost-estimator.js"),
+    read("features/value-frontier.js"),
     read("features/benchmark-workspace.js"),
     read("platform-v2.js"),
     read("platform-v3.js"),
@@ -1399,6 +1400,32 @@ test("the lazy benchmark workspace's own data (qualityBenchmark.note like \"공�
   const tableText = app.document.getElementById("benchmarkTable").textContent;
   assert.doesNotMatch(tableText, /[가-힣]/, "benchmark table should have no leftover Korean once English mode's lazy-load sweep has run");
   assert.match(tableText, /Official quality|Official report|Official distillation/, "at least one qualityBenchmark.note value should be visibly translated, not just absent");
+});
+
+test("VRAM-quality frontier compares one benchmark at a time and marks Pareto-efficient models", () => {
+  app.eval('setUiLanguage("ko"); AIHardwareBenchmark.renderSheet();');
+  const select = app.document.getElementById("valueFrontierMetric");
+  const chart = app.document.getElementById("valueFrontierChart");
+  const budget = app.document.getElementById("valueFrontierBudget");
+  assert.ok(select.options.length > 1, "at least two same-metric benchmark families should be selectable");
+  assert.equal(select.value, "MMLU-Pro");
+  assert.ok(chart.querySelector("svg"), "the frontier should render as an SVG chart");
+  assert.ok(chart.querySelectorAll(".frontier-point.is-frontier").length >= 2);
+  assert.match(budget.textContent, /8GB/);
+  assert.match(app.document.getElementById("valueFrontierMethod").textContent, /Q4_K_M/);
+
+  const frontier = app.AIHardwareBenchmark.computeValueFrontier([
+    { name: "small", requiredGb: 4, score: 60 },
+    { name: "dominated", requiredGb: 8, score: 55 },
+    { name: "better", requiredGb: 8, score: 70 },
+  ]);
+  assert.equal(frontier.find((row) => row.name === "small").onFrontier, true);
+  assert.equal(frontier.find((row) => row.name === "dominated").onFrontier, false);
+  assert.equal(frontier.find((row) => row.name === "better").onFrontier, true);
+
+  app.eval('setUiLanguage("en"); AIHardwareBenchmark.renderSheet();');
+  assert.match(app.document.getElementById("valueFrontierTitle").textContent, /Best local model/);
+  assert.doesNotMatch(app.document.getElementById("valueFrontier").textContent, /[가-힣]/);
 });
 
 test("the header logo acts as a home link, resetting to the default beginner mode", () => {

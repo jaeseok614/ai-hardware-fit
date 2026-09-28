@@ -90,7 +90,8 @@
 
   window.loadBenchmarkWorkspace = () => {
     if (!benchmarkPromise) {
-      benchmarkPromise = loadScript("features/benchmark-workspace.js")
+      benchmarkPromise = loadScript("features/value-frontier.js")
+        .then(() => loadScript("features/benchmark-workspace.js"))
         .then(() => {
           window.AIHardwareBenchmark?.renderDashboard();
           window.AIHardwareBenchmark?.renderSheet();

@@ -30,11 +30,13 @@ jobs:
         env:
           SPOTLIGHT_GPU: ${{ inputs.gpu }}
         run: node scripts/generate-weekly-spotlight.mjs
+      - name: Generate this week's local-model value report
+        run: node scripts/generate-model-value-report.mjs
       - name: Commit generated content
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add docs/spotlights
+          git add docs/spotlights docs/model-value
           if git diff --cached --quiet; then
             echo "No spotlight changes to publish."
             exit 0

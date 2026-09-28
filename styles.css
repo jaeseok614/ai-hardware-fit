@@ -6287,6 +6287,205 @@ button:focus-visible {
   font-weight: 800;
 }
 
+.value-frontier {
+  margin: 2px 0 18px;
+  padding: 18px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-md);
+  background: var(--surface-soft);
+}
+
+.value-frontier-head,
+.value-frontier-footer {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.value-frontier-head h3 {
+  margin: 4px 0 0;
+  font-size: 18px;
+}
+
+.value-frontier-head p,
+.value-frontier-method,
+.value-frontier-budget > p {
+  margin: 6px 0 0;
+  color: var(--muted);
+  font-size: 11.5px;
+  line-height: 1.55;
+}
+
+.value-frontier-filter {
+  display: grid;
+  flex: 0 0 min(360px, 40%);
+  gap: 5px;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.value-frontier-filter select {
+  width: 100%;
+}
+
+.value-frontier-method {
+  margin-bottom: 14px;
+  padding: 8px 10px;
+  border-left: 3px solid var(--green);
+  background: var(--panel-raised);
+}
+
+.value-frontier-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(360px, 0.8fr);
+  gap: 14px;
+  align-items: start;
+}
+
+.value-frontier-chart,
+.value-frontier-budget {
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--panel-raised);
+}
+
+.value-frontier-chart {
+  min-height: 300px;
+  padding: 8px;
+}
+
+.value-frontier-chart svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.frontier-grid {
+  stroke: var(--line);
+  stroke-width: 1;
+}
+
+.frontier-line {
+  fill: none;
+  stroke: var(--green);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.frontier-point {
+  stroke: var(--panel-raised);
+  stroke-width: 2;
+}
+
+.frontier-point.is-frontier {
+  fill: var(--green);
+}
+
+.frontier-point.is-dominated {
+  fill: var(--muted);
+  opacity: 0.45;
+}
+
+.frontier-gpu-line {
+  stroke: var(--blue);
+  stroke-width: 1.5;
+  stroke-dasharray: 5 4;
+}
+
+.frontier-gpu-label,
+.frontier-model-label,
+.frontier-axis-label,
+.frontier-axis-title {
+  fill: var(--muted);
+  font-family: inherit;
+  font-size: 10px;
+}
+
+.frontier-gpu-label,
+.frontier-axis-title {
+  fill: var(--ink);
+  font-weight: 800;
+}
+
+.frontier-model-label {
+  fill: var(--ink);
+  font-size: 9px;
+  font-weight: 700;
+}
+
+.value-frontier-budget {
+  padding: 14px;
+}
+
+.value-frontier-budget h4 {
+  margin: 0;
+  font-size: 14px;
+}
+
+.value-frontier-budget-table {
+  display: grid;
+  margin-top: 10px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+
+.value-frontier-budget-row {
+  display: grid;
+  grid-template-columns: 58px minmax(0, 1.2fr) minmax(0, 1fr);
+  gap: 8px;
+  align-items: center;
+  min-height: 38px;
+  padding: 7px 9px;
+  border-top: 1px solid var(--line);
+  font-size: 11px;
+}
+
+.value-frontier-budget-row:first-child {
+  border-top: 0;
+}
+
+.value-frontier-budget-row.is-head {
+  background: var(--surface-tint);
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.value-frontier-budget-row span {
+  min-width: 0;
+}
+
+.value-frontier-budget-row small {
+  display: block;
+  margin-top: 2px;
+  color: var(--muted);
+  font-size: 9.5px;
+}
+
+.value-frontier-footer {
+  align-items: center;
+  margin-top: 10px;
+  color: var(--muted);
+  font-size: 10.5px;
+}
+
+.value-frontier-footer a {
+  flex: 0 0 auto;
+  color: var(--blue);
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.value-frontier-footer a:hover {
+  text-decoration: underline;
+}
+
 .benchmark-table-wrap {
   max-height: 520px;
   overflow: auto;
@@ -6362,6 +6561,39 @@ button:focus-visible {
        it instead of stacking, so the panel width is actually used. */
     grid-template-columns: minmax(360px, 460px) minmax(480px, 1fr);
     align-items: start;
+  }
+}
+
+@media (max-width: 1100px) {
+  .value-frontier-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 680px) {
+  .value-frontier {
+    padding: 13px;
+  }
+
+  .value-frontier-head,
+  .value-frontier-footer {
+    display: grid;
+  }
+
+  .value-frontier-filter {
+    width: 100%;
+  }
+
+  .value-frontier-budget-row {
+    grid-template-columns: 48px minmax(0, 1fr);
+  }
+
+  .value-frontier-budget-row > :nth-child(3) {
+    display: none;
+  }
+
+  .frontier-model-label {
+    display: none;
   }
 }
 

@@ -30,6 +30,11 @@ if (fs.existsSync(spotlightSource)) {
   fs.cpSync(spotlightSource, path.join(outputDir, "spotlights"), { recursive: true });
 }
 
+const modelValueSource = path.join("docs", "model-value");
+if (fs.existsSync(modelValueSource)) {
+  fs.cpSync(modelValueSource, path.join(outputDir, "model-value"), { recursive: true });
+}
+
 const indexPath = path.join(outputDir, "index.html");
 const index = fs.readFileSync(indexPath, "utf8").replaceAll("__CACHE_VERSION__", version);
 fs.writeFileSync(indexPath, index);

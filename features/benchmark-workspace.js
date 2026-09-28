@@ -318,6 +318,7 @@ function renderBenchmarkSheetWorkspace() {
   $("benchmarkMeta").textContent = `${t("updated")} ${DATA_UPDATED_AT} · ${benchmarkTypeLabel} ${externalReferenceCount}${uiLanguage === "en" ? "" : "개"} · ${userTypeLabel} ${userMeasurementRows.length}${uiLanguage === "en" ? "" : "개"} · ${projectTypeLabel} ${projectMeasurementRows.length}${uiLanguage === "en" ? "" : "개"}${errorStats ? ` · ${uiLanguage === "en" ? "Average estimate error" : "평균 추정 오차"} ${errorStats.avgAbsErrorPct.toFixed(1)}%` : ""}`;
 
   renderBenchmarkMetricFilterOptions(rows);
+  window.AIHardwareValueFrontier?.render(rows);
 
   // Drop selections for rows that no longer exist (defensive; row set only
   // changes with the underlying data, not with search/filtering).
@@ -421,6 +422,7 @@ function collectQualityBenchmarks() {
       sourceUrl: model.qualityBenchmark.sourceUrl,
       qualityValue: typeof model.qualityBenchmark.value === "number" ? model.qualityBenchmark.value : null,
       qualityMetricName: model.qualityBenchmark.metric || model.qualityBenchmark.label,
+      model,
       params: model.params,
       active: model.active,
       releaseDate: model.releaseDate,
@@ -504,6 +506,7 @@ window.AIHardwareBenchmark = {
   renderDashboard: renderBenchmarkDashboardWorkspace,
   renderSheet: renderBenchmarkSheetWorkspace,
   selectMetricFamily: selectBenchmarkMetricFamilyWorkspace,
+  computeValueFrontier: (entries) => window.AIHardwareValueFrontier?.compute(entries) || [],
 };
 window.dispatchEvent(new CustomEvent("ai-hardware-benchmark-ready"));
 })();

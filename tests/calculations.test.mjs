@@ -88,6 +88,7 @@ function loadApp(url = "https://example.com/?gpu=rtx4090-24", storage = {}, { pe
   combined += "\n;\n" + read("features/affiliate-links.js");
   combined += "\n;\n" + read("features/gpu-advisor.js");
   combined += "\n;\n" + read("features/model-placement.js");
+  combined += "\n;\n" + read("features/value-frontier.js");
   combined += "\n;\n" + read("features/benchmark-workspace.js");
   if (platformV2) combined += "\n;\n" + read("platform-v2.js") + "\n;\n" + read("platform-v3.js");
   combined += "\n;\ninit();\n";
