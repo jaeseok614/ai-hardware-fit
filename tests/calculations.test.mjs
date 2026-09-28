@@ -450,6 +450,8 @@ describe("quick recommendation navigation", () => {
     assert.equal(fresh.document.getElementById("hardwareCapabilityDetails").hidden, false);
     assert.equal(fresh.document.getElementById("hardwareCapabilityDetails").open, false);
     assert.equal(fresh.document.getElementById("benchmarkSheet").hidden, true);
+    assert.equal(fresh.document.getElementById("valueFrontier").closest("#resultsPanel")?.id, "resultsPanel");
+    assert.ok(fresh.document.getElementById("valueFrontierChart").querySelector("svg"), "the selected-GPU result should include the VRAM-quality chart");
     assert.equal(fresh.document.getElementById("gpuDetailSummary").hidden, true);
     assert.equal(fresh.document.getElementById("gpuCompareBuilder").hidden, true);
     assert.ok(fresh.document.querySelector("[data-share-toggle]"));

@@ -434,7 +434,11 @@ function refreshCoreTaskUi() {
       apiCostButton.querySelector("span").textContent = uiText("core.apiCost.title");
       apiCostButton.querySelector("small").textContent = uiText("core.apiCost.note");
     }
-    const ontologyCostButton = document.querySelector('[data-core-task="ontologyCost"]');
+    // The standalone top-level ontology button was intentionally removed.
+    // Keep this selector scoped to the navigation so a contextual bridge
+    // button inside API Cost (which has no span/small children) is not
+    // mistaken for a menu item during language refreshes.
+    const ontologyCostButton = document.querySelector('.core-task-actions [data-core-task="ontologyCost"]');
     if (ontologyCostButton) {
       ontologyCostButton.querySelector("span").textContent = uiText("core.ontologyCost.title");
       ontologyCostButton.querySelector("small").textContent = uiText("core.ontologyCost.note");

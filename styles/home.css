@@ -95,7 +95,7 @@
 .core-task-more[open] > summary::before { content: "−"; }
 .core-task-more > summary small { color: var(--muted); font-size: 11px; font-weight: 650; }
 .core-task-secondary {
-  display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 7px;
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 7px;
   margin-top: 7px; padding-top: 10px; border-top: 1px solid var(--line);
 }
 .core-task-secondary .core-task-button { min-height: 68px !important; }

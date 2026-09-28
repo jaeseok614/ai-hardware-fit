@@ -7,6 +7,7 @@
   const cacheVersion = ownUrl.searchParams.get("v") || "";
   let infrastructurePromise = null;
   let decisionToolsPromise = null;
+  let valueFrontierPromise = null;
   let benchmarkPromise = null;
   let apiCostPromise = null;
   let ontologyCostPromise = null;
@@ -88,9 +89,19 @@
     return ontologyCostPromise;
   };
 
+  window.loadValueFrontier = () => {
+    if (!valueFrontierPromise) {
+      valueFrontierPromise = loadScript("features/value-frontier.js").catch((error) => {
+        valueFrontierPromise = null;
+        throw error;
+      });
+    }
+    return valueFrontierPromise;
+  };
+
   window.loadBenchmarkWorkspace = () => {
     if (!benchmarkPromise) {
-      benchmarkPromise = loadScript("features/value-frontier.js")
+      benchmarkPromise = window.loadValueFrontier()
         .then(() => loadScript("features/benchmark-workspace.js"))
         .then(() => {
           window.AIHardwareBenchmark?.renderDashboard();
@@ -143,20 +154,21 @@
     if (params.get("ui") === "expert" || params.has("model") || params.has("hub") || params.has("detail") || params.has("build")) {
       window.loadDecisionTools();
     }
+    const frontierTarget = document.getElementById("valueFrontier");
     const benchmarkTarget = document.getElementById("benchmarkSheet");
-    const targets = [benchmarkTarget].filter(Boolean);
+    const targets = [frontierTarget, benchmarkTarget].filter(Boolean);
     if ("IntersectionObserver" in window && targets.length) {
       const observer = new IntersectionObserver((entries) => {
         if (!entries.some((entry) => entry.isIntersecting)) return;
-        if (entries.some((entry) => entry.isIntersecting && entry.target === benchmarkTarget)) {
-          observer.unobserve(benchmarkTarget);
-          window.loadBenchmarkWorkspace();
-        }
+        entries.filter((entry) => entry.isIntersecting).forEach((entry) => observer.unobserve(entry.target));
+        window.loadBenchmarkWorkspace();
       }, { rootMargin: "500px" });
       targets.forEach((target) => observer.observe(target));
     } else {
       window.setTimeout(() => {
-        if (benchmarkTarget && !benchmarkTarget.hidden) window.loadBenchmarkWorkspace();
+        const frontierVisible = frontierTarget && !frontierTarget.closest("[hidden]");
+        const benchmarkVisible = benchmarkTarget && !benchmarkTarget.closest("[hidden]");
+        if (frontierVisible || benchmarkVisible) window.loadBenchmarkWorkspace();
       }, 2500);
     }
   });

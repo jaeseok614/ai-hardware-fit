@@ -122,16 +122,16 @@ after(() => dom?.window.close());
 
 test("first screen prioritizes three common tasks and keeps advanced tools accessible", () => {
   const actions = app.document.querySelector(".core-task-actions");
-  assert.equal(actions.querySelectorAll("[data-core-task]").length, 7);
+  assert.equal(actions.querySelectorAll("[data-core-task]").length, 6);
   assert.equal(actions.querySelectorAll(".core-task-primary [data-core-task]").length, 3);
-  assert.equal(actions.querySelectorAll(".core-task-secondary [data-core-task]").length, 4);
+  assert.equal(actions.querySelectorAll(".core-task-secondary [data-core-task]").length, 3);
   assert.equal(app.document.querySelectorAll(".task-choice-number").length, 0);
   assert.ok(actions.querySelector('[data-core-task="finder"]'));
   assert.ok(actions.querySelector('[data-core-task="modelFinder"]'));
   assert.ok(actions.querySelector('[data-core-task="infra"]'));
   assert.ok(actions.querySelector('[data-core-task="placement"]'));
   assert.ok(actions.querySelector('[data-core-task="apiCost"]'));
-  assert.ok(actions.querySelector('[data-core-task="ontologyCost"]'));
+  assert.equal(actions.querySelector('[data-core-task="ontologyCost"]'), null);
   assert.ok(actions.querySelector('[data-core-task="community"]'));
   assert.ok(app.document.querySelector(".core-task-more"));
   assert.equal(app.document.querySelector(".core-task-more").open, false);
@@ -684,9 +684,12 @@ test("API vs Local includes a Cloud rental section (RunPod/Vast.ai/Lambda) that 
 });
 
 test("Ontology Cost tab estimates a one-time document-processing cost, separate from API vs Local's monthly figures", () => {
-  app.document.querySelector('[data-core-task="ontologyCost"]').click();
+  app.eval('setCoreTaskMode("ontologyCost");');
   const panel = () => app.document.getElementById("ontologyCostPanel");
   assert.equal(panel().hidden, false);
+  assert.equal(app.document.getElementById("resultsPanel").hidden, true, "GPU results should not leak into the ontology-cost workspace");
+  assert.equal(app.document.getElementById("benchmarkSheet").hidden, true, "the full benchmark sheet should not leak into the ontology-cost workspace");
+  assert.equal(app.document.body.dataset.workspace, "ontologyCost");
 
   // Pure math sanity check, independent of the DOM: doubling the pass
   // count should exactly double both total input and total output tokens

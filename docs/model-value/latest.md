@@ -8,7 +8,7 @@
 
 ## 이번 주 변경
 
-- 첫 기준 스냅샷을 생성했습니다. 다음 주부터 모델·점수·VRAM 추천 변화를 비교합니다.
+- 지난 스냅샷 이후 모델·점수·VRAM 추천 변경이 없습니다.
 
 ## VRAM별 최고 점수
 
@@ -34,4 +34,4 @@
 - [Qwen3.5 122B A10B](https://huggingface.co/Qwen/Qwen3.5-35B-A3B) — 84.2GB · MMLU-Pro 86.7
 - [Qwen3.5 397B A17B](https://huggingface.co/Qwen/Qwen3.6-27B) — 263.0GB · MMLU-Pro 87.8
 
-프런티어는 같은 그룹에서 더 적은 VRAM을 쓰면서 같거나 높은 점수를 내는 다른 모델이 없는 경우입니다. [대화형 차트 열기](https://jaeseok614.github.io/ai-hardware-fit/?lang=ko#benchmarkSheet) · [Open in English](https://jaeseok614.github.io/ai-hardware-fit/?lang=en#benchmarkSheet)
+프런티어는 같은 그룹에서 더 적은 VRAM을 쓰면서 같거나 높은 점수를 내는 다른 모델이 없는 경우입니다. [대화형 차트 열기](https://jaeseok614.github.io/ai-hardware-fit/?lang=ko#valueFrontier) · [Open in English](https://jaeseok614.github.io/ai-hardware-fit/?lang=en#valueFrontier)
