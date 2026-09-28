@@ -1,6 +1,6 @@
 {
   "name": "ai-hardware-fit",
-  "version": "7.36.1",
+  "version": "7.37.0",
   "private": false,
   "description": "Open-source GPU fit calculator for local AI models with VRAM, quantization, speed, GPU selection, API cost, and infrastructure sizing.",
   "type": "module",

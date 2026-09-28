@@ -1946,6 +1946,140 @@ html[lang="en"] .simple-mode-head > div:first-child {
   overflow-wrap: anywhere;
 }
 
+.advisor-frontier {
+  margin-top: 18px;
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--panel-raised);
+}
+
+.advisor-frontier-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.advisor-frontier-head h3 {
+  margin: 3px 0 5px;
+}
+
+.advisor-frontier-head p,
+.advisor-frontier-method,
+.advisor-frontier-note {
+  margin: 0;
+  color: var(--muted);
+  font-size: .82rem;
+}
+
+.advisor-frontier-legend {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px 12px;
+  color: var(--muted);
+  font-size: .75rem;
+  font-weight: 800;
+}
+
+.advisor-frontier-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.advisor-frontier-legend i {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--muted);
+}
+
+.advisor-frontier-legend i.is-frontier { background: var(--green); }
+.advisor-frontier-legend i.is-pick { border: 2px solid var(--blue); background: var(--panel); }
+
+.advisor-frontier-method {
+  margin-top: 12px;
+  padding: 9px 11px;
+  border-left: 3px solid var(--blue);
+  background: var(--surface-soft);
+}
+
+.advisor-frontier-chart {
+  margin-top: 12px;
+  overflow-x: auto;
+}
+
+.advisor-frontier-chart svg {
+  display: block;
+  width: 100%;
+  min-width: 620px;
+  height: auto;
+}
+
+.advisor-frontier-grid {
+  stroke: var(--line);
+  stroke-width: 1;
+}
+
+.advisor-frontier-axis-label,
+.advisor-frontier-axis-title,
+.advisor-frontier-model-label {
+  fill: var(--muted);
+  font-size: 11px;
+}
+
+.advisor-frontier-axis-title,
+.advisor-frontier-model-label {
+  font-weight: 800;
+}
+
+.advisor-frontier-line {
+  fill: none;
+  stroke: var(--green);
+  stroke-width: 3;
+  stroke-linejoin: round;
+}
+
+.advisor-frontier-point {
+  fill: var(--muted);
+  stroke: var(--panel);
+  stroke-width: 2;
+}
+
+.advisor-frontier-point.is-frontier { fill: var(--green); }
+.advisor-frontier-point.is-pick { stroke: var(--blue); stroke-width: 4; }
+
+.advisor-frontier-table {
+  margin-top: 10px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.advisor-frontier-row {
+  display: grid;
+  grid-template-columns: minmax(150px, 1.1fr) minmax(130px, .9fr) minmax(135px, .9fr) minmax(170px, 1.1fr);
+  gap: 12px;
+  align-items: center;
+  padding: 10px 12px;
+  border-top: 1px solid var(--line);
+  font-size: .79rem;
+}
+
+.advisor-frontier-row:first-child { border-top: 0; }
+.advisor-frontier-row.is-head { background: var(--surface-soft); color: var(--muted); font-weight: 850; }
+.advisor-frontier-row small { display: block; margin-top: 3px; color: var(--muted); }
+.advisor-frontier-row .evidence-badge { width: fit-content; padding: 3px 6px; background: var(--surface-soft); }
+.advisor-frontier-row .evidence-badge.is-market,
+.advisor-frontier-row .evidence-badge.is-measured,
+.advisor-frontier-row .evidence-badge.is-external { color: var(--green); }
+.advisor-frontier-row .evidence-badge.is-related { color: var(--blue); }
+.advisor-frontier-row .evidence-badge.is-launch,
+.advisor-frontier-row .evidence-badge.is-estimate { color: var(--yellow); }
+.advisor-frontier-note { margin-top: 10px; }
+
 body[data-workspace="finder"] #gpuAdvisorPanel,
 body[data-workspace="finder"] #gpuPlacementPanel,
 body[data-workspace="finder"] #decisionStudio,
@@ -2078,6 +2212,34 @@ body[data-workspace="placement"] #hardwarePanel > :not(#gpuPlacementPanel) {
   .advisor-alternative-notice {
     align-items: stretch;
     flex-direction: column;
+  }
+
+  .advisor-frontier {
+    padding: 14px;
+  }
+
+  .advisor-frontier-head {
+    flex-direction: column;
+  }
+
+  .advisor-frontier-legend {
+    justify-content: flex-start;
+  }
+
+  .advisor-frontier-table {
+    border: 0;
+    overflow: visible;
+  }
+
+  .advisor-frontier-row {
+    grid-template-columns: 1fr 1fr;
+    border: 1px solid var(--line);
+    border-radius: 9px;
+    margin-top: 8px;
+  }
+
+  .advisor-frontier-row.is-head {
+    display: none;
   }
 
   .benchmark-dashboard-grid {

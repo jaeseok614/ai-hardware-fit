@@ -116,7 +116,7 @@ try {
     check(state.purposeWorkload === "audioTts", `${width}x${height}: TTS purpose state was not restored`);
     check(state.purposeValues.includes("voiceCloning"), `${width}x${height}: voice-cloning purpose is missing`);
     check(state.cardTypes.length > 0 && state.cardTypes.every((type) => type === "audio-tts"), `${width}x${height}: recommendation crossed workload boundaries`);
-    check(state.taskButtons === 7, width + "x" + height + ": task capability count changed");
+    check(state.taskButtons === 6, width + "x" + height + ": task capability count changed");
     check(state.primaryTaskButtons === 3, width + "x" + height + ": first screen should expose exactly 3 primary tasks");
 
     if (width === 1280 && axePath) {
@@ -221,6 +221,12 @@ try {
   await page.locator("#advisorModelSearch").fill("model-that-does-not-exist-xyz");
   await page.locator("#advisorModelSearch").dispatchEvent("input");
   check(await page.locator("[data-advisor-reset]").count() === 1, "Advisor empty state has no reset button");
+  await page.locator("[data-advisor-reset]").click();
+  await page.locator("[data-advisor-next]").click();
+  await page.locator("[data-advisor-next]").click();
+  await page.locator(".advisor-frontier").waitFor();
+  check(await page.locator("[data-advisor-frontier-point]").count() > 1, "Advisor price-speed frontier has too few candidates");
+  check(await page.locator(".advisor-frontier-model-label").count() <= 5, "Advisor frontier labels are too crowded");
 
   const longNameOverflow = await page.evaluate(() => {
     const node = document.querySelector(".simple-pick-head strong");

@@ -11,7 +11,7 @@
 <p align="center">
   <a href="https://github.com/jaeseok614/ai-hardware-fit/actions/workflows/ci.yml"><img src="https://github.com/jaeseok614/ai-hardware-fit/actions/workflows/ci.yml/badge.svg" alt="CI status" /></a>
   <a href="./LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="MIT License" /></a>
-  <img src="https://img.shields.io/badge/GPU_presets-151-0f766e" alt="151 GPU presets" />
+  <img src="https://img.shields.io/badge/GPU_presets-152-0f766e" alt="152 GPU presets" />
   <img src="https://img.shields.io/badge/AI_models-332-164a7b" alt="332 AI models" />
 </p>
 
@@ -65,7 +65,7 @@ Speed is a planning range, not a guarantee. Drivers, runtime, context, batching,
 
 ## Highlights
 
-- 151 NVIDIA, AMD, Intel, Apple Silicon, data-center, and laptop GPU presets, plus custom specifications
+- 152 NVIDIA, AMD, Intel, Apple Silicon, data-center, and laptop GPU presets, plus custom specifications
 - 332 generative LLM, embedding, reranker, OCR/VLM, image/video, STT, and TTS models
 - Ollama, llama.cpp, vLLM, and MLX settings and run commands
 - Laptop TGP, mixed GPUs, unified memory, and system-RAM offloading
@@ -93,9 +93,9 @@ A GitHub Action refreshes a GPU-specific share card and Korean/English post copy
 
 ## Latest updates
 
+- **v7.37.0** — Added a price–speed frontier for all compatible model-first GPU candidates, including each GPU's run setting and separate price/speed evidence.
 - **v7.36.0** — Added a same-benchmark VRAM–quality frontier, VRAM-tier recommendations, and a weekly model-value change report.
 - **v7.35.0** — Split model-first GPU recommendations into three real screens and made a fresh AI service sizing entry start at step one.
-- **v7.34.0** — Removed remaining Korean copy from the English UI and updated AI service auto-selection to recent models with cited benchmark evidence.
 
 See the full [changelog](./CHANGELOG.md).
 

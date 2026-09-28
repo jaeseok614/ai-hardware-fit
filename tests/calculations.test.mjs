@@ -1041,6 +1041,10 @@ describe("v1.4 advisor and media optimization", () => {
     assert.equal(panel.dataset.advisorStep, "3");
     assert.equal(visibleStep(), "3");
     assert.ok(panel.querySelectorAll(".gpu-advisor-card").length > 0);
+    assert.ok(panel.querySelector(".advisor-frontier"));
+    assert.ok(panel.querySelectorAll("[data-advisor-frontier-point]").length > 1);
+    assert.match(panel.querySelector(".advisor-frontier").textContent, /가격·속도 프런티어/);
+    assert.match(panel.querySelector(".advisor-frontier-table").textContent, /실측|외부 공개|계산 속도 추정|관련 실측/);
     assert.match(fresh.document.querySelector("#workspaceJourney .is-current")?.textContent || "", /GPU 3안 비교/);
 
     fresh.document.querySelector('[data-core-task="modelFinder"]').click();
@@ -1056,6 +1060,8 @@ describe("v1.4 advisor and media optimization", () => {
     assert.equal(panel.hidden, false);
     assert.ok(panel.querySelectorAll(".gpu-advisor-card").length > 0);
     assert.match(panel.textContent, /Monthly energy/);
+    assert.match(panel.querySelector(".advisor-frontier").textContent, /GPU price–speed frontier/);
+    assert.match(panel.querySelector(".advisor-frontier").textContent, /Calculated speed estimate|measurement|benchmark/i);
     assert.doesNotMatch(panel.textContent, /[가-힣]/);
   });
 
@@ -1248,7 +1254,7 @@ describe("v3.7 infrastructure sizing and multimodal stack", () => {
 
   test("opens infrastructure sizing as a separate beginner-first workspace", () => {
     const platform = loadApp("https://example.com/?gpu=rtx5070ti-16&lang=ko", {}, { platformV2: true });
-    assert.equal(platform.document.querySelectorAll(".core-task-actions [data-core-task]").length, 7);
+    assert.equal(platform.document.querySelectorAll(".core-task-actions [data-core-task]").length, 6);
     assert.ok(platform.document.querySelector(".core-task-actions [data-core-task='placement']"));
     assert.equal(platform.document.querySelector("#gpuAdvisorPanel").hidden, true);
     assert.equal(platform.document.querySelector("#resultsPanel").previousElementSibling.id, "hardwarePanel");
