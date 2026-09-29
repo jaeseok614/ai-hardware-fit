@@ -227,7 +227,7 @@ try {
   await page.locator(".advisor-frontier").waitFor();
   check(await page.locator("[data-advisor-frontier-point]").count() > 1, "Advisor price-speed frontier has too few candidates");
   check(await page.locator(".advisor-frontier-model-label").count() <= 5, "Advisor frontier labels are too crowded");
-  const inspectedPoint = page.locator("[data-advisor-frontier-point]").first();
+  const inspectedPoint = page.locator("[data-advisor-frontier-point]").last();
   const inspectedName = await inspectedPoint.getAttribute("data-frontier-name");
   await inspectedPoint.click();
   check((await page.locator("[data-advisor-frontier-detail]").innerText()).includes(inspectedName), "Advisor point selection did not expose GPU details");
