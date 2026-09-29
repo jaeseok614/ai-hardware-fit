@@ -325,6 +325,42 @@ describe("first-visit GPU onboarding", () => {
     assert.match(fresh.document.getElementById("simpleModeResult").textContent, /내 GPU를 선택하면 추천을 시작합니다/);
   });
 
+  test("shows Mac mini options in the eight first-screen GPU shortcuts", () => {
+    const fresh = loadApp("https://example.com/");
+    const cards = [...fresh.document.querySelectorAll("#onboardingQuickpicks [data-quick-gpu]")];
+    const ids = cards.map((card) => card.dataset.quickGpu);
+
+    assert.equal(cards.length, 8);
+    assert.ok(ids.includes("m4pro-64"));
+    assert.ok(ids.includes("m4-32"));
+    assert.ok(!ids.includes("rtx4080super-16"));
+    assert.ok(!ids.includes("rtx4060ti-16"));
+    assert.match(cards.find((card) => card.dataset.quickGpu === "m4pro-64").textContent, /Mac mini M4 Pro/);
+    assert.match(cards.find((card) => card.dataset.quickGpu === "m4pro-64").textContent, /64 GB 통합메모리 · GPU 계산 48 GB/);
+
+    cards.find((card) => card.dataset.quickGpu === "m4-32").click();
+    assert.equal(fresh.document.getElementById("gpuPreset").value, "m4-32");
+
+    const english = loadApp("https://example.com/?lang=en");
+    const englishProCard = english.document.querySelector('[data-quick-gpu="m4pro-64"]');
+    assert.match(englishProCard.textContent, /Mac mini M4 Pro/);
+    assert.match(englishProCard.textContent, /64 GB unified · 48 GB GPU basis/);
+    assert.doesNotMatch(englishProCard.textContent, /[가-힣]/);
+  });
+
+  test("keeps both Mac mini shortcuts when a different GPU was used last", () => {
+    const fresh = loadApp("https://example.com/", {
+      "ai-hardware-fit-primary-gpu-v1": "rtx5070ti-16",
+    });
+    const cards = [...fresh.document.querySelectorAll("#onboardingQuickpicks [data-quick-gpu]")];
+    const ids = cards.map((card) => card.dataset.quickGpu);
+
+    assert.equal(cards.length, 8);
+    assert.equal(ids[0], "rtx5070ti-16");
+    assert.ok(ids.includes("m4pro-64"));
+    assert.ok(ids.includes("m4-32"));
+  });
+
   test("remembers a fixed GPU as an explicit shortcut without bypassing the chooser", () => {
     const fresh = loadApp("https://example.com/");
     const select = fresh.document.getElementById("gpuPreset");

@@ -3,13 +3,14 @@ const GPU_PRESETS = (DATA.gpus || []).map(normalizeGpuPreset);
 const ONBOARDING_QUICK_GPU_IDS = [
   "rtx5090-32",
   "rtx4090-24",
-  "rtx4080super-16",
   "rtx4070tisuper-16",
-  "rtx4060ti-16",
   "rtx3090-24",
   "rtx3060-12",
   "rx7900xtx-24",
+  "m4pro-64",
+  "m4-32",
 ];
+const ONBOARDING_APPLE_MINI_GPU_IDS = ["m4pro-64", "m4-32"];
 const QUANTS = DATA.quantizations || [];
 const MODEL_METADATA = DATA.modelMetadata || {};
 const LICENSE_POLICIES = DATA.licensePolicies || {};
@@ -863,19 +864,34 @@ function renderOnboardingQuickPicks() {
   const target = $("onboardingQuickpicks");
   if (!target) return;
   const lastGpuId = getStoredPrimaryGpuId();
-  const pickIds = [...new Set([lastGpuId, ...ONBOARDING_QUICK_GPU_IDS].filter(Boolean))].slice(0, 8);
+  const pickIds = lastGpuId && !ONBOARDING_QUICK_GPU_IDS.includes(lastGpuId)
+    ? [
+        lastGpuId,
+        ...ONBOARDING_QUICK_GPU_IDS.filter((id) => !ONBOARDING_APPLE_MINI_GPU_IDS.includes(id)).slice(0, 5),
+        ...ONBOARDING_APPLE_MINI_GPU_IDS,
+      ]
+    : [...new Set([lastGpuId, ...ONBOARDING_QUICK_GPU_IDS].filter(Boolean))].slice(0, 8);
   const picks = pickIds
     .map((id) => GPU_PRESETS.find((gpu) => gpu.id === id))
     .filter(Boolean);
   target.innerHTML = picks
-    .map(
-      (gpu) => `
+    .map((gpu) => {
+      const isMacMini = ONBOARDING_APPLE_MINI_GPU_IDS.includes(gpu.id);
+      const title = isMacMini
+        ? (gpu.id === "m4pro-64" ? "Mac mini M4 Pro · 64 GB" : "Mac mini M4 · 32 GB")
+        : shortGpuName(gpu.name);
+      const memory = gpu.memoryType === "unified"
+        ? (uiLanguage === "en"
+          ? `${formatGb(gpu.vram)} unified · ${formatGb(gpu.gpuUsableMemoryGb || gpu.vram)} GPU basis`
+          : `${formatGb(gpu.vram)} 통합메모리 · GPU 계산 ${formatGb(gpu.gpuUsableMemoryGb || gpu.vram)}`)
+        : `${formatGb(gpu.vram)} VRAM`;
+      return `
         <button type="button" class="onboarding-gpu-card" data-quick-gpu="${escapeAttr(gpu.id)}">
-          <strong>${escapeHtml(shortGpuName(gpu.name))}</strong>
-          <span>${gpu.id === lastGpuId ? (uiLanguage === "en" ? "Last used · " : "최근 선택 · ") : ""}${formatGb(gpu.vram)} VRAM</span>
+          <strong>${escapeHtml(title)}</strong>
+          <span>${gpu.id === lastGpuId ? (uiLanguage === "en" ? "Last used · " : "최근 선택 · ") : ""}${escapeHtml(memory)}</span>
         </button>
-      `,
-    )
+      `;
+    })
     .join("");
 
   const gpuCount = GPU_PRESETS.filter((gpu) => gpu.id !== "custom").length;
