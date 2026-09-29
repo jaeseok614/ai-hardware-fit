@@ -227,6 +227,17 @@ try {
   await page.locator(".advisor-frontier").waitFor();
   check(await page.locator("[data-advisor-frontier-point]").count() > 1, "Advisor price-speed frontier has too few candidates");
   check(await page.locator(".advisor-frontier-model-label").count() <= 5, "Advisor frontier labels are too crowded");
+  const inspectedPoint = page.locator("[data-advisor-frontier-point]").first();
+  const inspectedName = await inspectedPoint.getAttribute("data-frontier-name");
+  await inspectedPoint.click();
+  check((await page.locator("[data-advisor-frontier-detail]").innerText()).includes(inspectedName), "Advisor point selection did not expose GPU details");
+  const labelOverlapCount = await page.locator(".advisor-frontier-model-label").evaluateAll((labels) => {
+    const boxes = labels.map((label) => label.getBoundingClientRect());
+    return boxes.reduce((count, box, index) => count + boxes.slice(index + 1).filter((other) => !(
+      box.right + 3 < other.left || box.left - 3 > other.right || box.bottom + 3 < other.top || box.top - 3 > other.bottom
+    )).length, 0);
+  });
+  check(labelOverlapCount === 0, `Advisor frontier labels overlap ${labelOverlapCount} time(s)`);
 
   const longNameOverflow = await page.evaluate(() => {
     const node = document.querySelector(".simple-pick-head strong");

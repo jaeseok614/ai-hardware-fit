@@ -1043,6 +1043,12 @@ describe("v1.4 advisor and media optimization", () => {
     assert.ok(panel.querySelectorAll(".gpu-advisor-card").length > 0);
     assert.ok(panel.querySelector(".advisor-frontier"));
     assert.ok(panel.querySelectorAll("[data-advisor-frontier-point]").length > 1);
+    const firstFrontierPoint = panel.querySelector("[data-advisor-frontier-point]");
+    assert.equal(firstFrontierPoint.getAttribute("role"), "button");
+    assert.equal(firstFrontierPoint.getAttribute("tabindex"), "0");
+    firstFrontierPoint.dispatchEvent(new fresh.Event("click", { bubbles: true }));
+    assert.equal(firstFrontierPoint.getAttribute("aria-pressed"), "true");
+    assert.match(panel.querySelector("[data-advisor-frontier-detail]").textContent, new RegExp(firstFrontierPoint.dataset.frontierName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
     assert.match(panel.querySelector(".advisor-frontier").textContent, /가격·속도 프런티어/);
     assert.match(panel.querySelector(".advisor-frontier-table").textContent, /실측|외부 공개|계산 속도 추정|관련 실측/);
     assert.match(fresh.document.querySelector("#workspaceJourney .is-current")?.textContent || "", /GPU 3안 비교/);

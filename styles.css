@@ -2007,6 +2007,7 @@ html[lang="en"] .simple-mode-head > div:first-child {
 }
 
 .advisor-frontier-chart {
+  position: relative;
   margin-top: 12px;
   overflow-x: auto;
 }
@@ -2035,6 +2036,14 @@ html[lang="en"] .simple-mode-head > div:first-child {
   font-weight: 800;
 }
 
+.advisor-frontier-model-label {
+  pointer-events: none;
+  paint-order: stroke;
+  stroke: var(--panel-raised);
+  stroke-width: 4px;
+  stroke-linejoin: round;
+}
+
 .advisor-frontier-line {
   fill: none;
   stroke: var(--green);
@@ -2046,10 +2055,100 @@ html[lang="en"] .simple-mode-head > div:first-child {
   fill: var(--muted);
   stroke: var(--panel);
   stroke-width: 2;
+  pointer-events: none;
 }
 
 .advisor-frontier-point.is-frontier { fill: var(--green); }
 .advisor-frontier-point.is-pick { stroke: var(--blue); stroke-width: 4; }
+
+.advisor-frontier-hit-target {
+  cursor: pointer;
+  outline: none;
+}
+
+.advisor-frontier-hit-area {
+  fill: transparent;
+  stroke: transparent;
+}
+
+.advisor-frontier-hit-target:hover .advisor-frontier-point,
+.advisor-frontier-hit-target:focus .advisor-frontier-point,
+.advisor-frontier-hit-target[aria-pressed="true"] .advisor-frontier-point {
+  stroke: var(--blue);
+  stroke-width: 4;
+}
+
+.advisor-frontier-hit-target:focus-visible .advisor-frontier-hit-area {
+  fill: color-mix(in srgb, var(--blue) 18%, transparent);
+  stroke: var(--blue);
+  stroke-width: 2;
+}
+
+.advisor-frontier-tooltip {
+  position: absolute;
+  z-index: 5;
+  width: min(280px, calc(100% - 20px));
+  padding: 10px 12px;
+  transform: translate(-50%, calc(-100% - 8px));
+  border: 1px solid var(--line-strong);
+  border-radius: 9px;
+  background: var(--ink);
+  color: var(--panel);
+  box-shadow: 0 10px 28px color-mix(in srgb, var(--ink) 24%, transparent);
+  pointer-events: none;
+  font-size: .76rem;
+}
+
+.advisor-frontier-tooltip.is-below {
+  transform: translate(-50%, 18px);
+}
+
+.advisor-frontier-tooltip strong,
+.advisor-frontier-tooltip span,
+.advisor-frontier-tooltip small,
+.advisor-frontier-detail strong,
+.advisor-frontier-detail span,
+.advisor-frontier-detail small {
+  display: block;
+}
+
+.advisor-frontier-tooltip span,
+.advisor-frontier-detail span {
+  margin-top: 3px;
+}
+
+.advisor-frontier-tooltip small {
+  margin-top: 4px;
+  color: color-mix(in srgb, var(--panel) 78%, transparent);
+}
+
+.advisor-frontier-detail {
+  display: grid;
+  grid-template-columns: minmax(160px, 1fr) minmax(180px, 1fr) minmax(220px, 1.4fr);
+  gap: 8px 16px;
+  align-items: center;
+  margin-top: 10px;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: var(--surface-soft);
+  font-size: .78rem;
+}
+
+.advisor-frontier-detail > span:only-child {
+  grid-column: 1 / -1;
+  margin: 0;
+  color: var(--muted);
+}
+
+.advisor-frontier-detail small {
+  color: var(--muted);
+}
+
+.advisor-frontier-detail[hidden],
+.advisor-frontier-tooltip[hidden] {
+  display: none;
+}
 
 .advisor-frontier-table {
   margin-top: 10px;
@@ -2236,6 +2335,10 @@ body[data-workspace="placement"] #hardwarePanel > :not(#gpuPlacementPanel) {
     border: 1px solid var(--line);
     border-radius: 9px;
     margin-top: 8px;
+  }
+
+  .advisor-frontier-detail {
+    grid-template-columns: 1fr;
   }
 
   .advisor-frontier-row.is-head {

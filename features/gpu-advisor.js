@@ -286,6 +286,62 @@ function advisorSpeedEvidence(confidence, en) {
   return { kind: "estimate", label: en ? "Calculated speed estimate" : "계산 속도 추정", detail: confidence?.reason || "" };
 }
 
+function bindAdvisorFrontierInteractions(panel, en) {
+  const chart = panel?.querySelector(".advisor-frontier-chart");
+  const tooltip = chart?.querySelector("[data-advisor-frontier-tooltip]");
+  const detail = panel?.querySelector("[data-advisor-frontier-detail]");
+  if (!chart || !tooltip || !detail) return;
+  let pinnedPoint = null;
+
+  const detailMarkup = (point) => `
+    <strong>${escapeHtml(point.dataset.frontierName || "GPU")}</strong>
+    <span>${escapeHtml(point.dataset.frontierPrice || "—")} · ${escapeHtml(point.dataset.frontierSpeed || "—")}</span>
+    <small>${escapeHtml(point.dataset.frontierSetting || "—")} · ${escapeHtml(point.dataset.frontierEvidence || "—")}</small>
+  `;
+  const positionTooltip = (point) => {
+    const pointRect = point.getBoundingClientRect();
+    const chartRect = chart.getBoundingClientRect();
+    const rawLeft = pointRect.left + pointRect.width / 2 - chartRect.left + chart.scrollLeft;
+    const minLeft = Math.min(145, chart.scrollWidth / 2);
+    const maxLeft = Math.max(minLeft, chart.scrollWidth - minLeft);
+    tooltip.style.left = `${Math.max(minLeft, Math.min(maxLeft, rawLeft))}px`;
+    tooltip.style.top = `${Math.max(18, pointRect.top - chartRect.top + chart.scrollTop - 10)}px`;
+    tooltip.classList.toggle("is-below", pointRect.top - chartRect.top < 105);
+  };
+  const showPoint = (point, { pin = false } = {}) => {
+    if (pin) {
+      pinnedPoint = point;
+      panel.querySelectorAll("[data-advisor-frontier-point]").forEach((candidate) => {
+        candidate.setAttribute("aria-pressed", String(candidate === point));
+      });
+    }
+    tooltip.innerHTML = detailMarkup(point);
+    tooltip.hidden = false;
+    positionTooltip(point);
+    detail.innerHTML = detailMarkup(point);
+    detail.hidden = false;
+  };
+  const hideTransientTooltip = (point) => {
+    if (pinnedPoint !== point) tooltip.hidden = true;
+  };
+
+  panel.querySelectorAll("[data-advisor-frontier-point]").forEach((point) => {
+    point.addEventListener("pointerenter", () => showPoint(point));
+    point.addEventListener("pointerleave", () => hideTransientTooltip(point));
+    point.addEventListener("focus", () => showPoint(point));
+    point.addEventListener("blur", () => hideTransientTooltip(point));
+    point.addEventListener("click", () => showPoint(point, { pin: true }));
+    point.addEventListener("keydown", (event) => {
+      if (event.key !== "Enter" && event.key !== " ") return;
+      event.preventDefault();
+      showPoint(point, { pin: true });
+    });
+  });
+
+  detail.innerHTML = `<span>${en ? "Select any point to inspect that GPU candidate." : "점을 선택하면 해당 GPU 후보의 이름과 근거를 확인할 수 있습니다."}</span>`;
+  detail.hidden = false;
+}
+
 function renderAdvisorPriceSpeedFrontier(items, model, pricing, currency, roleCandidates, en) {
   if (!pricing || items.length < 2) return "";
   const roleIds = new Set(roleCandidates.map(({ item }) => item.preset.id));
@@ -322,6 +378,41 @@ function renderAdvisorPriceSpeedFrontier(items, model, pricing, currency, roleCa
   const labeledFrontier = frontier.filter((entry, index) => (
     roleIds.has(entry.preset.id) || index === 0 || index === frontier.length - 1
   ));
+  const labelBoxes = [];
+  const labelPlacements = labeledFrontier.map((entry) => {
+    const pointX = x(entry.pricePoint.value);
+    const pointY = y(entry.speed);
+    const label = shortGpuName(entry.preset.name).replace(/\s*\([^)]*\)\s*$/, "").trim();
+    const displayLabel = label.length > 26 ? `${label.slice(0, 25)}…` : label;
+    const estimatedWidth = Math.min(170, Math.max(76, displayLabel.length * 6.4));
+    const candidates = [
+      { x: pointX + 10, y: pointY - 11, anchor: "start" },
+      { x: pointX + 10, y: pointY + 20, anchor: "start" },
+      { x: pointX - 10, y: pointY - 11, anchor: "end" },
+      { x: pointX - 10, y: pointY + 20, anchor: "end" },
+      { x: pointX + 10, y: pointY + 38, anchor: "start" },
+      { x: pointX - 10, y: pointY + 38, anchor: "end" },
+    ];
+    const fits = (candidate) => {
+      const left = candidate.anchor === "end" ? candidate.x - estimatedWidth : candidate.x;
+      const box = { left, right: left + estimatedWidth, top: candidate.y - 13, bottom: candidate.y + 4 };
+      const inside = box.left >= margin.left && box.right <= width - margin.right && box.top >= margin.top && box.bottom <= height - margin.bottom;
+      const clear = labelBoxes.every((placed) => box.right + 6 < placed.left || box.left - 6 > placed.right || box.bottom + 5 < placed.top || box.top - 5 > placed.bottom);
+      return inside && clear ? box : null;
+    };
+    let placement = candidates.map((candidate) => ({ candidate, box: fits(candidate) })).find(({ box }) => box);
+    if (!placement) {
+      const fallback = {
+        x: Math.max(margin.left + estimatedWidth, Math.min(width - margin.right, pointX - 10)),
+        y: Math.max(margin.top + 13, Math.min(height - margin.bottom - 4, pointY - 11)),
+        anchor: "end",
+      };
+      const left = fallback.x - estimatedWidth;
+      placement = { candidate: fallback, box: { left, right: fallback.x, top: fallback.y - 13, bottom: fallback.y + 4 } };
+    }
+    labelBoxes.push(placement.box);
+    return { entry, label: displayLabel, ...placement.candidate };
+  });
   const compactPrice = (value) => currency === "KRW"
     ? `${Math.round(value / 10000).toLocaleString("ko-KR")}만`
     : `$${Math.round(value).toLocaleString("en-US")}`;
@@ -348,19 +439,24 @@ function renderAdvisorPriceSpeedFrontier(items, model, pricing, currency, roleCa
         </div>
       </div>
       <p class="advisor-frontier-method">${en
-        ? "Lower price and higher estimated speed are better. Run settings may differ by available VRAM; each point shows its quantization or precision and evidence."
-        : "가격은 낮을수록, 예상 속도는 높을수록 유리합니다. 가용 VRAM에 따라 양자화·정밀도가 달라질 수 있어 각 점에 실행 설정과 근거를 함께 표시합니다."}</p>
-      <div class="advisor-frontier-chart" role="img" aria-label="${escapeAttr(`${en ? "GPU price-speed frontier" : "GPU 가격·속도 프런티어"}. ${chartDescription}`)}">
-        <svg viewBox="0 0 ${width} ${height}" aria-hidden="true" focusable="false">
+        ? "Lower price and higher estimated speed are better. Every point is a compatible GPU candidate; hover, focus, or tap a point for its name, run setting, and evidence."
+        : "가격은 낮을수록, 예상 속도는 높을수록 유리합니다. 모든 점은 선택한 모델을 실행할 GPU 후보이며, 점에 마우스를 올리거나 선택하면 이름·실행 설정·근거가 표시됩니다."}</p>
+      <div class="advisor-frontier-chart" role="group" aria-label="${escapeAttr(`${en ? "GPU price-speed frontier" : "GPU 가격·속도 프런티어"}. ${chartDescription}`)}">
+        <svg viewBox="0 0 ${width} ${height}" focusable="false">
           ${priceTicks.map((tick) => `<line class="advisor-frontier-grid" x1="${x(tick)}" y1="${margin.top}" x2="${x(tick)}" y2="${height - margin.bottom}"></line><text class="advisor-frontier-axis-label" x="${x(tick)}" y="${height - 35}" text-anchor="middle">${escapeHtml(compactPrice(tick))}</text>`).join("")}
           ${speedTicks.map((tick) => `<line class="advisor-frontier-grid" x1="${margin.left}" y1="${y(tick)}" x2="${width - margin.right}" y2="${y(tick)}"></line><text class="advisor-frontier-axis-label" x="${margin.left - 10}" y="${y(tick) + 4}" text-anchor="end">${escapeHtml(tick ? formatThroughput(tick, unit) : "0")}</text>`).join("")}
           ${frontier.length > 1 ? `<polyline class="advisor-frontier-line" points="${frontierLine}"></polyline>` : ""}
-          ${entries.map((entry) => `<circle data-advisor-frontier-point="${escapeAttr(entry.preset.id)}" class="advisor-frontier-point ${entry.onFrontier ? "is-frontier" : ""} ${roleIds.has(entry.preset.id) ? "is-pick" : ""}" cx="${x(entry.pricePoint.value)}" cy="${y(entry.speed)}" r="${roleIds.has(entry.preset.id) ? 8 : entry.onFrontier ? 6 : 4}"><title>${escapeHtml(`${shortGpuName(entry.preset.name)} · ${entry.pricePoint.label} · ${formatThroughput(entry.speed, unit)} · ${setting(entry)} · ${entry.pricePoint.evidence} · ${entry.speedEvidence.label}`)}</title></circle>`).join("")}
-          ${labeledFrontier.map((entry, index) => `<text class="advisor-frontier-model-label" x="${Math.min(width - 155, x(entry.pricePoint.value) + 8)}" y="${y(entry.speed) + (index % 2 ? 17 : -9)}">${escapeHtml(shortGpuName(entry.preset.name).slice(0, 24))}</text>`).join("")}
+          ${entries.map((entry) => {
+            const pointLabel = `${shortGpuName(entry.preset.name)} · ${entry.pricePoint.label} · ${formatThroughput(entry.speed, unit)} · ${setting(entry)} · ${entry.pricePoint.evidence} · ${entry.speedEvidence.label}`;
+            return `<g data-advisor-frontier-point="${escapeAttr(entry.preset.id)}" data-frontier-name="${escapeAttr(shortGpuName(entry.preset.name))}" data-frontier-price="${escapeAttr(entry.pricePoint.label)}" data-frontier-speed="${escapeAttr(formatThroughput(entry.speed, unit))}" data-frontier-setting="${escapeAttr(setting(entry))}" data-frontier-evidence="${escapeAttr(`${entry.pricePoint.evidence} · ${entry.speedEvidence.label}`)}" class="advisor-frontier-hit-target ${entry.onFrontier ? "is-frontier" : ""} ${roleIds.has(entry.preset.id) ? "is-pick" : ""}" role="button" tabindex="0" aria-pressed="false" aria-label="${escapeAttr(pointLabel)}"><circle class="advisor-frontier-hit-area" cx="${x(entry.pricePoint.value)}" cy="${y(entry.speed)}" r="12"></circle><circle class="advisor-frontier-point ${entry.onFrontier ? "is-frontier" : ""} ${roleIds.has(entry.preset.id) ? "is-pick" : ""}" cx="${x(entry.pricePoint.value)}" cy="${y(entry.speed)}" r="${roleIds.has(entry.preset.id) ? 8 : entry.onFrontier ? 6 : 4}"><title>${escapeHtml(pointLabel)}</title></circle></g>`;
+          }).join("")}
+          ${labelPlacements.map(({ label, x: labelX, y: labelY, anchor }) => `<text class="advisor-frontier-model-label" x="${labelX}" y="${labelY}" text-anchor="${anchor}">${escapeHtml(label)}</text>`).join("")}
           <text class="advisor-frontier-axis-title" x="${margin.left + plotWidth / 2}" y="${height - 5}" text-anchor="middle">${en ? `Reference price (${currency})` : "참고 가격 (원)"}</text>
           <text class="advisor-frontier-axis-title" transform="translate(17 ${margin.top + plotHeight / 2}) rotate(-90)" text-anchor="middle">${escapeHtml(en ? `Estimated speed (${unit})` : `예상 속도 (${unit})`)}</text>
         </svg>
+        <div class="advisor-frontier-tooltip" data-advisor-frontier-tooltip role="tooltip" hidden></div>
       </div>
+      <div class="advisor-frontier-detail" data-advisor-frontier-detail role="status" aria-live="polite"></div>
       <div class="advisor-frontier-table" role="table" aria-label="${en ? "Frontier GPU evidence" : "프런티어 GPU 근거"}">
         <div class="advisor-frontier-row is-head" role="row"><span role="columnheader">GPU</span><span role="columnheader">${en ? "Price" : "가격"}</span><span role="columnheader">${en ? "Speed / setting" : "속도·설정"}</span><span role="columnheader">${en ? "Evidence" : "근거"}</span></div>
         ${frontier.map((entry) => `<div class="advisor-frontier-row" role="row">
@@ -549,6 +645,7 @@ function renderGpuAdvisor() {
     $("advisorFormFactor").value = "all";
     renderGpuAdvisor();
   });
+  bindAdvisorFrontierInteractions(panel, en);
   panel.querySelector("[data-advisor-reset]")?.addEventListener("click", () => {
     $("advisorVendor").value = "all";
     $("advisorFormFactor").value = "all";
