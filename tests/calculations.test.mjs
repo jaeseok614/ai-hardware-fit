@@ -1163,11 +1163,30 @@ describe("v1.5 catalog, audio, and model-first experience", () => {
 
   test("estimates STT and TTS in realtime factors", () => {
     const fresh = loadApp();
-    const stt = fresh.eval(`estimateAudioModel(AUDIO_MODELS.find((model) => model.type === "audio-stt"), getHardware())`);
-    const tts = fresh.eval(`estimateAudioModel(AUDIO_MODELS.find((model) => model.type === "audio-tts"), getHardware())`);
+    const stt = fresh.eval(`estimateAudioModel(AUDIO_MODELS.find((model) => model.name === "Whisper tiny"), getHardware())`);
+    const tts = fresh.eval(`estimateAudioModel(AUDIO_MODELS.find((model) => model.name === "Kokoro-82M"), getHardware())`);
     assert.ok(stt.requiredGb > 0 && stt.speed > 0);
     assert.ok(tts.requiredGb > 0 && tts.speed > 0);
     assert.equal(stt.unitLabel, "x realtime");
+  });
+
+  test("does not invent throughput for new audio checkpoints without a baseline", () => {
+    const fresh = loadApp("https://example.com/?gpu=rtx4090-24&lang=en");
+    const estimate = fresh.eval(`estimateAudioModel(AUDIO_MODELS.find((model) => model.name === "Qwen3-ASR 1.7B"), getHardware())`);
+    assert.ok(estimate.requiredGb > 5);
+    assert.notEqual(estimate.grade, "F");
+    assert.equal(estimate.speed, 0);
+    assert.equal(estimate.speedUnverified, true);
+    assert.equal(fresh.eval(`formatSpeedRange(estimateAudioModel(AUDIO_MODELS.find((model) => model.name === "Qwen3-ASR 1.7B"), getHardware()))`), "Speed not calibrated");
+    assert.match(estimate.reason, /VRAM estimate only/);
+  });
+
+  test("keeps quote-only rack accelerators out of synthetic purchase pricing", () => {
+    const fresh = loadApp();
+    const market = fresh.eval(`gpuMarketReference(GPU_PRESETS.find((gpu) => gpu.id === "rubin-288"))`);
+    assert.equal(market.priceUsd, 0);
+    assert.equal(market.powerW, 0);
+    assert.equal(market.priceKind, "quote-required");
   });
 
   test("opens a model-first screen without requiring a selected GPU", () => {

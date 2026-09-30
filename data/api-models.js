@@ -1,9 +1,9 @@
 window.LLM_GPU_CHECKER_DATA = window.LLM_GPU_CHECKER_DATA || {};
 
-// Closed/hosted API model pricing, for the "API 비용 계산기" (API cost
+// Hosted API model pricing, for the "API 비용 계산기" (API cost
 // calculator) and the self-host-vs-API comparison inside the infra sizing
 // studio. This is a DIFFERENT kind of catalog from every other data file in
-// this repo: these models never run on the user's own GPU, so there is no
+// this repo: these records describe provider-hosted inference, so there is no
 // VRAM/bandwidth sizing question for them at all -- the only thing that
 // matters is per-token price. Keep this file's schema deliberately separate
 // from data/models.js (the local-inference catalog) rather than merging them,
@@ -17,84 +17,84 @@ window.LLM_GPU_CHECKER_DATA = window.LLM_GPU_CHECKER_DATA || {};
 // reflects prompt caching, batch discounts, long-context surcharges past
 // each provider's stated threshold, or regional pricing multipliers -- the
 // API cost estimator surfaces this as a "표준가 기준, 캐싱/배치 미반영" caveat
-// rather than claiming false precision. One flagship + one balanced + one
-// economy tier per provider, matching the 3 major hosted-API providers a
-// Korean AI infra team would actually be comparing self-hosting against.
+// rather than claiming false precision. Current general-purpose text tiers
+// from five providers; an extra premium flagship is shown separately.
+// Tier labels describe positioning, NOT a benchmark-equivalent quality level.
 window.LLM_GPU_CHECKER_DATA.apiModels = [
   {
-    id: "openai-gpt-5.6-sol",
+    id: "openai-gpt-6-astra",
     provider: "OpenAI",
-    name: "GPT-5.6 Sol",
+    name: "GPT-6 Astra",
     tier: "flagship",
-    inputPerMTokUsd: 5.0,
-    cachedInputPerMTokUsd: 0.5,
-    outputPerMTokUsd: 30.0,
+    inputPerMTokUsd: 10.0,
+    cachedInputPerMTokUsd: 1.0,
+    outputPerMTokUsd: 50.0,
     note: {
-      ko: "OpenAI 플래그십 에이전트/추론 모델. 컨텍스트 270K 토큰 이하 표준가 기준",
-      en: "OpenAI's flagship agentic/reasoning model. Standard rate for prompts up to 270K tokens",
+      ko: "OpenAI 추론·에이전트 플래그십. 272K 입력 토큰 이하 표준가이며 초과 시 입력·캐시 2배, 출력 1.5배. 캐시 쓰기 비용은 별도",
+      en: "OpenAI reasoning/agentic flagship. Standard rate up to 272K input tokens; above that, input/cache cost doubles and output costs 1.5x. Cache writes cost extra",
     },
-    sourceUrl: "https://openai.com/api/pricing/",
-    verifiedAt: "2026-08-28",
+    sourceUrl: "https://developers.openai.com/api/docs/pricing",
+    verifiedAt: "2026-09-30",
   },
   {
-    id: "openai-gpt-5.6-terra",
+    id: "openai-gpt-6.1-sol",
     provider: "OpenAI",
-    name: "GPT-5.6 Terra",
+    name: "GPT-6.1 Sol",
     tier: "balanced",
     inputPerMTokUsd: 2.0,
-    cachedInputPerMTokUsd: 0.2,
-    outputPerMTokUsd: 12.0,
+    cachedInputPerMTokUsd: 0.1,
+    outputPerMTokUsd: 10.0,
     note: {
-      ko: "대량 처리에 맞춘 균형형 모델. 컨텍스트 270K 토큰 이하 표준가 기준",
-      en: "Balanced model tuned for high-volume work. Standard rate for prompts up to 270K tokens",
+      ko: "코딩·일반 에이전트용 균형형. 272K 입력 토큰 이하 표준가이며 초과 시 입력·캐시 2배, 출력 1.5배. 캐시 쓰기 $2.50/MTok은 별도",
+      en: "Balanced coding/general agentic model. Standard rate up to 272K input tokens; above that, input/cache cost doubles and output costs 1.5x. $2.50/MTok cache writes are extra",
     },
-    sourceUrl: "https://openai.com/api/pricing/",
-    verifiedAt: "2026-08-28",
+    sourceUrl: "https://developers.openai.com/api/docs/pricing",
+    verifiedAt: "2026-09-30",
   },
   {
-    id: "openai-gpt-5.6-luna",
+    id: "openai-gpt-6-luna",
     provider: "OpenAI",
-    name: "GPT-5.6 Luna",
+    name: "GPT-6 Luna",
     tier: "economy",
-    inputPerMTokUsd: 0.2,
-    cachedInputPerMTokUsd: 0.02,
-    outputPerMTokUsd: 1.2,
+    inputPerMTokUsd: 0.1,
+    cachedInputPerMTokUsd: 0.01,
+    outputPerMTokUsd: 0.5,
     note: {
-      ko: "가장 저렴한 상시 처리용 모델. 컨텍스트 270K 토큰 이하 표준가 기준",
-      en: "The cheapest everyday-use model. Standard rate for prompts up to 270K tokens",
+      ko: "경량·대량 처리용. 272K 입력 토큰 이하 표준가이며 초과 시 입력·캐시 2배, 출력 1.5배. 캐시 쓰기 비용은 별도",
+      en: "Lightweight high-volume model. Standard rate up to 272K input tokens; above that, input/cache cost doubles and output costs 1.5x. Cache writes cost extra",
     },
-    sourceUrl: "https://openai.com/api/pricing/",
-    verifiedAt: "2026-08-28",
+    sourceUrl: "https://developers.openai.com/api/docs/pricing",
+    verifiedAt: "2026-09-30",
   },
   {
-    id: "anthropic-claude-opus-5",
+    id: "anthropic-claude-opus-5.5",
     provider: "Anthropic",
-    name: "Claude Opus 5",
+    name: "Claude Opus 5.5",
     tier: "flagship",
-    inputPerMTokUsd: 5.0,
-    cachedInputPerMTokUsd: 0.5,
-    outputPerMTokUsd: 25.0,
+    inputPerMTokUsd: 4.0,
+    cachedInputPerMTokUsd: 0.2,
+    outputPerMTokUsd: 20.0,
     note: {
-      ko: "Anthropic 플래그십 모델. 1M 토큰 컨텍스트까지 표준가 동일 적용",
-      en: "Anthropic's flagship model. Standard rate applies uniformly up to the 1M-token context window",
+      ko: "장시간 에이전트 코딩·지식 작업용. 캐시 적중 가격은 $0.20/MTok이며 캐시 쓰기·도구 비용은 별도",
+      en: "For long-running agentic coding and knowledge work. Cache hits cost $0.20/MTok; cache writes and tools cost extra",
     },
     sourceUrl: "https://platform.claude.com/docs/en/about-claude/pricing",
-    verifiedAt: "2026-08-28",
+    verifiedAt: "2026-09-30",
   },
   {
-    id: "anthropic-claude-sonnet-5",
+    id: "anthropic-claude-sonnet-5.5",
     provider: "Anthropic",
-    name: "Claude Sonnet 5",
+    name: "Claude Sonnet 5.5",
     tier: "balanced",
     inputPerMTokUsd: 2.0,
     cachedInputPerMTokUsd: 0.2,
     outputPerMTokUsd: 10.0,
     note: {
-      ko: "가장 널리 쓰이는 프로덕션 모델. $2/$10 요금은 2026-08-31 도입가로 시작해 정식 요금으로 확정됨(원래 예정이던 $3/$15 인상은 취소)",
-      en: "The most widely used production model. The $2/$10 rate started as introductory pricing through 2026-08-31 and became the standard price (the previously planned increase to $3/$15 was cancelled)",
+      ko: "속도·품질 균형형 Sonnet 5.5의 표준가. 캐시 쓰기·도구 비용은 별도이며 제공사 간 토크나이저 차이도 고려하세요",
+      en: "Standard rate for the speed/intelligence-balanced Sonnet 5.5. Cache writes and tools cost extra; consider tokenizer differences between providers",
     },
     sourceUrl: "https://platform.claude.com/docs/en/about-claude/pricing",
-    verifiedAt: "2026-08-28",
+    verifiedAt: "2026-09-30",
   },
   {
     id: "anthropic-claude-haiku-4.5",
@@ -109,7 +109,7 @@ window.LLM_GPU_CHECKER_DATA.apiModels = [
       en: "Anthropic's cheapest everyday-use model",
     },
     sourceUrl: "https://platform.claude.com/docs/en/about-claude/pricing",
-    verifiedAt: "2026-08-28",
+    verifiedAt: "2026-09-30",
   },
   {
     id: "google-gemini-3.1-pro-preview",
@@ -124,12 +124,12 @@ window.LLM_GPU_CHECKER_DATA.apiModels = [
       en: "Google's flagship model. Standard rate for prompts up to 200K tokens (rises to $4.00 input / $18.00 output above 200K)",
     },
     sourceUrl: "https://ai.google.dev/gemini-api/docs/pricing",
-    verifiedAt: "2026-08-28",
+    verifiedAt: "2026-09-30",
   },
   {
-    id: "google-gemini-3.7-flash",
+    id: "google-gemini-3.8-flash",
     provider: "Google",
-    name: "Gemini 3.7 Flash",
+    name: "Gemini 3.8 Flash",
     tier: "balanced",
     inputPerMTokUsd: 0.75,
     cachedInputPerMTokUsd: 0.075,
@@ -139,7 +139,7 @@ window.LLM_GPU_CHECKER_DATA.apiModels = [
       en: "Balanced model for agentic/multimodal work. This rate applies through 2026-12-31; a scheduled increase to $1.50 input / $7.50 output takes effect 2027-01-01",
     },
     sourceUrl: "https://ai.google.dev/gemini-api/docs/pricing",
-    verifiedAt: "2026-08-28",
+    verifiedAt: "2026-09-30",
   },
   {
     id: "google-gemini-3.5-flash-lite",
@@ -154,15 +154,75 @@ window.LLM_GPU_CHECKER_DATA.apiModels = [
       en: "Google's cheapest model, optimized for high-volume, translation, and simple tasks",
     },
     sourceUrl: "https://ai.google.dev/gemini-api/docs/pricing",
-    verifiedAt: "2026-08-28",
+    verifiedAt: "2026-09-30",
+  },
+  {
+    id: "anthropic-claude-fable-5.1",
+    provider: "Anthropic",
+    name: "Claude Fable 5.1",
+    tier: "flagship",
+    inputPerMTokUsd: 10.0,
+    cachedInputPerMTokUsd: 0.25,
+    outputPerMTokUsd: 50.0,
+    note: {
+      ko: "고난도 추론·장기 에이전트 작업용 프리미엄 플래그십. 캐시 적중은 $0.25/MTok이며 캐시 쓰기·도구 비용은 별도. 같은 티어가 같은 품질을 뜻하지는 않습니다",
+      en: "Premium flagship for demanding reasoning and long-horizon agentic work. Cache hits cost $0.25/MTok; cache writes and tools cost extra. A shared tier does not imply equal quality",
+    },
+    sourceUrl: "https://platform.claude.com/docs/en/about-claude/pricing",
+    verifiedAt: "2026-09-30",
+  },
+  {
+    id: "deepseek-v4.1-flash",
+    provider: "DeepSeek",
+    name: "DeepSeek V4.1 Flash",
+    tier: "balanced",
+    inputPerMTokUsd: 0.3,
+    cachedInputPerMTokUsd: 0.006,
+    outputPerMTokUsd: 1.2,
+    note: {
+      ko: "API 이름 deepseek-flash. 기본 계산은 피크 요금이며 오프피크는 입력 $0.15·출력 $0.60·캐시 $0.003/MTok. 피크는 평일 UTC 01–04시·06–10시(중국 공휴일 제외). 할인 시간대는 자동 반영하지 않습니다",
+      en: "API name: deepseek-flash. Peak rates are used; off-peak input/output/cache rates are $0.15/$0.60/$0.003 per MTok. Peak hours are weekdays 01–04 and 06–10 UTC, excluding Chinese public holidays. Time-based discounts are not applied automatically",
+    },
+    sourceUrl: "https://api-docs.deepseek.com/quick_start/pricing/",
+    verifiedAt: "2026-09-30",
+  },
+  {
+    id: "mistral-medium-3.5",
+    provider: "Mistral AI",
+    name: "Mistral Medium 3.5",
+    tier: "flagship",
+    inputPerMTokUsd: 1.5,
+    cachedInputPerMTokUsd: 0.15,
+    outputPerMTokUsd: 7.5,
+    note: {
+      ko: "에이전트·코딩·멀티모달용 Mistral 표준 API 요금. 지역 지정·우선 처리·배치 조건은 별도이며 로컬 가중치 적재 비용과 구분합니다",
+      en: "Standard Mistral API rate for agentic, coding, and multimodal work. Regional inference, priority, and batch rates are separate from local weight deployment costs",
+    },
+    sourceUrl: "https://docs.mistral.ai/inference/pricing",
+    verifiedAt: "2026-09-30",
+  },
+  {
+    id: "mistral-small-4",
+    provider: "Mistral AI",
+    name: "Mistral Small 4",
+    tier: "economy",
+    inputPerMTokUsd: 0.15,
+    cachedInputPerMTokUsd: 0.015,
+    outputPerMTokUsd: 0.6,
+    note: {
+      ko: "지시·추론·코딩을 통합한 Small 4의 표준 API 요금. 지역 지정·우선 처리·배치 조건은 별도이며 저렴한 요금이 동등한 작업 품질을 보장하지는 않습니다",
+      en: "Standard API rate for Small 4's unified instruction, reasoning, and coding model. Regional, priority, and batch rates are separate; lower prices do not guarantee equivalent task quality",
+    },
+    sourceUrl: "https://docs.mistral.ai/inference/pricing",
+    verifiedAt: "2026-09-30",
   },
 ];
 
 // Shared caveats surfaced once in the UI rather than repeated per row.
 window.LLM_GPU_CHECKER_DATA.apiPricingMeta = {
   basis: {
-    ko: "각 제공사 공식 가격 페이지의 표준(비배치·비캐싱·기본 리전) 요금 기준. 프롬프트 캐싱, 배치 처리 할인, 장문 컨텍스트 할증, 리전별 가산은 반영하지 않은 참고용 추정치입니다.",
-    en: "Based on each provider's official standard (non-batch, non-cached, default-region) per-token rate. Prompt caching, batch discounts, long-context surcharges, and regional multipliers are not reflected -- this is a reference estimate only.",
+    ko: "각 제공사 공식 가격 페이지의 표준(비배치·비캐싱·기본 리전) 텍스트 요금 기준. DeepSeek은 피크 요금을 사용합니다. 캐시 읽기·쓰기, 시간대/배치 할인, 장문 할증, 리전 가산, 도구·검색·이미지·음성 과금은 미반영한 참고 추정입니다. 같은 입력 문장도 토크나이저에 따라 토큰 수가 다릅니다.",
+    en: "Official standard (non-batch, non-cached, default-region) text-token rates, using peak rates for DeepSeek. Cache reads/writes, time-based/batch discounts, long-context surcharges, regional premiums, tools/search, image and audio charges are excluded. The same text can have different token counts across tokenizers.",
   },
-  verifiedAt: "2026-08-28",
+  verifiedAt: "2026-09-30",
 };

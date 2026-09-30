@@ -39,6 +39,11 @@ assertArray(data.audioModels, "audioModels");
 for (const model of data.audioModels) {
   requireFields(model, ["type", "name", "provider", "params", "license", "realtimeBase", "sourceUrl"], "audio model");
   if (!["audio-stt", "audio-tts"].includes(model.type)) throw new Error(`invalid audio model type: ${model.type}`);
+  if (!Number.isFinite(model.params) || model.params <= 0) throw new Error(`audio model ${model.name} needs positive params`);
+  if (!Number.isFinite(model.realtimeBase) || model.realtimeBase < 0) throw new Error(`audio model ${model.name} has an invalid realtimeBase`);
+  if (model.speedStatus === "unverified" ? model.realtimeBase !== 0 : model.realtimeBase === 0) {
+    throw new Error(`audio model ${model.name} must explicitly distinguish unknown speed from a positive baseline`);
+  }
 }
 if (!Array.isArray(data.benchmarks)) throw new Error("benchmarks must be an array");
 if (!data.modelMetadata || typeof data.modelMetadata !== "object" || Array.isArray(data.modelMetadata)) {
@@ -255,6 +260,7 @@ const allModelNames = new Set([
   ...data.embeddingModels,
   ...data.rerankerModels,
   ...data.ocrModels,
+  ...data.audioModels,
 ].map((model) => model.name));
 const allModelsByName = new Map([
   ...data.models,

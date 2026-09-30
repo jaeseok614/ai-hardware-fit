@@ -545,7 +545,9 @@ function renderGpuAdvisor() {
   const currentSpeed = Number(currentEstimate?.speed || currentEstimate?.throughput || 0);
   const currentPrice = pricing ? pricing.toUsd($("advisorCurrentPriceUsd")?.value, advisorCurrency) : clampNumber($("advisorCurrentPriceUsd")?.value, 0, 100000, 0);
   const evaluatedCandidates = GPU_PRESETS
-    .filter((gpu) => gpu.id !== "custom")
+    // Quote-only rack accelerators remain selectable for memory-fit checks,
+    // but are not priced/ranked as if they were retail GPU purchases.
+    .filter((gpu) => gpu.id !== "custom" && !gpu.requiresSystemQuote)
     .map((preset) => {
       const hardware = buildHardwareForPreset(preset);
       const estimate = applyMeasuredCalibration(estimateAnyModelForHardware(model, hardware), hardware);

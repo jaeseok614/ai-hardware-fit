@@ -324,7 +324,8 @@ function estimateAudioModel(model, hardware) {
   const computeScale = Math.sqrt(Math.max(0.05, hardware.computeTotal.fp16Tflops / 82));
   const bandwidthScale = Math.sqrt(Math.max(0.05, hardware.aggregateBandwidth / 504));
   const fitScale = grade === "F" ? 0 : grade === "D" ? 0.25 : grade === "C" ? 0.65 : 1;
-  const speed = model.realtimeBase * computeScale * bandwidthScale * fitScale;
+  const speedUnverified = model.speedStatus === "unverified";
+  const speed = speedUnverified ? 0 : model.realtimeBase * computeScale * bandwidthScale * fitScale;
   return {
     model,
     precision: { id: "fp16", label: "FP16" },
@@ -342,12 +343,19 @@ function estimateAudioModel(model, hardware) {
     contextLimitTokens: 0,
     contextSupported: true,
     settingLabel: "FP16 · GPU",
-    speedLabel: `${speed.toFixed(speed >= 10 ? 0 : 1)}× realtime`,
-    limitLabel: model.type === "audio-stt" ? "60 min audio" : "streaming",
+    speedLabel: speedUnverified
+      ? (uiLanguage === "en" ? "Speed not calibrated" : "속도 보정 근거 미확인")
+      : `${speed.toFixed(speed >= 10 ? 0 : 1)}× realtime`,
+    speedUnverified,
+    limitLabel: speedUnverified
+      ? (uiLanguage === "en" ? "Check model/runtime limits" : "모델·런타임별 한도 확인")
+      : model.type === "audio-stt" ? "60 min audio" : "streaming",
     unitLabel: "x realtime",
     reason: grade === "F"
       ? (uiLanguage === "en" ? "The model exceeds available GPU and system memory." : "모델이 사용 가능한 GPU·시스템 메모리를 초과합니다.")
-      : (uiLanguage === "en" ? "Estimated real-time factor for one audio stream." : "오디오 1개 스트림 기준 예상 실시간 배속입니다."),
+      : speedUnverified
+        ? (uiLanguage === "en" ? "VRAM estimate only. A comparable single-stream speed baseline has not been verified; streaming latency and batched throughput are different metrics." : "VRAM만 추정합니다. 비교 가능한 단일 스트림 속도 기준은 미확인이며 스트리밍 지연·배치 처리량과 다른 지표입니다.")
+        : (uiLanguage === "en" ? "Estimated real-time factor for one audio stream." : "오디오 1개 스트림 기준 예상 실시간 배속입니다."),
   };
 }
 
@@ -1297,6 +1305,13 @@ function getEstimateConfidence(model, estimate, hardware) {
   const benchmarkRows = findBenchmarksForModel(model);
   const exactMatch = findExactMatchingBenchmark(benchmarkRows, model, estimate, hardware);
   const en = uiLanguage === "en";
+  if (estimate.speedUnverified) {
+    return {
+      label: en ? "Not calibrated" : "보정 근거 미확인",
+      className: "confidence-low", spread: 0, evidenceKind: "unverified", evidenceCount: 0,
+      reason: en ? "VRAM is estimated, but no comparable speed baseline is registered." : "VRAM은 추정하지만 비교 가능한 속도 기준은 등록되지 않았습니다.",
+    };
+  }
   const calibration = estimate.calibration || getMeasuredCalibration(model, estimate, hardware);
 
   if (calibration?.sampleCount >= 3) {
@@ -1536,6 +1551,7 @@ function qualityMissingLabel(model) {
 }
 
 function formatSpeedRange(estimate, confidence = getEstimateConfidence(estimate.model, estimate, getHardware())) {
+  if (estimate.speedUnverified && estimate.grade !== "F") return uiLanguage === "en" ? "Speed not calibrated" : "속도 보정 근거 미확인";
   if (!estimate.speed) return uiLanguage === "en" ? "N/A" : "불가";
   const spread = confidence.spread ?? 0.32;
   const unit = estimate.unitLabel || "tok/s";

@@ -1,5 +1,7 @@
 # 참고한 공식 자료
 
+2026-09-30 GPU·소형 LLM·음성·API 가격 검토의 항목별 출처와 보류 이유는 [v7.38.0 검토 내역](./releases/v7.38.0.md)에 기록했습니다.
+
 앱에 등록된 모델·GPU 메타데이터(출시일, 대표 공개 평가, 라이선스, 스펙)가 근거로 삼은 공식 자료 목록입니다. 이 자료의 수치는 외부 공개 참고값이며 사용자 측정이나 자체 측정으로 표시하지 않습니다. 각 값이 어떤 출처를 쓰는지는 `data/model-metadata.js`와 앱의 모델 상세 화면에서도 확인할 수 있습니다.
 
 - [NVIDIA DGX Spark specifications](https://www.nvidia.com/en-sg/products/workstations/dgx-spark/)

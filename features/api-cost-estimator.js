@@ -47,7 +47,7 @@
     ontology: "balanced",
   };
 
-  // Provider filter and column sort inside the "전체 9개 모델 보기" (view all 9)
+  // Provider filter and column sort inside the expanded catalog
   // expanded table are UI-only concerns -- they never touch estimate()
   // itself, so platform-v3.js's build-vs-buy comparison (which calls
   // estimate() directly, not through this panel) is unaffected.
@@ -62,7 +62,7 @@
   let tableFilter = { provider: "all", tier: "all", sortKey: "cost", sortDir: "asc" };
   // Primary view state: which quality tier the compact 3-model view shows,
   // which workload preset last drove that tier choice, and whether the
-  // "전체 9개 모델 보기" (view all 9) table is currently expanded.
+  // The full catalog table is currently expanded.
   let viewState = { workload: "general", tier: "balanced", expanded: false, selectedProvider: null };
 
   // One representative self-hosted (model, reference GPU, quant) per quality
@@ -705,7 +705,7 @@
     `;
   }
 
-  // Full, sortable/filterable table for the "전체 9개 모델 보기" (view all 9)
+  // Full, sortable/filterable API catalog table
   // expanded state -- unchanged from the previous filter/sort behavior.
   function renderFullTable(rows, language, allRows) {
     const en = language === "en";
@@ -975,7 +975,7 @@
     expandToggle.setAttribute("aria-expanded", String(viewState.expanded));
     expandToggle.textContent = viewState.expanded
       ? (en ? "Hide the other models ▲" : "다른 모델 접기 ▲")
-      : (en ? "View all 9 models →" : "전체 9개 모델 보기 →");
+      : (en ? `View all ${apiModels().length} models →` : `전체 ${apiModels().length}개 모델 보기 →`);
     panel.querySelector("#apiCostExpanded").hidden = !viewState.expanded;
     // Always re-render the expanded table's content (even while its
     // container is hidden), not just when actually visible -- otherwise a

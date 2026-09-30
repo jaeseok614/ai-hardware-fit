@@ -75,6 +75,7 @@ window.LLM_GPU_CHECKER_DATA.licensePolicies = {
     "https://huggingface.co/nreimers/mmarco-mMiniLMv2-L6-H384-v1",
   ),
   "Apache 2.0": apache20,
+  "Apache-2.0": apache20,
   MIT: mit,
   "Research-only": licensePolicy(
     "noncommercial",
@@ -321,6 +322,16 @@ window.LLM_GPU_CHECKER_DATA.licensePolicies = {
 };
 
 window.LLM_GPU_CHECKER_DATA.modelLicensePolicies = {
+  "Fish Audio S2 Pro": licensePolicy(
+    "noncommercial",
+    "비상업 연구용",
+    "공개 가중치·상업 사용 제한",
+    {
+      ko: "S2 Pro 공개 체크포인트는 Fish Audio Research License의 비상업 사용 조건입니다. 코드 라이선스와 가중치 라이선스는 다르며 상용 서비스에는 별도 허가를 확인하세요.",
+      en: "The public S2 Pro checkpoint is limited to non-commercial use under the Fish Audio Research License. Code and weight licenses differ; obtain separate permission for commercial services.",
+    },
+    "https://huggingface.co/fishaudio/s2-pro/blob/main/LICENSE.md",
+  ),
   "Kimi K2 Thinking": window.LLM_GPU_CHECKER_DATA.licensePolicies.Kimi,
   "KlingAIResearch/LivePortrait": licensePolicy(
     "review",

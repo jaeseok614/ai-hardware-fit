@@ -1,6 +1,6 @@
 {
   "name": "ai-hardware-fit",
-  "version": "7.37.0",
+  "version": "7.38.0",
   "private": false,
   "description": "Open-source GPU fit calculator for local AI models with VRAM, quantization, speed, GPU selection, API cost, and infrastructure sizing.",
   "type": "module",
@@ -10,6 +10,7 @@
   "scripts": {
     "check": "node --check ui-foundation.js && node --check feature-loader.js && node --check app.js && node --check features/i18n-catalog.js && node --check features/estimation-engine.js && node --check features/hf-import.js && node --check features/i18n-runtime.js && node --check features/affiliate-links.js && node --check features/ontology-cost-estimator.js && node --check features/gpu-advisor.js && node --check features/model-placement.js && node --check features/value-frontier.js && node --check features/benchmark-workspace.js && node --check features/app-bootstrap.js && node --check platform-v2.js && node --check platform-v3.js && node --check data/decision-data.js && node --check data/model-capabilities.js && node --check features/workspace-controller.js && node --check features/guided-experience.js && node --check features/decision-guidance.js && node --check features/catalog-requests.js && node --check features/catalog-search.js && node --check features/evidence-policy.js && node --check features/pricing-policy.js && node --check features/infrastructure-sizing.js && node --check features/locale-context.js && node --check features/data-trust.js && node --check features/runtime-localization.js && node --check features/promotion-kit.js && node --check features/quick-recommendation.js && node --check features/community-feedback.js && node --check features/privacy-analytics.js && node --check scripts/benchmark-cli.mjs && node --check scripts/gpu-request-tools.mjs && node --check scripts/model-request-tools.mjs && node --check scripts/benchmark-request-tools.mjs && node --check scripts/ui-regression.mjs && node --check scripts/generate-social-preview.mjs && node --check scripts/generate-weekly-spotlight.mjs && node --check scripts/generate-model-value-report.mjs && node --check scripts/official-source-audit.mjs && node scripts/official-source-audit.mjs && node scripts/check-size-budget.mjs && node scripts/validate-data.mjs && node scripts/data-audit.mjs && node scripts/build-static.mjs && node --test --test-force-exit tests/pipelines.test.mjs && node --test --test-force-exit tests/smoke.test.mjs && node --test tests/feature-loader.test.mjs",
     "test": "node scripts/run-tests.mjs",
+    "test:catalog": "node --test tests/catalog-refresh.test.mjs",
     "test:batch1": "node scripts/run-tests.mjs --batch=1",
     "test:batch2": "node scripts/run-tests.mjs --batch=2",
     "test:batch3": "node scripts/run-tests.mjs --batch=3",

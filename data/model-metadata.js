@@ -1399,8 +1399,10 @@ mergeModelMetadata({
     qualityBenchmark: quality("LiveCodeBench v6 90.3", "LiveCodeBench v6", 90.3, "https://huggingface.co/Qwen/Qwen3.8-27B", "공식 카드"),
   },
   "GLM-5.3-Flash": {
-    releaseDate: "2026-08-20",
-    sourceUrl: "https://llm-stats.com/models/glm-5.3-flash",
+    releaseDate: "2026-08-25",
+    releaseNote: "모델 카드",
+    sourceUrl: "https://huggingface.co/zai-org/GLM-5.3-Flash",
+    verifiedAt: "2026-09-30",
   },
   "Qwen3.8-Flash-Next": {
     releaseDate: "2026-08-25",
@@ -1669,4 +1671,25 @@ mergeModelMetadata({
       "공식 카드",
     ),
   },
+});
+
+// 2026-09-30 source review. Checkpoint counts are in data/models.js and
+// data/audio-models.js; these are publisher quality evaluations, NOT GPU
+// measurements. Different thinking modes/harnesses must not share a metric.
+Object.assign(window.LLM_GPU_CHECKER_DATA.modelMetadata, {
+  "Qwen3.5 0.8B": { ...meta("2026-03-02", "https://huggingface.co/Qwen/Qwen3.5-0.8B", quality("MMLU-Pro thinking 42.3", "MMLU-Pro (Qwen3.5 small, thinking)", 42.3, "https://huggingface.co/Qwen/Qwen3.5-0.8B", "공식 카드·thinking")), verifiedAt: "2026-09-30" },
+  "Qwen3.5 2B": { ...meta("2026-03-02", "https://huggingface.co/Qwen/Qwen3.5-2B", quality("MMLU-Pro thinking 66.5", "MMLU-Pro (Qwen3.5 small, thinking)", 66.5, "https://huggingface.co/Qwen/Qwen3.5-2B", "공식 카드·thinking")), verifiedAt: "2026-09-30" },
+  "Qwen3.5 4B": { ...meta("2026-03-02", "https://huggingface.co/Qwen/Qwen3.5-4B", quality("MMLU-Pro 79.1", "MMLU-Pro", 79.1, "https://huggingface.co/Qwen/Qwen3.5-9B", "공식 비교표·thinking")), verifiedAt: "2026-09-30" },
+  "Qwen3.5 9B": { ...meta("2026-03-02", "https://huggingface.co/Qwen/Qwen3.5-9B", quality("MMLU-Pro 82.5", "MMLU-Pro", 82.5, "https://huggingface.co/Qwen/Qwen3.5-9B", "공식 카드·thinking")), verifiedAt: "2026-09-30" },
+  "LFM2.5 1.2B Instruct": { ...meta("2026-01-06", "https://huggingface.co/LiquidAI/LFM2.5-1.2B-Instruct", quality("MMLU-Pro 44.35", "MMLU-Pro (Liquid AA methodology)", 44.35, "https://huggingface.co/LiquidAI/LFM2.5-1.2B-Instruct", "공식 카드·AA 평가 방법")), verifiedAt: "2026-09-30" },
+  "LFM2.5 2.6B": { ...meta("2026-08-04", "https://huggingface.co/LiquidAI/LFM2.5-2.6B", quality("LiveCodeBench v6 59.41", "LiveCodeBench v6 (Liquid harness)", 59.41, "https://www.liquid.ai/blog/lfm2-5-2-6b", "공식 공개 평가·조건 확인")), verifiedAt: "2026-09-30" },
+  "LFM2.5 8B A1B": { ...meta("2026-05-28", "https://huggingface.co/LiquidAI/LFM2.5-8B-A1B", quality("IFEval 91.84", "IFEval (Liquid harness)", 91.84, "https://huggingface.co/LiquidAI/LFM2.5-8B-A1B", "공식 카드·조건 확인")), verifiedAt: "2026-09-30" },
+  "LFM2.5 VL 3B": { ...meta("2026-08-12", "https://huggingface.co/LiquidAI/LFM2.5-VL-3B"), verifiedAt: "2026-09-30" },
+  "Nemotron 3 Nano 30B A3B": { ...meta("2025-12-15", "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B-BF16", quality("MMLU-Pro 78.3", "MMLU-Pro (Nemotron harness)", 78.3, "https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B-BF16", "공식 BF16 평가")), verifiedAt: "2026-09-30" },
+  "Qwen3-ASR 0.6B": { ...meta("2026-01-29", "https://huggingface.co/Qwen/Qwen3-ASR-0.6B"), verifiedAt: "2026-09-30" },
+  "Qwen3-ASR 1.7B": { ...meta("2026-01-29", "https://huggingface.co/Qwen/Qwen3-ASR-1.7B"), verifiedAt: "2026-09-30" },
+  "Voxtral Mini 4B Realtime": { ...meta("2026-02-04", "https://huggingface.co/mistralai/Voxtral-Mini-4B-Realtime-2602"), verifiedAt: "2026-09-30" },
+  "Qwen3-TTS 0.6B CustomVoice": { ...meta("2026-01-22", "https://huggingface.co/Qwen/Qwen3-TTS-12Hz-0.6B-CustomVoice"), verifiedAt: "2026-09-30" },
+  "Qwen3-TTS 1.7B CustomVoice": { ...meta("2026-01-22", "https://huggingface.co/Qwen/Qwen3-TTS-12Hz-1.7B-CustomVoice"), verifiedAt: "2026-09-30" },
+  "Fish Audio S2 Pro": { ...meta("2026-03-09", "https://huggingface.co/fishaudio/s2-pro"), verifiedAt: "2026-09-30" },
 });

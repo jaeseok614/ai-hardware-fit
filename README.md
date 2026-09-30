@@ -11,8 +11,8 @@
 <p align="center">
   <a href="https://github.com/jaeseok614/ai-hardware-fit/actions/workflows/ci.yml"><img src="https://github.com/jaeseok614/ai-hardware-fit/actions/workflows/ci.yml/badge.svg" alt="CI 상태" /></a>
   <a href="./LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="MIT License" /></a>
-  <img src="https://img.shields.io/badge/GPU_presets-152-0f766e" alt="GPU 프리셋 152종" />
-  <img src="https://img.shields.io/badge/AI_models-332-164a7b" alt="AI 모델 332종" />
+  <img src="https://img.shields.io/badge/GPU_presets-159-0f766e" alt="GPU 프리셋 159종" />
+  <img src="https://img.shields.io/badge/AI_models-347-164a7b" alt="AI 모델 347종" />
 </p>
 
 <p align="center">
@@ -65,8 +65,8 @@
 
 ## 핵심 기능
 
-- NVIDIA·AMD·Intel·Apple Silicon·노트북을 포함한 GPU 프리셋 152종과 직접 사양 입력
-- 생성형 LLM, 임베딩, 리랭커, OCR/VLM, 이미지·영상, STT·TTS 모델 332종
+- NVIDIA·AMD·Intel·Apple Silicon·노트북을 포함한 GPU 프리셋 159종과 직접 사양 입력
+- 생성형 LLM, 임베딩, 리랭커, OCR/VLM, 이미지·영상, STT·TTS 모델 347종
 - Ollama, llama.cpp, vLLM, MLX 실행 설정과 명령어
 - 노트북 TGP, 여러 GPU, 통합 메모리와 시스템 RAM 오프로딩 반영
 - GPU·모델 공식 출처, 검증일, 실측 표본과 추정 범위 구분
@@ -93,9 +93,9 @@ GitHub Actions가 매주 월요일 오전 9시(KST)에 GPU 한 종의 공유 카
 
 ## 최근 업데이트
 
+- **v7.38.0** — M5·Rubin·MI455X 7종과 로컬·음성 모델 15종을 추가하고, GPT-6·Claude 5.5·Gemini 3.8·DeepSeek·Mistral의 API 요금 13종을 공식 출처로 검토했습니다. [검토 내역](./docs/releases/v7.38.0.md)
 - **v7.37.0** — 모델→GPU 결과에 후보 전체의 가격·속도 프런티어와 GPU별 실행 설정·가격/속도 근거를 추가했습니다.
 - **v7.36.0** — 동일 공개 벤치마크 안에서만 비교하는 VRAM–성능 프런티어, VRAM별 추천표와 주간 변경 리포트를 추가했습니다.
-- **v7.35.0** — 모델 기준 GPU 추천을 실제 3단계 화면으로 나누고, AI 서비스 견적을 새로 누르면 항상 1단계부터 시작하도록 정리했습니다.
 
 전체 기록은 [CHANGELOG](./CHANGELOG.md)에서 확인할 수 있습니다.
 

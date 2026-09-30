@@ -106,6 +106,9 @@ const GPU_MARKET_REFERENCE = {
 };
 
 function gpuMarketReference(gpu) {
+  // Rack/module hardware without a supported price/power baseline must not
+  // inherit a desktop bandwidth-to-price/watts heuristic.
+  if (gpu.requiresSystemQuote) return { priceUsd: 0, powerW: 0, priceKind: "quote-required" };
   const [price, power] = GPU_MARKET_REFERENCE[gpu.id] || [];
   const memory = Number(gpu.gpuUsableMemoryGb || gpu.vram || 8);
   const inferredPrice = Math.round(Math.max(
