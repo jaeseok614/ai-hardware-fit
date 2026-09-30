@@ -2469,7 +2469,7 @@ function renderHardware(hardware, allEstimates) {
   if (!hasPrimaryGpuSelection) {
     $("settingsToggle").hidden = true;
     $("hardwareHeadline").textContent = "GPU를 선택해 주세요";
-    $("hardwareMeta").textContent = `GPU 프리셋 ${GPU_PRESETS.length}개 또는 직접 입력`;
+    $("hardwareMeta").textContent = `GPU 프리셋 ${GPU_PRESETS.filter((gpu) => gpu.id !== "custom").length}개 또는 직접 입력`;
     $("hardwareSubline").textContent = "선택 즉시 현재 환경에 맞는 모델을 계산합니다.";
     $("gpuSourceLinks").hidden = true;
     $("gpuSourceLinks").innerHTML = "";
@@ -3074,7 +3074,7 @@ function renderSimpleMode(hardware, allEstimates) {
     const catalogModels = Object.values(MODEL_GROUPS).flat().filter((model) => !model.hfImported);
     const qualityCount = catalogModels.filter((model) => model.qualityBenchmark).length;
     coverageTarget.innerHTML = `
-      <span><strong>${GPU_PRESETS.length}</strong> ${uiLanguage === "en" ? "GPU presets" : "GPU 프리셋"}</span>
+      <span><strong>${GPU_PRESETS.filter((gpu) => gpu.id !== "custom").length}</strong> ${uiLanguage === "en" ? "GPU presets" : "GPU 프리셋"}</span>
       <span><strong>${catalogModels.length}</strong> ${uiLanguage === "en" ? "AI models" : "AI 모델"}</span>
       <span><strong>${qualityCount}</strong> ${uiLanguage === "en" ? "Cited evaluations" : "출처 연결 평가"}</span>
     `;

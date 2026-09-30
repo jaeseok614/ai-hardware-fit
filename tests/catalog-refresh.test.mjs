@@ -9,6 +9,13 @@ for (const file of ["gpus", "models", "audio-models", "model-metadata", "api-mod
 }
 const data = context.window.LLM_GPU_CHECKER_DATA;
 
+test("GPU preset counts exclude the custom-input placeholder", () => {
+  assert.equal(data.gpus.filter((gpu) => gpu.id === "custom").length, 1);
+  assert.equal(data.gpus.filter((gpu) => gpu.id !== "custom").length, 158);
+  const source = fs.readFileSync("app.js", "utf8");
+  assert.doesNotMatch(source, /\$\{GPU_PRESETS\.length\}/);
+});
+
 test("M5 GPU bins have distinct official bandwidth and conservative unified budgets", () => {
   for (const [id, bandwidth, memory] of [["m5-32", 153, 32], ["m5pro-64", 307, 64], ["m5max-36", 460, 36], ["m5max-64", 614, 64], ["m5max-128", 614, 128]]) {
     const gpu = data.gpus.find((item) => item.id === id);

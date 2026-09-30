@@ -6,7 +6,7 @@
 - **로컬 모델 15종 추가:** Qwen3.5 0.8/2/4/9B, LFM2.5 1.2B Instruct·2.6B·8B A1B·VL 3B, Nemotron 3 Nano, Qwen3-ASR 2종·Qwen3-TTS CustomVoice 2종·Voxtral Mini Realtime·Fish Audio S2 Pro. 제품명 대신 인코더 포함 체크포인트 가중치 수로 메모리를 계산합니다.
 - **공식 API 요금 갱신:** GPT-6 Astra·GPT-6.1 Sol·GPT-6 Luna, Claude Opus/Sonnet 5.5·Fable 5.1, Gemini 3.8 Flash, DeepSeek V4.1 Flash, Mistral Medium 3.5·Small 4를 반영했습니다. 나머지 Google·Haiku 요금도 재확인하고 캐시 쓰기·도구·토크나이저 차이, DeepSeek 피크/오프피크와 예정된 Gemini 가격 변경을 명시합니다. 전체 모델 보기 개수는 카탈로그를 따라 자동 갱신됩니다.
 - **근거 보강:** GLM-5.3-Flash의 3rd-party 링크를 공식 모델 카드로 교체했습니다. 공개 품질 평가를 GPU 실측과 구분하며, 새 음성 모델의 속도 기준이 없으면 `속도 보정 근거 미확인`으로 표시합니다. S2 Pro의 비상업 가중치 조건을 분리했습니다.
-- **카탈로그 규모:** GPU 159종(직접 입력 제외), 로컬 AI 모델 347종, API 가격 모델 13종. [추가·보류 항목과 검토 근거](./docs/releases/v7.38.0.md)
+- **카탈로그 규모:** GPU 158종(직접 입력 제외), 로컬 AI 모델 347종, API 가격 모델 13종. 직접 입력을 실제 GPU로 집계하던 표시도 수정했습니다. [추가·보류 항목과 검토 근거](./docs/releases/v7.38.0.md)
 
 ## v7.37.0 - 2026-09-29
 
