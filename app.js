@@ -3195,6 +3195,7 @@ function applyRunFeedbackLinks(container, model, estimate, hardware) {
     ? (getWorkloadSettings()?.runtime || $("runtimeMode")?.value || "")
     : (workloadRuntime[model.type] || "PyTorch");
   const gpuName = formatHardwareName(hardware);
+  const workloadSettings = getWorkloadSettings();
   container.querySelectorAll("[data-run-feedback]").forEach((link) => {
     link.href = feedback.feedbackUrl({
       outcome: link.dataset.runFeedback,
@@ -3213,8 +3214,15 @@ function applyRunFeedbackLinks(container, model, estimate, hardware) {
   // 텍스트영역을 미리 채울 수 있다.
   container.querySelectorAll("[data-community-open]").forEach((el) => {
     el.dataset.communityModel = model.name;
+    el.dataset.communityModelKey = modelKey(model);
     el.dataset.communityGpu = gpuName;
+    el.dataset.communityGpuId = hardware?.preset?.id || "";
+    el.dataset.communityWorkload = activeWorkload;
     el.dataset.communityRuntime = runtime;
+    el.dataset.communityQuantization = estimate.quant?.label || estimate.precision?.label || workloadSettings.quantization || workloadSettings.precisionId || "";
+    el.dataset.communityContext = workloadSettings.context || workloadSettings.inputTokens || "";
+    el.dataset.communityConcurrency = workloadSettings.concurrency || workloadSettings.batchSize || "";
+    el.dataset.communityOutputTokens = workloadSettings.outputTokens || "";
   });
 }
 

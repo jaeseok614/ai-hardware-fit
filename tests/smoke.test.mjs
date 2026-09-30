@@ -1,6 +1,8 @@
 import { after, before, test } from "node:test";
 import assert from "node:assert/strict";
+import { spawnSync } from "node:child_process";
 import fs from "node:fs";
+import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { JSDOM } from "jsdom";
@@ -116,6 +118,67 @@ test("v7.5 terminal results are sanitized before submission", () => {
   assert.deepEqual(Array.from(Object.keys(parsed)).sort(), ["gpu", "model", "tokensPerSecond"]);
   assert.doesNotMatch(app.AIHardwareCommunityFeedback.measurementIssueUrl(parsed), /private|secret/);
   assert.equal(app.AIHardwareCommunityFeedback.neededCombinations().length, 10);
+});
+
+test("measurement preview creates a validator-ready issue and holds the link until required facts exist", () => {
+  const feedback = app.AIHardwareCommunityFeedback;
+  const partial = feedback.measurementReadiness({ model: "Qwen3 8B", gpu: "RTX 3060" });
+  assert.equal(partial.ready, false);
+  assert.ok(partial.missing.includes("GPU and site GPU ID"));
+  assert.ok(partial.missing.includes("measured throughput"));
+  const unsupported = feedback.measurementReadiness({
+    model: "Qwen3 8B", gpu: "RTX 3060", gpuId: "rtx3060-12", workload: "audio-tts",
+    runtime: "PyTorch", tokensPerSecond: 42,
+  });
+  assert.equal(unsupported.ready, false);
+  assert.ok(unsupported.missing.includes("supported workload type"));
+
+  const measurement = {
+    model: "Qwen3 8B",
+    modelKey: "qwen3-8b",
+    gpu: "GeForce RTX 3060 12GB",
+    gpuId: "rtx3060-12",
+    workload: "generative",
+    runtime: "ollama",
+    quantization: "Q4_K_M",
+    context: 8192,
+    outputTokens: 256,
+    tokensPerSecond: 98765.43,
+    prompt: "do not share this private prompt",
+    apiKey: "secret",
+  };
+  const readiness = feedback.measurementReadiness(measurement);
+  assert.equal(readiness.ready, true);
+  const previousLanguage = app.document.documentElement.lang;
+  let body;
+  try {
+    app.document.documentElement.lang = "en";
+    const url = new URL(feedback.measurementIssueUrl(measurement));
+    body = url.searchParams.get("body");
+    assert.match(url.searchParams.get("title"), /^\[Benchmark\]/);
+    assert.match(body, /### CLI measurement result \(JSON\)/);
+    assert.match(body, /### Site GPU ID/);
+    assert.match(body, /"gpuId": "rtx3060-12"/);
+    assert.match(body, /"tokensPerSecond": 98765\.43/);
+    assert.doesNotMatch(body, /private prompt|secret|apiKey/);
+  } finally {
+    app.document.documentElement.lang = previousLanguage;
+  }
+
+  const tempEvent = path.join(os.tmpdir(), `ai-hardware-benchmark-event-${process.pid}.json`);
+  fs.writeFileSync(tempEvent, JSON.stringify({ issue: { html_url: "https://github.com/jaeseok614/ai-hardware-fit/issues/99999", body: "" } }));
+  try {
+    const result = spawnSync(process.execPath, ["scripts/benchmark-request-tools.mjs"], {
+      cwd: root,
+      env: { ...process.env, GITHUB_EVENT_PATH: tempEvent, BENCHMARK_REQUEST_BODY: body },
+      encoding: "utf8",
+    });
+    assert.equal(result.status, 0, result.stderr);
+    assert.match(result.stdout, /✅ GPU·모델·실행 조건 확인 완료/);
+    assert.match(result.stdout, /tokensPerSecond:\s*98765\.43/);
+  } finally {
+    fs.unlinkSync(tempEvent);
+  }
 });
 
 after(() => dom?.window.close());

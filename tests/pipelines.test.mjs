@@ -1,6 +1,8 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
+import os from "node:os";
 import fs from "node:fs";
+import path from "node:path";
 import { spawnSync } from "node:child_process";
 
 test("Pages deployment builds a cache-stamped artifact", () => {
@@ -123,6 +125,40 @@ test("GPU and benchmark request workflows have guarded approval labels", () => {
   assert.match(benchmark, /steps\.benchmark\.outputs\.valid == 'true'/);
   assert.match(model, /model-ready/);
   assert.match(model, /steps\.model\.outputs\.valid == 'true'/);
+});
+
+test("manual benchmark issue forms normalize workload and K-context before validation", () => {
+  const eventFile = path.join(os.tmpdir(), `ai-hardware-benchmark-manual-${process.pid}.json`);
+  fs.writeFileSync(eventFile, JSON.stringify({ issue: { html_url: "https://github.com/jaeseok614/ai-hardware-fit/issues/99998", body: "" } }));
+  const body = [
+    ["CLI 측정 결과 (JSON)", "_No response_"],
+    ["GPU", "GeForce RTX 3060 12GB"],
+    ["사이트 GPU ID", "rtx3060-12"],
+    ["모델", "Qwen3 8B"],
+    ["워크로드", "Generative LLM (tok/s)"],
+    ["런타임", "Ollama"],
+    ["운영체제·드라이버", "Windows 11"],
+    ["전력 제한·노트북 TGP", "_No response_"],
+    ["최대 VRAM 사용량", "10.2 GB"],
+    ["실행 설정", "Q4_K_M, 8K context, concurrency 1"],
+    ["입력·컨텍스트 토큰", "8192"],
+    ["출력 토큰", "256"],
+    ["동시 요청", "1"],
+    ["실제 결과", "98764.32 tok/s"],
+    ["로그 또는 참고 자료", "수동 벤치마크 제보"],
+  ].map(([label, value]) => `### ${label}\n\n${value}`).join("\n\n");
+  try {
+    const result = spawnSync(process.execPath, ["scripts/benchmark-request-tools.mjs"], {
+      cwd: process.cwd(),
+      env: { ...process.env, GITHUB_EVENT_PATH: eventFile, BENCHMARK_REQUEST_BODY: body },
+      encoding: "utf8",
+    });
+    assert.equal(result.status, 0, result.stderr);
+    assert.match(result.stdout, /✅ GPU·모델·실행 조건 확인 완료/);
+    assert.match(result.stdout, /context:8192/);
+  } finally {
+    fs.unlinkSync(eventFile);
+  }
 });
 
 test("catalog requests prevent duplicates and expose a structured price report", () => {

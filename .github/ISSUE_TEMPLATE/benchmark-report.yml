@@ -7,7 +7,8 @@ body:
     attributes:
       value: |
         `node scripts/benchmark-cli.mjs --runtime ollama --model <모델> --context <길이>` (llama.cpp는 `--runtime llamacpp`)로 실행하면
-        아래 JSON 칸에 그대로 붙여넣을 수 있는 결과가 출력됩니다. **CLI JSON 또는 아래 수동 입력 항목 중 한쪽**을 채워 주세요.
+        아래 JSON 칸에 그대로 붙여넣을 수 있는 결과가 출력됩니다. 구조화된 처리량 데이터는 현재 LLM(tok/s), 임베딩(doc/s), 리랭커(pair/s), OCR(page/s)를 지원합니다.
+        **CLI JSON 또는 아래 수동 입력 항목 중 한쪽**을 채워 주세요.
   - type: textarea
     id: cli_json
     attributes:
@@ -29,6 +30,16 @@ body:
       label: 사이트 GPU ID
       description: 사이트 URL의 gpu= 값 또는 data/gpus.js의 id를 적으면 자동 집계가 정확해집니다.
       placeholder: rtx4090-24
+  - type: dropdown
+    id: workload
+    attributes:
+      label: 워크로드
+      options:
+        - Generative LLM (tok/s)
+        - Embedding (doc/s)
+        - Reranker (pair/s)
+        - OCR / document processing (page/s)
+      default: 1
   - type: input
     id: model
     attributes:

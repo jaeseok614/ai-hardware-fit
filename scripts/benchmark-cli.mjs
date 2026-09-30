@@ -398,7 +398,7 @@ async function main() {
     gpuIndex,
     gpuVramGb: latestGpu.available ? Math.round((latestGpu.totalMb / 1024) * 100) / 100 : undefined,
     workload: "generative",
-    runtime: "llamacpp",
+    runtime: args.runtime === "ollama" ? "ollama" : "llamacpp",
     runtimeTool: args.runtime,
     quantization: args.quantization || undefined,
     context,
