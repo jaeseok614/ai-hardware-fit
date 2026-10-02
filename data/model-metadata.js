@@ -19,8 +19,8 @@ const MODEL_METADATA_SOURCES = {
   mistralSmall31: "https://huggingface.co/mistralai/Mistral-Small-3.1-24B-Instruct-2503",
   mistralSmall31News: "https://mistral.ai/news/mistral-small-3-1/",
   mistralChangelog: "https://docs.mistral.ai/resources/changelogs",
-  mistralNemo: "https://legal.mistral.ai/ai-governance/models/open-mistral-nemo-2407",
-  mistral7b: "https://legal.mistral.ai/ai-governance/models/mistral-7-b",
+  mistralNemo: "https://mistral.ai/news/mistral-nemo/",
+  mistral7b: "https://mistral.ai/news/announcing-mistral-7b/",
   mistralLarge2: "https://mistral.ai/news/mistral-large-2407/",
   mixtral: "https://mistral.ai/news/mixtral-of-experts/",
   exaone35: "https://huggingface.co/LGAI-EXAONE/EXAONE-3.5-7.8B-Instruct",
@@ -380,7 +380,7 @@ mergeModelMetadata({
   },
   "Mistral 7B Instruct": {
     releaseDate: "2023-09-27",
-    sourceUrl: "https://legal.mistral.ai/ai-governance/models/mistral-7-b",
+    sourceUrl: MODEL_METADATA_SOURCES.mistral7b,
     qualityBenchmark: quality("MT-Bench 6.84", "MT-Bench (v0.1)", 6.84, "https://arxiv.org/abs/2310.06825", "공식 논문"),
   },
   "Mistral Nemo 12B Instruct": {
