@@ -5196,6 +5196,8 @@ function syncUrlState() {
   if ($("advisorModelCategory")) params.set("advisorCategory", $("advisorModelCategory").value);
   if ($("advisorModelSearch")?.value) params.set("advisorSearch", $("advisorModelSearch").value);
   if ($("advisorBudgetUsd")) params.set("budget", $("advisorBudgetUsd").value);
+  if ($("advisorBudgetScope")) params.set("budgetScope", $("advisorBudgetScope").value);
+  syncAdvisorUseUrl(params, coreTaskMode);
   if ($("advisorCurrentPriceUsd")) params.set("currentPrice", $("advisorCurrentPriceUsd").value);
   if ($("advisorElectricityRate")) params.set("electricity", $("advisorElectricityRate").value);
   if ($("advisorHoursMonth")) params.set("hours", $("advisorHoursMonth").value);
@@ -5305,7 +5307,7 @@ function syncUrlState() {
   }
 
   if (coreTaskMode !== "modelFinder") {
-    ["advisorModel", "advisorCategory", "advisorSearch", "advisorStep", "budget", "currentPrice", "electricity", "hours", "advisorVendor", "advisorForm"]
+    ["advisorModel", "advisorCategory", "advisorSearch", "advisorStep", "budget", "budgetScope", "currentPrice", "electricity", "hours", "advisorVendor", "advisorForm"]
       .forEach((key) => params.delete(key));
   } else {
     const advisorStep = window.AIHardwareGpuAdvisor?.getStep?.() || 1;
@@ -5387,6 +5389,8 @@ function applyUrlState() {
   setValueIfPresent("advisorModelSearch", params.get("advisorSearch"));
   refreshAdvisorModelOptions(params.get("advisorModel"));
   setValueIfPresent("advisorBudgetUsd", params.get("budget"));
+  setSelectIfValid("advisorBudgetScope", params.get("budgetScope") || (params.has("budget") ? "gpu" : "system"));
+  restoreAdvisorUseUrl(params);
   setValueIfPresent("advisorCurrentPriceUsd", params.get("currentPrice"));
   setValueIfPresent("advisorElectricityRate", params.get("electricity"));
   setValueIfPresent("advisorHoursMonth", params.get("hours"));

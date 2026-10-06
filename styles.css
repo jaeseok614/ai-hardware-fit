@@ -46,6 +46,10 @@
   --simple-inspector-width: clamp(440px, 32vw, 520px);
 }
 
+.advisor-use-profile { grid-column: 1 / -1; min-width: 0; margin: 0; padding: 1rem; border: 1px solid var(--line); border-radius: .5rem; }
+.advisor-use-profile legend { padding: 0 .4rem; font-weight: 700; }
+.advisor-use-profile p, #advisorUseResultSummary { font-size: .85rem; line-height: 1.5; color: var(--muted); }
+
 /* Dark theme. Same structural palette (warm-neutral canvas, one navy accent,
    hairline borders, no shadows) inverted for a dark surface, not a separate
    design -- toggled by [data-theme="dark"] on <html>, set in app.js. */
@@ -10031,3 +10035,9 @@ body.guide-modal-open {
   font-size: 10px;
   font-weight: 700;
 }
+.advisor-entry-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+.advisor-equipment { border-top: 1px solid var(--border-color, #d0d9e1); padding-top: 10px; margin: 12px 0; }
+.advisor-equipment summary { cursor: pointer; font-weight: 700; }
+.advisor-equipment p { font-size: .8rem; line-height: 1.6; }
+.advisor-equipment dl dd { min-width: 0; overflow-wrap: anywhere; }
+.advisor-equipment-total { border-top: 1px solid var(--border-color, #d0d9e1); padding-top: 10px; }

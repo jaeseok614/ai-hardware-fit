@@ -12,6 +12,8 @@ const budgets = [
   ["features/hf-import.js", 20 * 1024],
   ["features/i18n-runtime.js", 75 * 1024],
   ["features/gpu-advisor.js", 48 * 1024],
+  ["features/equipment-planner.js", 12 * 1024],
+  ["features/advisor-use-profiles.js", 12 * 1024],
   ["features/model-placement.js", 130 * 1024],
   ["features/benchmark-workspace.js", 40 * 1024],
   ["platform-v2.js", 60 * 1024],

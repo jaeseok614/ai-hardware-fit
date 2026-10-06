@@ -643,6 +643,7 @@ const KOREAN_GPU_MARKET = [
   },
   {
     gpuId: "dgxspark-gb10-128",
+    priceScope: "complete-system",
     newKrw: 9250000,
     usedKrw: 6937500,
     lowestKrw: 9250000,
@@ -653,6 +654,7 @@ const KOREAN_GPU_MARKET = [
   },
   {
     gpuId: "ryzen-ai-max-plus-395-64",
+    priceScope: "complete-system",
     newKrw: 3779000,
     usedKrw: 2834250,
     lowestKrw: 3779000,
@@ -663,6 +665,7 @@ const KOREAN_GPU_MARKET = [
   },
   {
     gpuId: "ryzen-ai-max-plus-395-128",
+    priceScope: "complete-system",
     newKrw: 6099000,
     usedKrw: 4574250,
     lowestKrw: 6099000,
@@ -672,6 +675,19 @@ const KOREAN_GPU_MARKET = [
     usedPriceMethod: "신품 노트북 완제품가의 75% 계산 참고값",
   },
 ];
+
+// Official complete-system starting prices are not retail/used GPU quotes.
+const SYSTEM_PRICE_REFERENCE = {
+  "m5ultra-96": {
+    priceScope: "complete-system",
+    priceKind: "launch-reference",
+    newKrw: 9490000,
+    lowestKrw: 9490000,
+    updatedAt: "2026-08-25",
+    sourceName: "Apple KR · Mac Studio M5 Ultra 96GB / 1TB base configuration",
+    sourceUrl: "https://www.apple.com/kr/newsroom/2026/08/apple-introduces-new-mac-studio-with-m5-max-and-m5-ultra/",
+  },
+};
 
 const PRICE_DATA_META = {
   currency: "KRW",
@@ -790,4 +806,5 @@ window.LLM_GPU_CHECKER_DATA = window.LLM_GPU_CHECKER_DATA || {};
 window.LLM_GPU_CHECKER_DATA.koreanGpuMarket = KOREAN_GPU_MARKET;
 window.LLM_GPU_CHECKER_DATA.priceDataMeta = PRICE_DATA_META;
 window.LLM_GPU_CHECKER_DATA.systemPartCatalog = SYSTEM_PART_CATALOG;
+window.LLM_GPU_CHECKER_DATA.systemPriceReference = SYSTEM_PRICE_REFERENCE;
 window.LLM_GPU_CHECKER_DATA.gpuPhysicalReference = GPU_PHYSICAL_REFERENCE;

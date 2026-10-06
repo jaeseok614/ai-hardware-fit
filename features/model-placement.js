@@ -271,7 +271,7 @@ function renderPlacementModelList() {
     return;
   }
 
-  container.innerHTML = filtered
+  container.innerHTML = sortModelCatalog(filtered)
     .slice(0, 150)
     .map((model) => {
       const key = modelKey(model);

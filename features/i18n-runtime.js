@@ -480,6 +480,7 @@ const ENGLISH_UI_REPLACEMENTS = [
   ["전체 해제", "Clear all"],
   ["종합 추천", "Overall recommendation"],
   ["최신 모델순", "Newest first"],
+  ["제공사·모델 계열순", "Provider / model family"],
   ["파라미터 큰 순", "Largest parameters first"],
   ["속도 우선", "Speed first"],
   ["품질 우선", "Quality first"],

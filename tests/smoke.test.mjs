@@ -68,6 +68,8 @@ before(() => {
     read("features/i18n-runtime.js"),
     read("features/affiliate-links.js"),
     read("features/gpu-advisor.js"),
+    read("features/equipment-planner.js"),
+    read("features/advisor-use-profiles.js"),
     read("features/model-placement.js"),
     read("features/api-cost-estimator.js"),
     read("features/ontology-cost-estimator.js"),
@@ -473,7 +475,7 @@ test("full catalog and advisor produce usable results", () => {
     setCoreTaskMode("modelFinder");
     const smokeModel = getAllModels().find((model) => model.name.includes("TinyLlama")) || getAllModels()[0];
     document.getElementById("advisorModel").value = modelKey(smokeModel);
-    document.getElementById("advisorBudgetUsd").value = "100000";
+    document.getElementById("advisorBudgetUsd").value = "0";
     document.getElementById("advisorVendor").value = "all";
     document.getElementById("advisorFormFactor").value = "all";
     renderGpuAdvisor();

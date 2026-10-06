@@ -87,6 +87,8 @@ function loadApp(url = "https://example.com/?gpu=rtx4090-24", storage = {}, { pe
   combined += "\n;\n" + read("features/i18n-runtime.js");
   combined += "\n;\n" + read("features/affiliate-links.js");
   combined += "\n;\n" + read("features/gpu-advisor.js");
+  combined += "\n;\n" + read("features/equipment-planner.js");
+  combined += "\n;\n" + read("features/advisor-use-profiles.js");
   combined += "\n;\n" + read("features/model-placement.js");
   combined += "\n;\n" + read("features/value-frontier.js");
   combined += "\n;\n" + read("features/benchmark-workspace.js");
@@ -1058,6 +1060,148 @@ describe("v1.3 GPU platform upgrades", () => {
 });
 
 describe("v1.4 advisor and media optimization", () => {
+  test("model browsing groups providers and families without changing selected models", () => {
+    const fresh = loadApp("https://example.com/?mode=modelFinder&lang=en");
+    const fixtures = [
+      {name:"Qwen2.5 7B",maker:"Alibaba",params:7},
+      {name:"Gemma 4 12B",maker:"Google",params:12},
+      {name:"Qwen3.5 27B",maker:"Alibaba",params:27},
+      {name:"Qwen3.5 9B",maker:"Qwen Team",params:9},
+      {name:"Qwen3.10 8B",maker:"Alibaba",params:8},
+      {name:"DeepSeek R1 Distill Qwen 32B",maker:"DeepSeek",params:32},
+    ];
+    fresh.testCatalogFixtures = fixtures;
+    const sorted = fresh.eval("sortModelCatalog(testCatalogFixtures).map(m=>m.name)");
+    assert.deepEqual(Array.from(sorted), ["Qwen3.10 8B","Qwen3.5 9B","Qwen3.5 27B","Qwen2.5 7B","DeepSeek R1 Distill Qwen 32B","Gemma 4 12B"]);
+    assert.equal(fixtures[0].name, "Qwen2.5 7B");
+    const selected = fresh.document.getElementById("advisorModel").value;
+    fresh.eval("refreshAdvisorModelOptions()");
+    assert.equal(fresh.document.getElementById("advisorModel").value, selected);
+    const options = fresh.eval("[...$('advisorModel').options].map(o=>getModelByKey(o.value))");
+    fresh.testCatalogOptions = options;
+    assert.equal(fresh.eval("testCatalogOptions.every((m,i,a)=>i===0||compareModelCatalog(a[i-1],m)<=0)"), true,
+      fresh.eval("JSON.stringify(testCatalogOptions.flatMap((m,i,a)=>i&&compareModelCatalog(a[i-1],m)>0?[{previous:a[i-1].name,current:m.name,previousMaker:a[i-1].maker,currentMaker:m.maker}]:[]))"));
+    fresh.eval(`$("sortBy").value="family"; window.testCatalogEstimates=testCatalogFixtures.map(model=>({model,grade:"A"}))`);
+    assert.deepEqual(Array.from(fresh.eval("sortEstimates(testCatalogEstimates).map(e=>e.model.name)")), Array.from(sorted));
+    assert.match(fresh.document.querySelector('#sortBy [value="family"]').textContent, /Provider \/ model family/);
+    fresh.eval(`$("advisorModelSearch").value="Qwen3.5"; refreshAdvisorModelOptions()`);
+    assert.equal(fresh.eval("[...$('advisorModel').options].some(o=>o.textContent.includes('Qwen3.5'))"), true);
+    const expectedMatches = fresh.eval("sortModelCatalog(window.AIHardwareCatalogSearch.search('Qwen3.5',getAllModels(),{limit:getAllModels().length})).map(modelKey)");
+    assert.deepEqual(Array.from(fresh.eval("[...$('advisorModel').options].map(o=>o.value)")), Array.from(expectedMatches));
+    assert.match(read("platform-v3.js"), /sortModelCatalog\(getAllModels\(\)\.filter/);
+    assert.match(read("features/model-placement.js"), /container.innerHTML = sortModelCatalog\(filtered\)/);
+  });
+
+  test("personal-use defaults, long documents and sharing change the actual LLM estimate", () => {
+    const fresh = loadApp("https://example.com/?mode=modelFinder&lang=en");
+    assert.equal(fresh.document.getElementById("advisorUseProfile").value, "personal");
+    assert.equal(fresh.document.getElementById("advisorUseConcurrency").value, "1");
+    assert.equal(fresh.document.getElementById("advisorUseContext").value, "4096");
+    assert.equal(fresh.document.getElementById("advisorUseQuant").value, "q4");
+    assert.equal(fresh.document.getElementById("advisorUseMinSpeed").value, "20");
+    assert.match(fresh.document.getElementById("advisorModel").selectedOptions[0].textContent, /Qwen3.5 9B/);
+    const evaluate = () => fresh.eval(`(() => { const m=getModelByKey($("advisorModel").value); const h=advisorHardwareForPreset(GPU_PRESETS.find(g=>g.id==="rtx5090-32"),m); return {hardware:h,estimate:estimateAdvisorModel(m,h)} })()`);
+    const personal = evaluate();
+    assert.equal(personal.hardware.concurrency, 1);
+    assert.equal(personal.hardware.runtime, "llamacpp");
+    const inheritedContext = fresh.document.getElementById("contextSize").value;
+    fresh.eval(`$("advisorUseProfile").value = "documents"; $("advisorUseProfile").dispatchEvent(new Event("change"))`);
+    const documents = evaluate();
+    assert.equal(documents.hardware.context, 16384);
+    assert.ok(documents.estimate.requiredGb > personal.estimate.requiredGb);
+    assert.equal(fresh.document.getElementById("contextSize").value, inheritedContext);
+    fresh.eval(`$("advisorUseProfile").value = "shared"; $("advisorUseProfile").dispatchEvent(new Event("change"))`);
+    const shared = evaluate();
+    assert.equal(shared.hardware.concurrency, 4);
+    assert.ok(shared.estimate.kvGb > personal.estimate.kvGb);
+    assert.match(fresh.document.getElementById("advisorUseResultSummary").textContent, /per-request estimates/);
+    fresh.eval(`$("advisorUseConcurrency").value = "2"; $("advisorUseConcurrency").dispatchEvent(new Event("change"))`);
+    assert.equal(fresh.document.getElementById("advisorUseProfile").value, "custom");
+    const restored = loadApp(fresh.location.href);
+    assert.equal(restored.document.getElementById("advisorUseConcurrency").value, "2");
+    assert.equal(restored.document.getElementById("advisorUseContext").value, "8192");
+    fresh.eval(`setCoreTaskMode("finder"); syncUrlState()`);
+    assert.equal(new URL(fresh.location.href).searchParams.has("advisorCtx"), false);
+    const legacy = loadApp("https://example.com/?mode=modelFinder&ctx=32768&con=8&quant=q8");
+    assert.equal(legacy.document.getElementById("advisorUseProfile").value, "custom");
+    assert.equal(legacy.document.getElementById("advisorUseContext").value, "32768");
+    assert.equal(legacy.document.getElementById("advisorUseConcurrency").value, "8");
+    assert.equal(legacy.document.getElementById("advisorUseQuant").value, "q8");
+    assert.equal(legacy.document.getElementById("advisorUseMinSpeed").value, "0");
+    fresh.eval(`setCoreTaskMode("modelFinder"); $("advisorUseMinSpeed").value="100000"; $("advisorUseMinSpeed").dispatchEvent(new Event("change"))`);
+    assert.ok(fresh.document.querySelector(".advisor-alternative-notice"));
+    assert.match(fresh.document.getElementById("gpuAdvisorResult").textContent, /Below target speed/);
+    fresh.eval(`$("advisorModelCategory").value="image"; refreshAdvisorModelOptions(); renderGpuAdvisor()`);
+    assert.equal(fresh.document.getElementById("advisorUseMinSpeed").disabled, true);
+    assert.match(fresh.document.getElementById("advisorUseNote").textContent, /only to text LLMs/);
+  });
+
+  test("equipment budget includes a compatible planning BOM and preserves budget scope", () => {
+    const fresh = loadApp("https://example.com/?mode=modelFinder&lang=en");
+    const panel = fresh.document.getElementById("gpuAdvisorPanel");
+    assert.equal(fresh.document.getElementById("advisorBudgetScope").value, "system");
+    panel.querySelector("[data-advisor-budget-first]").click();
+    assert.equal(panel.dataset.advisorStep, "2");
+    fresh.eval(`$("advisorBudgetUsd").value = "3000"; $("advisorFormFactor").value = "desktop"; renderGpuAdvisor(); syncUrlState()`);
+    assert.equal(new URL(fresh.location.href).searchParams.get("budgetScope"), "system");
+    assert.match(panel.textContent, /Full equipment total|Equipment & itemized costs/);
+    assert.doesNotMatch(panel.textContent, /[가-힣]/);
+    const plan = fresh.eval(`advisorEquipmentPlan(GPU_PRESETS.find(g => g.id === "rtx5090-32"), {ram:64}, {requiredGb:24}, {powerW:575}, 1000000)`);
+    assert.equal(plan.complete, true);
+    assert.ok(parseInt(plan.rows.find(row => row.type === "psu").name, 10) >= 1000);
+    assert.equal(plan.rows.find(row => row.type === "motherboard").name.includes("AM5"), true);
+    assert.equal(plan.totalKrw, plan.rows.reduce((sum, row) => sum + row.priceKrw, 0));
+    assert.ok(plan.partsKrw > 0);
+    panel.querySelector("[data-advisor-model-first]").click();
+    assert.equal(panel.dataset.advisorStep, "1");
+    const restored = loadApp(fresh.location.href);
+    assert.equal(restored.document.getElementById("advisorBudgetScope").value, "system");
+    const legacy = loadApp("https://example.com/?mode=modelFinder&lang=en&budget=2000");
+    assert.equal(legacy.document.getElementById("advisorBudgetScope").value, "gpu");
+  });
+
+  test("full-system budget excludes unknown bundles and marks over-budget alternatives", () => {
+    const fresh = loadApp("https://example.com/?mode=modelFinder&lang=en");
+    const bundle = fresh.eval(`advisorEquipmentPlan(GPU_PRESETS.find(g => g.id === "m4-32"), {ram:32}, {requiredGb:8}, {powerW:100}, 1000000)`);
+    assert.equal(bundle.complete, false);
+    assert.equal(bundle.totalKrw, null);
+    assert.equal(bundle.rows.length, 1);
+    fresh.eval(`$("advisorBudgetUsd").value = "1"; renderGpuAdvisor()`);
+    assert.ok(fresh.document.querySelector(".advisor-alternative-notice"));
+    assert.match(fresh.document.getElementById("gpuAdvisorResult").textContent, /Above the selected budget|Price unknown/);
+    fresh.eval(`$("advisorBudgetUsd").value = "0"; $("advisorFormFactor").value = "desktop"; renderGpuAdvisor()`);
+    assert.equal(fresh.document.querySelector(".advisor-alternative-notice"), null);
+    assert.match(fresh.document.querySelector(".advisor-frontier").textContent, /Equipment total/);
+    fresh.eval(`$("advisorBudgetUsd").value = "1"; $("advisorVendor").value = "Apple"; $("advisorFormFactor").value = "integrated"; renderGpuAdvisor()`);
+    assert.ok(fresh.document.querySelector(".advisor-alternative-notice"));
+    assert.match(fresh.document.getElementById("gpuAdvisorResult").textContent, /System quote required/);
+  });
+
+  test("Spark and M5 Ultra use complete-system prices without duplicate PC parts", () => {
+    const fresh = loadApp("https://example.com/?mode=modelFinder&lang=ko&budget=30000000&budgetScope=system");
+    const spark = fresh.eval(`advisorEquipmentPlan(GPU_PRESETS.find(g => g.id === "dgxspark-gb10-128"), {ram:128}, {requiredGb:80}, {powerW:240}, 1)`);
+    assert.equal(spark.complete, true);
+    assert.equal(spark.totalKrw, 9250000);
+    assert.equal(spark.partsKrw, 0);
+    assert.equal(spark.rows.length, 1);
+    const mac = fresh.eval(`advisorEquipmentPlan(GPU_PRESETS.find(g => g.id === "m5ultra-96"), {ram:96}, {requiredGb:60}, {powerW:480}, 1)`);
+    assert.equal(mac.totalKrw, 9490000);
+    assert.equal(mac.priceKind, "launch-reference");
+    fresh.testMacPlan = mac;
+    assert.equal(fresh.eval(`advisorPricePoint({budgetScope:"system",equipment:testMacPlan},window.AIHardwarePricing,"KRW").kind`), "launch");
+    assert.match(fresh.eval(`advisorPricePoint({budgetScope:"system",equipment:testMacPlan},window.AIHardwarePricing,"KRW").evidence`), /완제품 참고가/);
+    const upgrade = fresh.eval(`advisorEquipmentPlan(GPU_PRESETS.find(g => g.id === "m5ultra-256"), {ram:256}, {requiredGb:80}, {powerW:480}, 9490000)`);
+    assert.equal(upgrade.complete, false);
+    assert.equal(upgrade.totalKrw, null);
+    fresh.eval(`$("advisorVendor").value = "Apple"; $("advisorFormFactor").value = "integrated"; renderGpuAdvisor()`);
+    assert.match(fresh.document.getElementById("gpuAdvisorResult").textContent, /Mac Studio M5 Ultra.*96GB/);
+    assert.match(fresh.document.getElementById("gpuAdvisorResult").textContent, /256GB/);
+    assert.equal(fresh.document.querySelector(".advisor-alternative-notice"), null);
+    fresh.eval(`$("advisorBudgetUsd").value = "0"; setUiLanguage("en"); renderGpuAdvisor()`);
+    assert.equal(fresh.document.getElementById("advisorBudgetUsd").value, "0");
+    assert.doesNotMatch(fresh.document.getElementById("gpuAdvisorResult").textContent, /[가-힣]/);
+  });
+
   test("model-first recommendations use real model, budget, and result screens", () => {
     const fresh = loadApp("https://example.com/?mode=modelFinder&lang=ko");
     const panel = fresh.document.getElementById("gpuAdvisorPanel");

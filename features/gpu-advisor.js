@@ -33,6 +33,7 @@ function ensureGpuAdvisorPanel() {
       </div>
     </div>
     <div class="advisor-wizard" data-advisor-step="1">
+      <div class="advisor-entry-actions"><button type="button" class="ghost-button" data-advisor-budget-first></button><button type="button" class="ghost-button" data-advisor-model-first></button></div>
       <div class="gpu-advisor-controls advisor-wizard-panel" data-advisor-step-panel="1">
         <label class="field"><span id="advisorModelCategoryLabel"></span><select id="advisorModelCategory"></select></label>
         <label class="field advisor-model-search-field"><span id="advisorModelSearchLabel"></span><input id="advisorModelSearch" type="search" autocomplete="off"></label>
@@ -43,7 +44,9 @@ function ensureGpuAdvisorPanel() {
         </div>
       </div>
       <div class="gpu-advisor-controls advisor-wizard-panel" data-advisor-step-panel="2" hidden>
+        <label class="field"><span id="advisorBudgetScopeLabel"></span><select id="advisorBudgetScope"><option value="system">전체 장비</option><option value="gpu">GPU만</option></select><small id="advisorBudgetScopeNote"></small></label>
         <label class="field advisor-budget-field"><span id="advisorBudgetLabel"></span><input id="advisorBudgetUsd" data-currency="KRW" type="number" min="0" max="200000000" step="100000" value="2800000"></label>
+        <p id="advisorBudgetModelSummary"></p>
         <details class="advisor-detailed-settings">
           <summary><span class="advisor-detail-summary"></span></summary>
           <div class="advisor-detail-grid">
@@ -77,6 +80,10 @@ function ensureGpuAdvisorPanel() {
     .map((category) => `<option value="${category.id}">${escapeHtml(category.en)}</option>`)
     .join("");
   refreshAdvisorModelOptions();
+  ensureAdvisorUseProfiles(panel);
+  panel.querySelector("[data-advisor-budget-first]")?.addEventListener("click", () => setAdvisorWizardStep(2, { scroll: true }));
+  panel.querySelector("[data-advisor-model-first]")?.addEventListener("click", () => setAdvisorWizardStep(1, { scroll: true }));
+  $("advisorBudgetScope")?.addEventListener("change", renderGpuAdvisor);
   panel.querySelector("[data-advisor-back]")?.addEventListener("click", () => setAdvisorWizardStep(advisorWizardStep - 1, { scroll: true }));
   panel.querySelector("[data-advisor-next]")?.addEventListener("click", () => setAdvisorWizardStep(advisorWizardStep + 1, { scroll: true }));
   panel.querySelector("[data-advisor-restart]")?.addEventListener("click", () => setAdvisorWizardStep(1, { scroll: true }));
@@ -97,7 +104,7 @@ function syncAdvisorCurrencyInputs() {
     if (!input) return;
     const sourceCurrency = input.dataset.currency || "USD";
     if (sourceCurrency !== targetCurrency) {
-      const numeric = Number(input.value || fallback);
+      const numeric = Number(input.value === "" ? fallback : input.value);
       input.value = targetCurrency === "KRW"
         ? Math.round(pricing.toKrw(numeric, sourceCurrency))
         : Number(pricing.toUsd(numeric, sourceCurrency).toFixed(id === "advisorElectricityRate" ? 2 : 0));
@@ -157,10 +164,12 @@ function refreshAdvisorModelOptions(preferredKey = $("advisorModel")?.value) {
       return query.normalize("NFKC").toLocaleLowerCase().trim().split(/\s+/).filter(Boolean).every((token) => searchText.includes(token));
     }))
     : candidates;
+  models.sort(compareModelCatalog);
   select.innerHTML = models
     .map((model) => `<option value="${escapeAttr(modelKey(model))}">${escapeHtml(model.name)}</option>`)
     .join("");
   if (preferredKey && models.some((model) => modelKey(model) === preferredKey)) select.value = preferredKey;
+  else if (!preferredKey && models.length) select.value = modelKey(models.find((model) => model.name === "Qwen3.5 9B") || models[0]);
   select.disabled = models.length === 0;
   const count = $("advisorModelCount");
   if (count) count.textContent = uiLanguage === "en" ? `${models.length} models` : `${models.length}개 모델`;
@@ -229,29 +238,6 @@ window.AIHardwareGpuAdvisor = {
   startNewSearch: startNewAdvisorSearch,
 };
 
-function advisorPricePoint(item, pricing, currency) {
-  if (item.koreanMarket?.lowestKrw > 0) {
-    return {
-      value: currency === "KRW"
-        ? item.koreanMarket.lowestKrw
-        : pricing.toUsd(item.koreanMarket.lowestKrw, "KRW"),
-      label: pricing.formatFromKrw(item.koreanMarket.lowestKrw, uiLanguage),
-      kind: "market",
-      evidence: uiLanguage === "en"
-        ? `Korean market price · checked ${item.koreanMarket.updatedAt}`
-        : `국내 시세 · ${item.koreanMarket.updatedAt} 확인`,
-    };
-  }
-  const priceUsd = Number(item.market?.priceUsd || 0);
-  return {
-    value: currency === "KRW" ? pricing.toKrw(priceUsd, "USD") : priceUsd,
-    label: pricing.formatFromUsd(priceUsd, uiLanguage),
-    kind: item.market?.priceKind === "launch-reference" ? "launch" : "estimate",
-    evidence: item.market?.priceKind === "launch-reference"
-      ? (uiLanguage === "en" ? "Launch-price reference" : "출시 가격 참고")
-      : (uiLanguage === "en" ? "Calculated price estimate" : "계산 가격 추정"),
-  };
-}
 
 function advisorSpeedEvidence(confidence, en) {
   if (confidence?.sampleCount) {
@@ -344,6 +330,7 @@ function bindAdvisorFrontierInteractions(panel, en) {
 
 function renderAdvisorPriceSpeedFrontier(items, model, pricing, currency, roleCandidates, en) {
   if (!pricing || items.length < 2) return "";
+  const systemBudget = items[0]?.budgetScope === "system";
   const roleIds = new Set(roleCandidates.map(({ item }) => item.preset.id));
   const entries = items
     .map((item) => ({
@@ -427,7 +414,7 @@ function renderAdvisorPriceSpeedFrontier(items, model, pricing, currency, roleCa
       <div class="advisor-frontier-head">
         <div>
           <span class="section-kicker">PRICE × SPEED</span>
-          <h3 id="advisorFrontierTitle">${en ? "GPU price–speed frontier" : "GPU별 가격·속도 프런티어"}</h3>
+          <h3 id="advisorFrontierTitle">${en ? "GPU price–speed frontier" : "GPU별 가격·속도 프런티어"}${systemBudget ? (en ? " · full equipment" : " · 전체 장비 기준") : ""}</h3>
           <p>${en
             ? `For ${escapeHtml(model.name)}, compare every compatible candidate behind the three highlighted recommendations.`
             : `${escapeHtml(model.name)} 실행이 가능한 후보 전체에서 추천 3안이 선택된 위치를 비교합니다.`}</p>
@@ -451,7 +438,7 @@ function renderAdvisorPriceSpeedFrontier(items, model, pricing, currency, roleCa
             return `<g data-advisor-frontier-point="${escapeAttr(entry.preset.id)}" data-frontier-name="${escapeAttr(shortGpuName(entry.preset.name))}" data-frontier-price="${escapeAttr(entry.pricePoint.label)}" data-frontier-speed="${escapeAttr(formatThroughput(entry.speed, unit))}" data-frontier-setting="${escapeAttr(setting(entry))}" data-frontier-evidence="${escapeAttr(`${entry.pricePoint.evidence} · ${entry.speedEvidence.label}`)}" class="advisor-frontier-hit-target ${entry.onFrontier ? "is-frontier" : ""} ${roleIds.has(entry.preset.id) ? "is-pick" : ""}" role="button" tabindex="0" aria-pressed="false" aria-label="${escapeAttr(pointLabel)}"><circle class="advisor-frontier-hit-area" cx="${x(entry.pricePoint.value)}" cy="${y(entry.speed)}" r="12"></circle><circle class="advisor-frontier-point ${entry.onFrontier ? "is-frontier" : ""} ${roleIds.has(entry.preset.id) ? "is-pick" : ""}" cx="${x(entry.pricePoint.value)}" cy="${y(entry.speed)}" r="${roleIds.has(entry.preset.id) ? 8 : entry.onFrontier ? 6 : 4}"><title>${escapeHtml(pointLabel)}</title></circle></g>`;
           }).join("")}
           ${labelPlacements.map(({ label, x: labelX, y: labelY, anchor }) => `<text class="advisor-frontier-model-label" x="${labelX}" y="${labelY}" text-anchor="${anchor}">${escapeHtml(label)}</text>`).join("")}
-          <text class="advisor-frontier-axis-title" x="${margin.left + plotWidth / 2}" y="${height - 5}" text-anchor="middle">${en ? `Reference price (${currency})` : "참고 가격 (원)"}</text>
+          <text class="advisor-frontier-axis-title" x="${margin.left + plotWidth / 2}" y="${height - 5}" text-anchor="middle">${systemBudget ? (en ? `Equipment total (${currency})` : "전체 장비 참고 합계 (원)") : (en ? `Reference price (${currency})` : "참고 가격 (원)")}</text>
           <text class="advisor-frontier-axis-title" transform="translate(17 ${margin.top + plotHeight / 2}) rotate(-90)" text-anchor="middle">${escapeHtml(en ? `Estimated speed (${unit})` : `예상 속도 (${unit})`)}</text>
         </svg>
         <div class="advisor-frontier-tooltip" data-advisor-frontier-tooltip role="tooltip" hidden></div>
@@ -481,13 +468,15 @@ function renderGpuAdvisor() {
   const en = uiLanguage === "en";
   $("gpuAdvisorTitle").textContent = en ? "GPU recommendations by model, budget, and power" : "예산·전력·모델 기준 GPU 추천";
   $("gpuAdvisorDescription").textContent = en
-    ? "Choose a model and cost constraints to rank compatible GPUs by value, speed, and energy."
-    : "원하는 모델과 비용 조건을 넣으면 적합한 GPU를 가격·속도·전력 기준으로 정렬합니다.";
+    ? "Start with your budget or model, then compare runnable hardware and itemized equipment costs."
+    : "예산이나 원하는 모델부터 시작해 실행 가능한 장비와 부품별 비용을 비교하세요.";
+  const systemBudget = $("advisorBudgetScope")?.value === "system";
   const labels = {
     advisorModelCategoryLabel: en ? "Model category" : "모델 종류",
     advisorModelSearchLabel: en ? "Search models" : "모델 검색",
     advisorModelLabel: en ? "Model to run" : "실행할 모델",
-    advisorBudgetLabel: en ? "GPU budget (USD)" : "GPU 예산 (원)",
+    advisorBudgetLabel: systemBudget ? (en ? "Total equipment budget (USD)" : "전체 장비 예산 (원)") : (en ? "GPU budget (USD)" : "GPU 예산 (원)"),
+    advisorBudgetScopeLabel: en ? "Budget covers" : "예산 범위",
     advisorCurrentPriceLabel: en ? "Current GPU price (USD)" : "현재 GPU 견적가 (원)",
     advisorElectricityLabel: en ? "Electricity (USD/kWh)" : "전기요금 (원/kWh)",
     advisorHoursLabel: en ? "Hours per month" : "월 사용 시간",
@@ -495,6 +484,12 @@ function renderGpuAdvisor() {
     advisorFormFactorLabel: en ? "Form factor" : "형태",
   };
   Object.entries(labels).forEach(([id, text]) => { if ($(id)) $(id).textContent = text; });
+  const scopeOptions = $("advisorBudgetScope")?.options;
+  if (scopeOptions) { scopeOptions[0].textContent = en ? "Full equipment / new build" : "전체 장비 / 새 PC 구성"; scopeOptions[1].textContent = en ? "GPU only / existing PC" : "GPU만 / 기존 PC 사용"; }
+  $("advisorBudgetScopeNote").textContent = en ? "0 = no budget limit. Unknown complete-system prices cannot be certified within budget." : "0은 예산 제한 없음입니다. 완제품 가격이 없는 구성은 예산 충족으로 판정하지 않습니다.";
+  panel.querySelector("[data-advisor-budget-first]").textContent = en ? "Start with budget" : "예산부터 설정";
+  panel.querySelector("[data-advisor-model-first]").textContent = en ? "Choose / change model" : "원하는 모델 선택·변경";
+  $("advisorBudgetModelSummary").textContent = `${en ? "Model filter" : "적용 모델"}: ${getModelByKey($("advisorModel")?.value)?.name || "—"}`;
   document.querySelectorAll(".advisor-detail-summary").forEach((node) => {
     node.textContent = en ? "Detailed constraints" : "상세 조건";
   });
@@ -526,6 +521,7 @@ function renderGpuAdvisor() {
   applyAdvisorWizardUi();
 
   const model = getModelByKey($("advisorModel").value);
+  renderAdvisorUseProfiles(model, en);
   if (!model) {
     if ($("advisorModelEmpty")) $("advisorModelEmpty").hidden = false;
     $("gpuAdvisorResult").innerHTML = `<div class="empty-state"><p>${en ? "No matching model. Try another category or search term." : "일치하는 모델이 없습니다. 종류나 검색어를 바꿔보세요."}</p></div>`;
@@ -547,15 +543,15 @@ function renderGpuAdvisor() {
   const evaluatedCandidates = GPU_PRESETS
     // Quote-only rack accelerators remain selectable for memory-fit checks,
     // but are not priced/ranked as if they were retail GPU purchases.
-    .filter((gpu) => gpu.id !== "custom" && !gpu.requiresSystemQuote)
+    .filter((gpu) => gpu.id !== "custom" && (!gpu.requiresSystemQuote || gpu.formFactor === "integrated"))
     .map((preset) => {
-      const hardware = buildHardwareForPreset(preset);
-      const estimate = applyMeasuredCalibration(estimateAnyModelForHardware(model, hardware), hardware);
+      const hardware = advisorHardwareForPreset(preset, model);
+      const estimate = applyMeasuredCalibration(estimateAdvisorModel(model, hardware), hardware);
       const market = gpuMarketReference(preset);
-      const koreanMarket = KOREAN_GPU_MARKET.find((row) => row.gpuId === preset.id);
+      const koreanMarket = KOREAN_GPU_MARKET.find((row) => row.gpuId === preset.id) || window.LLM_GPU_CHECKER_DATA?.systemPriceReference?.[preset.id];
       const priceState = window.AIHardwareUI?.priceState({
-        marketPrice: koreanMarket?.lowestKrw || 0,
-        launchPrice: market.priceKind === "launch-reference" ? market.priceUsd : 0,
+        marketPrice: koreanMarket?.priceKind === "launch-reference" ? 0 : koreanMarket?.lowestKrw || 0,
+        launchPrice: koreanMarket?.priceKind === "launch-reference" ? koreanMarket.lowestKrw / 1400 : market.priceKind === "launch-reference" ? market.priceUsd : 0,
         updatedAt: koreanMarket?.updatedAt || "",
       }) || {
         kind: market.priceKind === "launch-reference" ? "launch" : "quote",
@@ -568,24 +564,27 @@ function renderGpuAdvisor() {
       const referencePriceUsd = koreanMarket?.lowestKrw
         ? (pricing?.toUsd(koreanMarket.lowestKrw, "KRW") || koreanMarket.lowestKrw / 1400)
         : market.priceUsd;
-      const fitsBudget = !referencePriceUsd || referencePriceUsd <= budget;
+      const equipment = advisorEquipmentPlan(preset, hardware, estimate, market, pricing?.toKrw(referencePriceUsd, "USD") || referencePriceUsd * 1400);
+      const budgetPriceUsd = systemBudget ? (equipment.complete ? (pricing?.toUsd(equipment.totalKrw, "KRW") || equipment.totalKrw / 1400) : 0) : referencePriceUsd;
+      const fitsBudget = budgetPriceUsd > 0 && (budget === 0 || budgetPriceUsd <= budget);
       const runnable = estimate && GRADE_META[estimate.grade]?.score >= GRADE_META.B.score;
       const speed = Number(estimate?.speed || estimate?.throughput || 0);
-      const valueScore = runnable ? speed / Math.max(200, referencePriceUsd || budget || 1000) : 0;
+      const meetsSpeed = getAdvisorModelCategory(model) !== "llm" || speed >= advisorUseSettings(model).minSpeed;
+      const valueScore = runnable ? speed / Math.max(200, budgetPriceUsd || budget || 1000) : 0;
       const fitsVendor = vendor === "all" || preset.vendor === vendor;
       const fitsFormFactor = formFactor === "all" || preset.formFactor === formFactor;
       const confidence = getEstimateConfidence(model, estimate, hardware);
-      return { preset, hardware, estimate, confidence, market, koreanMarket, priceState, referencePriceUsd, monthlyEnergy, fitsBudget, fitsVendor, fitsFormFactor, runnable, speed, valueScore };
+      return { preset, hardware, estimate, confidence, market, koreanMarket, priceState, referencePriceUsd, budgetPriceUsd, budgetScope: systemBudget ? "system" : "gpu", equipment, monthlyEnergy, fitsBudget, fitsVendor, fitsFormFactor, runnable, meetsSpeed, speed, valueScore };
     });
   const strictCandidates = evaluatedCandidates
-    .filter((item) => item.runnable && item.fitsBudget && item.fitsVendor && item.fitsFormFactor)
+    .filter((item) => item.runnable && item.meetsSpeed && item.fitsBudget && item.fitsVendor && item.fitsFormFactor)
     .sort((a, b) => b.valueScore - a.valueScore || b.speed - a.speed);
   const showingAlternatives = strictCandidates.length === 0;
   const candidates = showingAlternatives
     ? evaluatedCandidates
       .filter((item) => item.runnable)
       .sort((a, b) => {
-        const penalty = (item) => (item.fitsBudget ? 0 : 4) + (item.fitsVendor ? 0 : 2) + (item.fitsFormFactor ? 0 : 2);
+        const penalty = (item) => (item.fitsBudget ? 0 : 4) + (item.meetsSpeed ? 0 : 4) + (item.fitsVendor ? 0 : 2) + (item.fitsFormFactor ? 0 : 2);
         return penalty(a) - penalty(b) || b.valueScore - a.valueScore || b.speed - a.speed;
       })
       .slice(0, 12)
@@ -593,9 +592,9 @@ function renderGpuAdvisor() {
   const comparisonPool = showingAlternatives ? candidates : strictCandidates;
   const roleCandidates = [];
   if (comparisonPool.length) {
-    const priced = comparisonPool.filter((item) => item.referencePriceUsd > 0);
+    const priced = comparisonPool.filter((item) => item.budgetPriceUsd > 0);
     const roleRows = [
-      { role: en ? "Lowest cost" : "최저 비용", item: [...(priced.length ? priced : comparisonPool)].sort((a, b) => (a.referencePriceUsd || Infinity) - (b.referencePriceUsd || Infinity))[0] },
+      { role: en ? "Lowest cost" : "최저 비용", item: [...(priced.length ? priced : comparisonPool)].sort((a, b) => (a.budgetPriceUsd || Infinity) - (b.budgetPriceUsd || Infinity))[0] },
       { role: en ? "Balanced" : "균형 추천", item: candidates[0] },
       { role: en ? "Highest performance" : "최고 성능", item: [...comparisonPool].sort((a, b) => b.speed - a.speed)[0] },
     ];
@@ -617,7 +616,8 @@ function renderGpuAdvisor() {
           ${showingAlternatives ? `<p class="advisor-difference">${[
             !item.fitsVendor ? (en ? `Vendor alternative: ${item.preset.vendor}` : `제조사 대안: ${item.preset.vendor}`) : "",
             !item.fitsFormFactor ? (en ? `Form alternative: ${item.preset.formFactor}` : `형태 대안: ${item.preset.formFactor}`) : "",
-            !item.fitsBudget ? (en ? "Above the selected budget" : "선택 예산 초과") : "",
+            !item.meetsSpeed ? (en ? "Below target speed" : "목표 속도 미달") : "",
+            !item.fitsBudget ? (item.budgetPriceUsd > 0 ? (en ? "Above the selected budget" : "선택 예산 초과") : (en ? "Price unknown / quote required" : "가격 미확인 / 견적 필요")) : "",
           ].filter(Boolean).map((text) => `<span>${escapeHtml(text)}</span>`).join("")}</p>` : ""}
           <dl>
             <div><dt>${en ? "Estimated speed" : "예상 속도"}</dt><dd>${escapeHtml(formatThroughput(item.speed, item.estimate?.unitLabel || "tok/s"))}</dd></div>
@@ -631,15 +631,18 @@ function renderGpuAdvisor() {
             <div><dt>${en ? "Evidence" : "근거"}</dt><dd>${escapeHtml(gpuEvidenceLabel(item.preset, en))}</dd></div>
             <div><dt>${en ? "vs current GPU" : "현재 GPU 대비"}</dt><dd>${currentSpeed ? `${(item.speed / currentSpeed).toFixed(2)}×` : "—"}</dd></div>
             <div><dt>${en ? "Speed / $1K" : "속도 / 100만원"}</dt><dd>${(item.speed / Math.max(0.2, en
-              ? (item.referencePriceUsd || currentPrice || budget) / 1000
-              : (pricing?.toKrw(item.referencePriceUsd || currentPrice || budget, "USD") || 0) / 1000000)).toFixed(1)}</dd></div>
+              ? (item.budgetPriceUsd || currentPrice || budget) / 1000
+              : (pricing?.toKrw(item.budgetPriceUsd || currentPrice || budget, "USD") || 0) / 1000000)).toFixed(1)}</dd></div>
           </dl>
+          <dl class="advisor-equipment-total"><div><dt>${en ? "Full equipment total" : "전체 장비 합계"}</dt><dd>${item.equipment.complete ? pricing?.formatFromKrw(item.equipment.totalKrw, uiLanguage) : (en ? "System quote required" : "전체 장비 견적 필요")}</dd></div>${item.budgetPriceUsd > 0 && budget > 0 ? `<div><dt>${item.fitsBudget ? (en ? "Budget remaining" : "예산 잔액") : (en ? "Over budget" : "예산 초과액")}</dt><dd>${pricing?.formatFromUsd(Math.abs(budget - item.budgetPriceUsd), uiLanguage)}</dd></div>` : ""}</dl>
+          ${renderAdvisorEquipment(item, en, pricing)}
           <button type="button" class="ghost-button" data-advisor-select-gpu="${escapeAttr(item.preset.id)}">${en ? "Use this GPU" : "이 GPU 선택"}</button>
           <a class="ghost-button gpu-buy-link" href="${escapeAttr(window.AIHardwareAffiliate ? window.AIHardwareAffiliate.buildCoupangLink(shortGpuName(item.preset.name)) : `https://www.coupang.com/np/search?q=${encodeURIComponent(shortGpuName(item.preset.name))}`)}" target="_blank" rel="noopener noreferrer sponsored">${en ? "Buy this spec \u2197" : "이 사양대로 사기 \u2197"}</a>
         </article>
       `).join("")}
     </div>
     ${renderAdvisorPriceSpeedFrontier(comparisonPool, model, pricing, advisorCurrency, roleCandidates, en)}
+    ${systemBudget ? renderAdvisorQuoteCandidates(evaluatedCandidates, en) : ""}
     <p class="advisor-disclaimer">${en ? "A dated Korean market price is shown when available. Otherwise the UI clearly separates launch-price references from supplier-quote-required items. Energy cost uses the selected hours and rate." : "기준일이 있는 국내 시세만 시세로 표시하며, 나머지는 출시 가격 참고와 공급사 견적 필요 상태를 구분합니다. 전력비는 입력한 시간과 요금으로 계산합니다."}</p>
   ` : `<div class="empty-state"><p>${en ? "No GPU with known specifications fits these conditions. Raise the budget or change a filter." : "현재 조건에 맞는 GPU가 없습니다. 예산을 높이거나 필터를 바꿔보세요."}</p><button type="button" class="ghost-button" data-advisor-reset>${en ? "Reset conditions" : "조건 초기화"}</button></div>`;
   panel.querySelector("[data-advisor-relax]")?.addEventListener("click", () => {

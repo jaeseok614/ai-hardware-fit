@@ -116,6 +116,14 @@ for (const row of data.koreanGpuMarket) {
   }
 }
 
+for (const [gpuId, row] of Object.entries(data.systemPriceReference || {})) {
+  requireFields(row, ["priceScope", "priceKind", "lowestKrw", "updatedAt", "sourceName", "sourceUrl"], "complete-system price reference");
+  if (!gpuIds.has(gpuId)) throw new Error(`system price references unknown GPU: ${gpuId}`);
+  if (row.priceScope !== "complete-system" || row.priceKind !== "launch-reference") throw new Error(`system price ${gpuId} needs an explicit starting-price basis`);
+  if (!Number.isFinite(row.lowestKrw) || row.lowestKrw <= 0) throw new Error(`system price ${gpuId} must be positive`);
+  if (!/^https:\/\//.test(row.sourceUrl) || !/^\d{4}-\d{2}-\d{2}$/.test(row.updatedAt)) throw new Error(`system price ${gpuId} needs a dated HTTPS source`);
+}
+
 const quantIds = new Set();
 for (const quant of data.quantizations) {
   requireFields(quant, ["id", "label", "rank"], "quantization");

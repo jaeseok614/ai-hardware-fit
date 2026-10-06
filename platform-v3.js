@@ -250,10 +250,10 @@ function studioMoney(value) {
 }
 
 function studioWorkloadModels() {
-  return getAllModels().filter((model) => {
+  return sortModelCatalog(getAllModels().filter((model) => {
     const category = typeof getAdvisorModelCategory === "function" ? getAdvisorModelCategory(model) : (model.type || "llm");
     return studioState.category === "all" || category === studioState.category;
-  });
+  }));
 }
 
 function studioSelectedModel() {
@@ -1752,7 +1752,7 @@ function renderStudioConsulting() {
   const industryValue = en
     ? (studioState.siIndustry === "제조·일반기업" ? "Manufacturing / general business" : studioState.siIndustry)
     : (studioState.siIndustry === "Manufacturing / general business" ? "제조·일반기업" : studioState.siIndustry);
-  const modelOptions = getAllModels().filter((item) => ["generative", "llm", "vlm", "ocr"].includes(item.type || "generative"));
+  const modelOptions = sortModelCatalog(getAllModels().filter((item) => ["generative", "llm", "vlm", "ocr"].includes(item.type || "generative")));
   return `
     <div class="si-input-mode-switch"><button type="button" data-si-input-mode="simple" class="${studioState.siInputMode === "simple" ? "is-active" : ""}">${en ? "Easy estimate" : "간편 견적"}</button><button type="button" data-si-input-mode="expert" class="${studioState.siInputMode === "expert" ? "is-active" : ""}">${en ? "Detailed estimate" : "상세 견적"}</button></div>
     ${renderV49Readiness(model, plans)}

@@ -123,6 +123,36 @@ function getAllModels() {
   return Object.values(MODEL_GROUPS).flat();
 }
 
+// Browsing order is independent of recommendation/performance ranking.
+function modelCatalogGroup(model) {
+  const name = String(model.name || "");
+  const known = name.match(/^(Qwen|DeepSeek|Llama|Gemma|Phi|GLM|Mistral|EXAONE|GPT-OSS|MiMo|Granite|BGE|Whisper|Wan|Flux|Hunyuan|PaddleOCR)/i);
+  const family = (known?.[1] || name.split(/[\s/-]/)[0].replace(/[\d.]+$/g, "") || "Other").toLowerCase();
+  let maker = String(model.maker || model.provider || model.publisher || "Other").toLowerCase();
+  if (family === "qwen" && /alibaba|qwen/.test(maker)) maker = "alibaba";
+  const versionMatch = name.match(/^(?:Qwen|DeepSeek[- ]?[VR]?|Llama|Gemma|Phi|GLM|Mistral|EXAONE)[- ]*(\d+(?:\.\d+)*)/i);
+  return { maker, family, version: versionMatch ? versionMatch[1].split(".").map(Number) : [] };
+}
+
+function compareModelCatalog(a, b) {
+  const ka = modelCatalogGroup(a);
+  const kb = modelCatalogGroup(b);
+  const group = ka.maker.localeCompare(kb.maker, "en", { numeric: true, sensitivity: "base" })
+    || ka.family.localeCompare(kb.family, "en", { numeric: true, sensitivity: "base" });
+  if (group) return group;
+  for (let index = 0; index < Math.max(ka.version.length, kb.version.length); index++) {
+    const difference = (kb.version[index] || 0) - (ka.version[index] || 0);
+    if (difference) return difference;
+  }
+  return Number(a.params || 0) - Number(b.params || 0)
+    || String(a.name).localeCompare(String(b.name), "en", { numeric: true, sensitivity: "base" })
+    || String(a.type || "").localeCompare(String(b.type || ""), "en");
+}
+
+function sortModelCatalog(models) {
+  return [...models].sort(compareModelCatalog);
+}
+
 function isVisionWorkload(workload) {
   return VISION_WORKLOADS.has(workload);
 }
@@ -1131,6 +1161,7 @@ function getFilteredEstimates() {
 function sortEstimates(estimates) {
   const sortBy = $("sortBy").value;
   return [...estimates].sort((a, b) => {
+    if (sortBy === "family") return compareModelCatalog(a.model, b.model) || gradeSort(a, b);
     if (sortBy === "speed") return b.speed - a.speed || gradeSort(a, b) || a.requiredGb - b.requiredGb;
     if (sortBy === "quality") return gradeSort(a, b) || b.model.params - a.model.params || b.speed - a.speed;
     if (sortBy === "vramAsc" || sortBy === "vramHeadroom") return (b.effectiveVram - b.requiredGb) - (a.effectiveVram - a.requiredGb) || gradeSort(a, b);
