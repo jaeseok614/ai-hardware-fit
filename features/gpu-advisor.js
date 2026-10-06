@@ -33,7 +33,7 @@ function ensureGpuAdvisorPanel() {
       </div>
     </div>
     <div class="advisor-wizard" data-advisor-step="1">
-      <div class="advisor-entry-actions"><button type="button" class="ghost-button" data-advisor-budget-first></button><button type="button" class="ghost-button" data-advisor-model-first></button></div>
+      <div class="advisor-entry-actions"><button type="button" class="ghost-button" data-advisor-budget-first>${uiLanguage === "en" ? "Start with budget" : "예산부터 설정"}</button><button type="button" class="ghost-button" data-advisor-model-first>${uiLanguage === "en" ? "Choose / change model" : "원하는 모델 선택·변경"}</button></div>
       <div class="gpu-advisor-controls advisor-wizard-panel" data-advisor-step-panel="1">
         <label class="field"><span id="advisorModelCategoryLabel"></span><select id="advisorModelCategory"></select></label>
         <label class="field advisor-model-search-field"><span id="advisorModelSearchLabel"></span><input id="advisorModelSearch" type="search" autocomplete="off"></label>
