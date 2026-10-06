@@ -11,7 +11,7 @@ const data = context.window.LLM_GPU_CHECKER_DATA;
 
 test("GPU preset counts exclude the custom-input placeholder", () => {
   assert.equal(data.gpus.filter((gpu) => gpu.id === "custom").length, 1);
-  assert.equal(data.gpus.filter((gpu) => gpu.id !== "custom").length, 158);
+  assert.equal(data.gpus.filter((gpu) => gpu.id !== "custom").length, 160);
   const source = fs.readFileSync("app.js", "utf8");
   assert.doesNotMatch(source, /\$\{GPU_PRESETS\.length\}/);
 });
