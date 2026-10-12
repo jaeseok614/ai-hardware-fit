@@ -11,8 +11,8 @@
 <p align="center">
   <a href="https://github.com/jaeseok614/ai-hardware-fit/actions/workflows/ci.yml"><img src="https://github.com/jaeseok614/ai-hardware-fit/actions/workflows/ci.yml/badge.svg" alt="CI status" /></a>
   <a href="./LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="MIT License" /></a>
-  <img src="https://img.shields.io/badge/GPU_presets-158-0f766e" alt="158 GPU presets" />
-  <img src="https://img.shields.io/badge/AI_models-347-164a7b" alt="347 AI models" />
+  <img src="https://img.shields.io/badge/GPU_presets-160-0f766e" alt="160 GPU presets" />
+  <img src="https://img.shields.io/badge/AI_models-348-164a7b" alt="348 AI models" />
 </p>
 
 <p align="center">
@@ -65,8 +65,8 @@ Speed is a planning range, not a guarantee. Drivers, runtime, context, batching,
 
 ## Highlights
 
-- 158 NVIDIA, AMD, Intel, Apple Silicon, data-center, and laptop GPU presets, plus custom specifications
-- 347 generative LLM, embedding, reranker, OCR/VLM, image/video, STT, and TTS models
+- 160 NVIDIA, AMD, Intel, Apple Silicon, data-center, and laptop GPU presets, plus custom specifications
+- 348 generative LLM, embedding, reranker, OCR/VLM, image/video, STT, and TTS models
 - Ollama, llama.cpp, vLLM, and MLX settings and run commands
 - Laptop TGP, mixed GPUs, unified memory, and system-RAM offloading
 - Source, verification date, measurement count, and estimate range shown separately

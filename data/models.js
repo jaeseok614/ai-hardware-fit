@@ -1,6 +1,7 @@
 window.LLM_GPU_CHECKER_DATA = window.LLM_GPU_CHECKER_DATA || {};
 
 window.LLM_GPU_CHECKER_DATA.models = [
+  { name: "MiniCPM5 2B", maker: "OpenBMB", params: 2.51675648, active: 2.51675648, context: 128, license: "Apache 2.0", tags: ["general", "coding", "reasoning", "edge", "long", "agent"], summary: { ko: "공식 체크포인트는 약 2.52B인 소형 Llama 구조 모델입니다. RL·온폴리시 증류와 128K 컨텍스트를 지원하며 GGUF·MLX 배포판이 있습니다. 속도와 메모리는 계산 추정이며 공개 품질 점수는 제작사 평가입니다.", en: "A compact Llama-architecture model with about 2.52B checkpoint parameters, RL/on-policy distillation and 128K context. Official GGUF and MLX variants exist. Speed and memory are estimates; published quality scores are publisher evaluations." } },
   { name: "TinyLlama 1.1B Chat", maker: "Community", params: 1.1, active: 1.1, context: 4, license: "Apache 2.0", tags: ["general", "edge"], summary: { ko: "초저사양 로컬 테스트와 임베디드 챗봇 실험에 적합한 1B급 모델입니다.", en: "A 1B-class model suited for very low-spec local testing and embedded-chatbot experiments." } },
   { name: "SmolLM2 1.7B Instruct", maker: "HuggingFace", params: 1.7, active: 1.7, context: 8, license: "Apache 2.0", tags: ["general", "edge"], summary: { ko: "가벼운 로컬 챗봇과 빠른 프로토타입에 적합한 소형 모델입니다.", en: "A small model suited for lightweight local chatbots and quick prototyping." } },
   { name: "Llama 3.2 1B Instruct", maker: "Meta", params: 1, active: 1, context: 128, license: "Llama 3.2 Community", tags: ["general", "korean", "edge", "long"], summary: { ko: "낮은 VRAM에서 긴 컨텍스트 실험을 시작하기 좋은 1B급 모델입니다.", en: "A 1B-class model good for starting long-context experiments on low VRAM." } },

@@ -9,6 +9,19 @@ for (const file of ["gpus", "models", "audio-models", "model-metadata", "api-mod
 }
 const data = context.window.LLM_GPU_CHECKER_DATA;
 
+test("MiniCPM5 uses checkpoint parameters and separates publisher evaluation from measurements", () => {
+  const model = data.models.find((row) => row.name === "MiniCPM5 2B");
+  assert.equal(model.params, 2.51675648);
+  assert.equal(model.active, model.params);
+  assert.equal(model.context * 1024, 131072);
+  assert.equal(model.license, "Apache 2.0");
+  const metadata = data.modelMetadata[model.name];
+  assert.equal(metadata.verifiedAt, "2026-10-12");
+  assert.equal(metadata.qualityBenchmark.value, 70.8);
+  assert.match(metadata.qualityBenchmark.metric, /OpenBMB/);
+  assert.equal(metadata.releaseDate, undefined);
+});
+
 test("GPU preset counts exclude the custom-input placeholder", () => {
   assert.equal(data.gpus.filter((gpu) => gpu.id === "custom").length, 1);
   assert.equal(data.gpus.filter((gpu) => gpu.id !== "custom").length, 160);

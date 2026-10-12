@@ -54,6 +54,7 @@ function same(record, names) {
 }
 
 window.LLM_GPU_CHECKER_DATA.modelMetadata = {
+  "MiniCPM5 2B": { sourceUrl: "https://huggingface.co/openbmb/MiniCPM5-2B", verifiedAt: "2026-10-12", qualityBenchmark: quality("MMLU-Pro 70.8", "MMLU-Pro (OpenBMB MiniCPM5 evaluation)", 70.8, "https://huggingface.co/openbmb/MiniCPM5-2B", "제작사 재현 평가·로컬 실측 아님") },
   "Qwen2.5 0.5B Instruct": meta(
     "2024-09-19",
     MODEL_METADATA_SOURCES.qwen25,

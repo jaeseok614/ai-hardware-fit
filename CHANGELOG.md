@@ -1,5 +1,11 @@
 # Changelog
 
+## Weekly catalog update - 2026-10-12
+
+- Added MiniCPM5 2B using its official 2.51675648B checkpoint size and 128K context. Publisher MMLU-Pro evaluation is separately labelled; no measured speed is claimed.
+- README counts now reflect 160 hardware presets (excluding custom input) and 348 local AI models.
+- Kolibri-1 remains deferred pending mixed-attention, FP8 and runtime validation. [Verification notes](./docs/maintenance/2026-10-12-weekly.md)
+
 ## v7.38.0 - 2026-09-30
 
 - **GPU 7종 추가:** Apple M5 32GB·M5 Pro 64GB·M5 Max 36/64/128GB, NVIDIA Rubin 288GB HBM4, AMD Instinct MI455X 432GB. M5 Max의 32/40 GPU 코어 대역폭을 구분합니다. 시스템 견적이 필요한 Rubin/MI455X는 메모리 적합성 확인에는 제공하되 자동 구매 추천·가격 프런티어에서는 제외합니다.
