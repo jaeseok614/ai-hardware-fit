@@ -1,4 +1,4 @@
-# Weekly local-model value report — 2026-10-05
+# Weekly local-model value report — 2026-10-12
 
 같은 공개 벤치마크 안에서만 모델을 비교한 AI Hardware Fit 주간 요약입니다.
 
@@ -8,8 +8,7 @@
 
 ## 이번 주 변경
 
-- 벤치마크 모델 추가: LFM2.5 1.2B Instruct, LFM2.5 2.6B, LFM2.5 8B A1B, Nemotron 3 Nano 30B A3B, Qwen3.5 0.8B, Qwen3.5 2B, Qwen3.5 4B, Qwen3.5 9B
-- VRAM 추천 변경: 8GB, 12GB, 16GB
+- 벤치마크 모델 추가: MiniCPM5 2B
 
 ## VRAM별 최고 점수
 

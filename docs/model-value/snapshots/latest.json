@@ -1,5 +1,5 @@
 {
-  "date": "2026-10-05",
+  "date": "2026-10-12",
   "baseline": "Q4_K_M · 4K context · concurrency 1 · llama.cpp",
   "metric": "MMLU-Pro",
   "models": [
@@ -639,6 +639,13 @@
       "metric": "OpenCompass 8개 벤치마크 평균",
       "score": 65.2,
       "requiredGb": 7.42
+    },
+    {
+      "name": "MiniCPM5 2B",
+      "releaseDate": "",
+      "metric": "MMLU-Pro (OpenBMB MiniCPM5 evaluation)",
+      "score": 70.8,
+      "requiredGb": 3.16
     },
     {
       "name": "Ministral 3 14B",
