@@ -1,5 +1,10 @@
 # Changelog
 
+## Weekly catalog update - 2026-10-19
+
+- Added LFM2.5 24B A2B: 23.97158528B checkpoint weights, 2.45B active, 128K context, hybrid GQA/convolution cache calculation and verified official GGUF commands. LiveClaw is publisher evaluation, not measured GPU speed.
+- Corrected three Qwen3 embedding checkpoint sizes; updated catalog count to 349. [Sources and caveats](./docs/maintenance/2026-10-19-weekly.md)
+
 ## Weekly catalog update - 2026-10-12
 
 - Added MiniCPM5 2B using its official 2.51675648B checkpoint size and 128K context. Publisher MMLU-Pro evaluation is separately labelled; no measured speed is claimed.

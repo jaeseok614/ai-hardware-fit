@@ -16,7 +16,7 @@ window.LLM_GPU_CHECKER_DATA.embeddingModels = [
   embeddingModel({
     name: "Qwen/Qwen3-Embedding-0.6B",
     maker: "Alibaba Qwen",
-    params: 0.6,
+    params: 0.595776512,
     hiddenSize: 1024,
     layers: 28,
     attentionHeads: 16,
@@ -32,7 +32,7 @@ window.LLM_GPU_CHECKER_DATA.embeddingModels = [
   embeddingModel({
     name: "Qwen/Qwen3-Embedding-4B",
     maker: "Alibaba Qwen",
-    params: 4,
+    params: 4.021774336,
     hiddenSize: 2560,
     layers: 36,
     attentionHeads: 20,
@@ -48,7 +48,7 @@ window.LLM_GPU_CHECKER_DATA.embeddingModels = [
   embeddingModel({
     name: "Qwen/Qwen3-Embedding-8B",
     maker: "Alibaba Qwen",
-    params: 8,
+    params: 7.567295488,
     hiddenSize: 4096,
     layers: 36,
     attentionHeads: 32,

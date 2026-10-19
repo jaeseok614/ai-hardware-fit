@@ -5061,10 +5061,18 @@ function ocrTypeLabel(value) {
 }
 
 function buildOllamaCommand(model, quant, hardware) {
+  if (model.officialGgufRepo) return buildLlamaCppCommand(model, quant, hardware);
   return `ollama run ${buildOllamaModelName(model)} # ${quant.label}, ${formatContext(hardware.context)}`;
 }
 
 function buildLlamaCppCommand(model, quant, hardware) {
+  if (model.officialGgufRepo) {
+    const format = quant.id === "fp16" ? "F16" : quant.label;
+    if (["Q4_K_M", "Q5_K_M", "Q6_K", "Q8_0", "F16"].includes(format)) {
+      return `llama-cli -hf ${model.officialGgufRepo}:${format} -c ${hardware.context} -ngl 999`;
+    }
+    return `# ${uiLanguage === "en" ? "This quantization requires a separately converted GGUF; no official download is verified." : "이 양자화는 별도 변환 GGUF가 필요하며 공식 다운로드가 확인되지 않았습니다."}`;
+  }
   return `llama-cli -m ./models/${toSlug(model.name)}-${quant.label}.gguf -c ${hardware.context} -ngl 999`;
 }
 
@@ -5078,6 +5086,7 @@ function buildMlxCommand(model, quant, hardware) {
   // bit-width (quant.bits, e.g. Q4_K_M=4.8, Q8_0=8.5, FP16=16) onto the
   // closest commonly-published MLX tag rather than inventing a 1:1 label.
   const bits = quant.bits == null ? "4bit" : quant.bits <= 5 ? "4bit" : quant.bits <= 9 ? "8bit" : "bf16";
+  if (model.name === "LFM2.5 24B A2B") return `pip install -U mlx-lm\nmlx_lm.generate --model LiquidAI/LFM2.5-24B-A2B-MLX-${bits} --max-tokens ${hardware.outputTokens}`;
   return `pip install mlx-lm
 mlx_lm.generate --model mlx-community/${toSlug(model.name)}-${bits} --max-tokens ${hardware.outputTokens}`;
 }

@@ -12,7 +12,7 @@
   <a href="https://github.com/jaeseok614/ai-hardware-fit/actions/workflows/ci.yml"><img src="https://github.com/jaeseok614/ai-hardware-fit/actions/workflows/ci.yml/badge.svg" alt="CI 상태" /></a>
   <a href="./LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="MIT License" /></a>
   <img src="https://img.shields.io/badge/GPU_presets-160-0f766e" alt="GPU 프리셋 160종" />
-  <img src="https://img.shields.io/badge/AI_models-348-164a7b" alt="AI 모델 348종" />
+  <img src="https://img.shields.io/badge/AI_models-349-164a7b" alt="AI 모델 349종" />
 </p>
 
 <p align="center">
@@ -66,7 +66,8 @@
 ## 핵심 기능
 
 - NVIDIA·AMD·Intel·Apple Silicon·노트북을 포함한 GPU 프리셋 160종과 직접 사양 입력
-- 생성형 LLM, 임베딩, 리랭커, OCR/VLM, 이미지·영상, STT·TTS 모델 348종
+- 생성형 LLM, 임베딩, 리랭커, OCR/VLM, 이미지·영상, STT·TTS 모델 349종
+- LFM2.5 24B A2B는 공식 GQA·합성곱 층 구성으로 KV/고정 상태를 계산합니다. 다른 모델의 활성 파라미터 기반 KV 값은 범용 추정이며 실측값이 아닙니다.
 - Ollama, llama.cpp, vLLM, MLX 실행 설정과 명령어
 - 노트북 TGP, 여러 GPU, 통합 메모리와 시스템 RAM 오프로딩 반영
 - GPU·모델 공식 출처, 검증일, 실측 표본과 추정 범위 구분

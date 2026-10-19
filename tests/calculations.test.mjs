@@ -121,9 +121,9 @@ before(() => {
 });
 
 describe("weights: dense vs MoE (active vs total params)", () => {
-  test("KV cache scales with active params, not total params", () => {
+  test("fallback KV heuristic scales with active params when no architecture profile exists", () => {
     const dense = win.eval(`GENERATIVE_MODELS.find((m) => m.params === m.active && m.params > 3 && m.params < 40)`);
-    const moe = win.eval(`GENERATIVE_MODELS.find((m) => m.active < m.params * 0.5 && m.params > 20)`);
+    const moe = win.eval(`GENERATIVE_MODELS.find((m) => !m.kvCacheProfile && m.active < m.params * 0.5 && m.params > 20)`);
     assert.ok(dense, "expected at least one dense model in the catalog");
     assert.ok(moe, "expected at least one MoE model in the catalog");
 
@@ -135,9 +135,8 @@ describe("weights: dense vs MoE (active vs total params)", () => {
     const denseKv = win.eval("estimateKvCacheGb(denseModel, testHardware)");
     const moeKv = win.eval("estimateKvCacheGb(moeModel, testHardware)");
 
-    // KV cache should track active params: a MoE model with far fewer active
-    // params than a similarly-sized dense model must report smaller KV cache
-    // per token, even though its total (loaded) weight is comparable or larger.
+    // This regression covers the existing heuristic, not a physical KV law.
+    // Explicit architecture profiles are tested separately in catalog-refresh.
     const denseActiveRatio = denseKv / dense.active;
     const moeActiveRatio = moeKv / moe.active;
     assert.ok(

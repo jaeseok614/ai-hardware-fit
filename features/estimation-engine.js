@@ -293,6 +293,15 @@ function mlxSpeedBonus(model) {
 }
 
 function estimateKvCacheGb(model, hardware) {
+  const profile = model.kvCacheProfile;
+  if (profile) {
+    // Official hybrid layout: only GQA layers retain token-length KV state.
+    // Short-convolution state is fixed per sequence; allocator overhead is
+    // estimated separately, not presented as a measured peak allocation.
+    const kvBytes = 2 * profile.attentionLayers * profile.kvHeads * profile.headDim * hardware.context * 2 * hardware.kvMeta.factor;
+    const convBytes = profile.convLayers * profile.hiddenSize * profile.convCache * 2;
+    return (kvBytes + convBytes) * hardware.concurrency / 1e9;
+  }
   const contextMultiplier = hardware.context / 4096;
   const concurrencyMultiplier = hardware.concurrency;
   return model.active * 0.09 * contextMultiplier * concurrencyMultiplier * hardware.kvMeta.factor;

@@ -4,10 +4,35 @@ import fs from "node:fs";
 import vm from "node:vm";
 
 const context = vm.createContext({ window: {} });
-for (const file of ["gpus", "models", "audio-models", "model-metadata", "api-models", "licenses"]) {
+for (const file of ["gpus", "models", "embedding-models", "audio-models", "model-metadata", "api-models", "licenses"]) {
   vm.runInContext(fs.readFileSync(`data/${file}.js`, "utf8"), context);
 }
 const data = context.window.LLM_GPU_CHECKER_DATA;
+
+test("October review uses actual LFM checkpoint and Qwen embedding weights", () => {
+  const model = data.models.find((row) => row.name === "LFM2.5 24B A2B");
+  assert.equal(model.params, 23.97158528);
+  assert.equal(model.active, 2.45);
+  assert.equal(model.context * 1024, 131072);
+  assert.equal(model.kvCacheProfile.attentionLayers, 10);
+  assert.equal(model.kvCacheProfile.convLayers, 30);
+  assert.equal(data.modelMetadata[model.name].qualityBenchmark.value, 48.09);
+  assert.match(data.modelMetadata[model.name].qualityBenchmark.metric, /temperature 1.0/);
+  for (const [size, params] of [["0.6B", 0.595776512], ["4B", 4.021774336], ["8B", 7.567295488]]) {
+    assert.equal(data.embeddingModels.find((row) => row.name === `Qwen/Qwen3-Embedding-${size}`).params, params);
+  }
+  vm.runInContext(fs.readFileSync("features/estimation-engine.js", "utf8"), context);
+  context.model = model;
+  const base = vm.runInContext("estimateKvCacheGb(model, {context:4096,concurrency:1,kvMeta:{factor:1}})", context);
+  assert.ok(Math.abs(base - 0.08425472) < 1e-10);
+  assert.equal(vm.runInContext("estimateKvCacheGb(model, {context:4096,concurrency:2,kvMeta:{factor:1}})", context), base * 2);
+  const appSource = fs.readFileSync("app.js", "utf8");
+  vm.runInContext(appSource.slice(appSource.indexOf("function buildOllamaCommand("), appSource.indexOf("function buildOllamaModelName(")), context);
+  context.uiLanguage = "en";
+  assert.match(vm.runInContext('buildOllamaCommand(model, {id:"q4",label:"Q4_K_M"}, {context:4096})', context), /llama-cli -hf LiquidAI\/LFM2.5-24B-A2B-GGUF:Q4_K_M/);
+  assert.match(vm.runInContext('buildLlamaCppCommand(model, {id:"q2",label:"Q2_K"}, {context:4096})', context), /no official download/);
+  assert.match(vm.runInContext('buildMlxCommand(model, {bits:4.8}, {outputTokens:512})', context), /LiquidAI\/LFM2.5-24B-A2B-MLX-4bit/);
+});
 
 test("MiniCPM5 uses checkpoint parameters and separates publisher evaluation from measurements", () => {
   const model = data.models.find((row) => row.name === "MiniCPM5 2B");
