@@ -1,4 +1,4 @@
-# Weekly local-model value report — 2026-10-12
+# Weekly local-model value report — 2026-10-19
 
 같은 공개 벤치마크 안에서만 모델을 비교한 AI Hardware Fit 주간 요약입니다.
 
@@ -8,7 +8,7 @@
 
 ## 이번 주 변경
 
-- 벤치마크 모델 추가: MiniCPM5 2B
+- 벤치마크 모델 추가: LFM2.5 24B A2B
 
 ## VRAM별 최고 점수
 

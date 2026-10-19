@@ -1,5 +1,5 @@
 {
-  "date": "2026-10-12",
+  "date": "2026-10-19",
   "baseline": "Q4_K_M · 4K context · concurrency 1 · llama.cpp",
   "metric": "MMLU-Pro",
   "models": [
@@ -485,6 +485,13 @@
       "metric": "LiveCodeBench v6 (Liquid harness)",
       "score": 59.41,
       "requiredGb": 3.3
+    },
+    {
+      "name": "LFM2.5 24B A2B",
+      "releaseDate": "",
+      "metric": "LiveClaw (Liquid harness, vLLM, temperature 1.0, max output 8192)",
+      "score": 48.09,
+      "requiredGb": 17.89
     },
     {
       "name": "LFM2.5 8B A1B",
