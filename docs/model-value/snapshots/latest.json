@@ -1,5 +1,5 @@
 {
-  "date": "2026-10-19",
+  "date": "2026-10-26",
   "baseline": "Q4_K_M · 4K context · concurrency 1 · llama.cpp",
   "metric": "MMLU-Pro",
   "models": [
