@@ -54,7 +54,7 @@ function same(record, names) {
 }
 
 window.LLM_GPU_CHECKER_DATA.modelMetadata = {
-  "LFM2.5 24B A2B": { sourceUrl: "https://huggingface.co/LiquidAI/LFM2.5-24B-A2B", verifiedAt: "2026-10-19", qualityBenchmark: quality("LiveClaw 48.09", "LiveClaw (Liquid harness, vLLM, temperature 1.0, max output 8192)", 48.09, "https://huggingface.co/LiquidAI/LFM2.5-24B-A2B", "제작사 재현 평가·로컬 실측 아님") },
+  "LFM2.5 24B A2B": { sourceUrl: "https://huggingface.co/LiquidAI/LFM2.5-24B-A2B", verifiedAt: "2026-10-26", speculativeDraft: { sourceUrl: "https://huggingface.co/LiquidAI/LFM2.5-24B-A2B-DSpark", ggufSourceUrl: "https://huggingface.co/LiquidAI/LFM2.5-24B-A2B-DSpark-GGUF", estimatedByDefault: false, standalone: false, verifiedAt: "2026-10-26" }, qualityBenchmark: quality("LiveClaw 48.09", "LiveClaw (Liquid harness, vLLM, temperature 1.0, max output 8192)", 48.09, "https://huggingface.co/LiquidAI/LFM2.5-24B-A2B", "제작사 재현 평가·로컬 실측 아님") },
   "MiniCPM5 2B": { sourceUrl: "https://huggingface.co/openbmb/MiniCPM5-2B", verifiedAt: "2026-10-12", qualityBenchmark: quality("MMLU-Pro 70.8", "MMLU-Pro (OpenBMB MiniCPM5 evaluation)", 70.8, "https://huggingface.co/openbmb/MiniCPM5-2B", "제작사 재현 평가·로컬 실측 아님") },
   "Qwen2.5 0.5B Instruct": meta(
     "2024-09-19",

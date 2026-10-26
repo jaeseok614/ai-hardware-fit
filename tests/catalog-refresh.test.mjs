@@ -9,6 +9,21 @@ for (const file of ["gpus", "models", "embedding-models", "audio-models", "model
 }
 const data = context.window.LLM_GPU_CHECKER_DATA;
 
+test("DSpark companion release does not become a standalone model or inflate base estimates", () => {
+  const targets = data.models.filter((row) => row.name === "LFM2.5 24B A2B");
+  assert.equal(targets.length, 1);
+  assert.equal(data.models.some((row) => /DSpark/i.test(row.name)), false);
+  assert.equal(targets[0].params, 23.97158528);
+  assert.match(targets[0].summary.en, /target-only/);
+  assert.match(targets[0].summary.ko, /드래프트 미사용/);
+  const metadata = data.modelMetadata[targets[0].name];
+  assert.equal(metadata.verifiedAt, "2026-10-26");
+  assert.equal(metadata.speculativeDraft.standalone, false);
+  assert.equal(metadata.speculativeDraft.estimatedByDefault, false);
+  assert.equal(metadata.qualityBenchmark.value, 48.09);
+  assert.match(metadata.speculativeDraft.ggufSourceUrl, /LiquidAI\/LFM2.5-24B-A2B-DSpark-GGUF$/);
+});
+
 test("October review uses actual LFM checkpoint and Qwen embedding weights", () => {
   const model = data.models.find((row) => row.name === "LFM2.5 24B A2B");
   assert.equal(model.params, 23.97158528);

@@ -1,5 +1,10 @@
 # Changelog
 
+## Weekly catalog update - 2026-10-26
+
+- Verified the newly published LFM2.5 24B A2B DSpark and GGUF draft companions; replaced the previous coming-soon understanding with source-linked availability and target-only sizing/runtime caveats.
+- No standalone model count increase or speculative speed multiplier: the draft needs additional memory and supported runtime builds. [Verification and launch notes](./docs/maintenance/2026-10-26-weekly.md)
+
 ## Weekly catalog update - 2026-10-19
 
 - Added LFM2.5 24B A2B: 23.97158528B checkpoint weights, 2.45B active, 128K context, hybrid GQA/convolution cache calculation and verified official GGUF commands. LiveClaw is publisher evaluation, not measured GPU speed.
