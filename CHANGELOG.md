@@ -1,5 +1,9 @@
 # Changelog
 
+## Weekly catalog update - 2026-11-02
+
+- Added LFM3 1.7B using official checkpoint parameters, 256K context, conservative hybrid KV sizing and verified GGUF commands. MLX launch is withheld while publisher-listed support remains in progress. Catalog: 350 models. [Sources and limits](./docs/maintenance/2026-11-02-weekly.md)
+
 ## Weekly catalog update - 2026-10-26
 
 - Verified the newly published LFM2.5 24B A2B DSpark and GGUF draft companions; replaced the previous coming-soon understanding with source-linked availability and target-only sizing/runtime caveats.

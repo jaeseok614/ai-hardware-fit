@@ -9,6 +9,26 @@ for (const file of ["gpus", "models", "embedding-models", "audio-models", "model
 }
 const data = context.window.LLM_GPU_CHECKER_DATA;
 
+test("LFM3 hybrid cache is a conservative upper bound and pending MLX is not executable", () => {
+  const context = vm.createContext({ window: {} });
+  const model = data.models.find((row) => row.name === "LFM3 1.7B");
+  assert.equal(model.params, 1.728801536);
+  assert.equal(model.context * 1024, 262144);
+  assert.equal(model.tags.includes("coding"), false);
+  assert.equal(data.modelMetadata[model.name].verifiedAt, "2026-11-02");
+  vm.runInContext(fs.readFileSync("features/estimation-engine.js", "utf8"), context);
+  context.model = model;
+  const kv = vm.runInContext("estimateKvCacheGb(model, {context:4096,concurrency:1,kvMeta:{factor:1}})", context);
+  const bounded = (2 * 4 * 128 * 2 * (6 * 4096 + 5 * 256) + 13 * 2048 * 7 * 2) / 1e9;
+  assert.ok(kv > bounded);
+  assert.equal(kv, (2 * 11 * 4 * 128 * 4096 * 2 + 13 * 2048 * 7 * 2) / 1e9);
+  const source = fs.readFileSync("app.js", "utf8");
+  vm.runInContext(source.slice(source.indexOf("function buildOllamaCommand("), source.indexOf("function buildOllamaModelName(")), context);
+  context.uiLanguage = "en";
+  assert.match(vm.runInContext('buildLlamaCppCommand(model, {id:"q4",label:"Q4_K_M"}, {context:4096})', context), /b11960/);
+  assert.doesNotMatch(vm.runInContext('buildMlxCommand(model, {bits:4.8}, {outputTokens:512})', context), /mlx_lm.generate/);
+});
+
 test("DSpark companion release does not become a standalone model or inflate base estimates", () => {
   const targets = data.models.filter((row) => row.name === "LFM2.5 24B A2B");
   assert.equal(targets.length, 1);

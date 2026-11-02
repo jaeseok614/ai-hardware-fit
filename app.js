@@ -5069,7 +5069,8 @@ function buildLlamaCppCommand(model, quant, hardware) {
   if (model.officialGgufRepo) {
     const format = quant.id === "fp16" ? "F16" : quant.label;
     if (["Q4_K_M", "Q5_K_M", "Q6_K", "Q8_0", "F16"].includes(format)) {
-      return `llama-cli -hf ${model.officialGgufRepo}:${format} -c ${hardware.context} -ngl 999`;
+      const compatibility = model.name === "LFM3 1.7B" ? `# ${uiLanguage === "en" ? "Requires llama.cpp b11960 / v0.8.0 or newer" : "llama.cpp b11960 / v0.8.0 이상이 필요합니다"}\n` : "";
+      return `${compatibility}llama-cli -hf ${model.officialGgufRepo}:${format} -c ${hardware.context} -ngl 999`;
     }
     return `# ${uiLanguage === "en" ? "This quantization requires a separately converted GGUF; no official download is verified." : "이 양자화는 별도 변환 GGUF가 필요하며 공식 다운로드가 확인되지 않았습니다."}`;
   }
@@ -5086,6 +5087,7 @@ function buildMlxCommand(model, quant, hardware) {
   // bit-width (quant.bits, e.g. Q4_K_M=4.8, Q8_0=8.5, FP16=16) onto the
   // closest commonly-published MLX tag rather than inventing a 1:1 label.
   const bits = quant.bits == null ? "4bit" : quant.bits <= 5 ? "4bit" : quant.bits <= 9 ? "8bit" : "bf16";
+  if (model.name === "LFM3 1.7B") return `# ${uiLanguage === "en" ? "Official MLX weights exist, but mlx-lm support is still in progress. Verify a supporting release before running." : "공식 MLX 가중치는 공개됐지만 mlx-lm 지원은 개발 중입니다. 지원 릴리스를 확인한 뒤 실행하세요."}\n# https://huggingface.co/LiquidAI/LFM3-1.7B-MLX-4bit`;
   if (model.name === "LFM2.5 24B A2B") return `pip install -U mlx-lm\nmlx_lm.generate --model LiquidAI/LFM2.5-24B-A2B-MLX-${bits} --max-tokens ${hardware.outputTokens}`;
   return `pip install mlx-lm
 mlx_lm.generate --model mlx-community/${toSlug(model.name)}-${bits} --max-tokens ${hardware.outputTokens}`;
