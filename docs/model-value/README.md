@@ -2,6 +2,7 @@
 
 Generated from the same Q4_K_M VRAM baseline used by the interactive benchmark workspace.
 
+- [2026-11-09](./reports/2026-11-09.md)
 - [2026-11-02](./reports/2026-11-02.md)
 - [2026-10-26](./reports/2026-10-26.md)
 - [2026-10-19](./reports/2026-10-19.md)

@@ -1,4 +1,4 @@
-# Weekly local-model value report — 2026-11-02
+# Weekly local-model value report — 2026-11-09
 
 같은 공개 벤치마크 안에서만 모델을 비교한 AI Hardware Fit 주간 요약입니다.
 
