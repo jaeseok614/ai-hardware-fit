@@ -32,6 +32,7 @@ test("LFM3 hybrid cache stays conservative and MLX uses the verified runtime and
   assert.match(launch, /--enable-thinking/);
   assert.match(launch, /--max-tokens 512/);
   assert.doesNotMatch(vm.runInContext('buildMlxCommand(model, {bits:16}, {outputTokens:512})', context), /python -m|pip install/);
+  assert.doesNotMatch(vm.runInContext('buildMlxCommand(model, {bits:3.4}, {outputTokens:512})', context), /python -m|pip install/);
 });
 
 test("DSpark companion release does not become a standalone model or inflate base estimates", () => {

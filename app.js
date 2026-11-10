@@ -5088,7 +5088,7 @@ function buildMlxCommand(model, quant, hardware) {
   // closest commonly-published MLX tag rather than inventing a 1:1 label.
   const bits = quant.bits == null ? "4bit" : quant.bits <= 5 ? "4bit" : quant.bits <= 9 ? "8bit" : "bf16";
   if (model.name === "LFM3 1.7B") {
-    if (bits !== "4bit") return `# ${uiLanguage === "en" ? "Only the official 4-bit MLX checkpoint is verified. Select a 4-bit precision to get its launch command." : "공식 4비트 MLX 체크포인트만 확인됐습니다. 4비트 정밀도를 선택하면 실행 명령이 표시됩니다."}`;
+    if (quant.bits != null && (quant.bits < 4 || quant.bits > 5)) return `# ${uiLanguage === "en" ? "Only the official 4-bit MLX checkpoint is verified. Select a 4-bit precision to get its launch command." : "공식 4비트 MLX 체크포인트만 확인됐습니다. 4비트 정밀도를 선택하면 실행 명령이 표시됩니다."}`;
     return `pip install -U "mlx-vlm>=0.7.11"\npython -m mlx_vlm.generate --model LiquidAI/LFM3-1.7B-MLX-4bit --prompt "Hello" --enable-thinking --temperature 0.1 --top-k 50 --repetition-penalty 1.1 --max-tokens ${hardware.outputTokens}`;
   }
   if (model.name === "LFM2.5 24B A2B") return `pip install -U mlx-lm\nmlx_lm.generate --model LiquidAI/LFM2.5-24B-A2B-MLX-${bits} --max-tokens ${hardware.outputTokens}`;
