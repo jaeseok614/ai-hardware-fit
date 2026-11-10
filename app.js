@@ -5087,7 +5087,10 @@ function buildMlxCommand(model, quant, hardware) {
   // bit-width (quant.bits, e.g. Q4_K_M=4.8, Q8_0=8.5, FP16=16) onto the
   // closest commonly-published MLX tag rather than inventing a 1:1 label.
   const bits = quant.bits == null ? "4bit" : quant.bits <= 5 ? "4bit" : quant.bits <= 9 ? "8bit" : "bf16";
-  if (model.name === "LFM3 1.7B") return `# ${uiLanguage === "en" ? "Official MLX weights exist, but mlx-lm support is still in progress. Verify a supporting release before running." : "공식 MLX 가중치는 공개됐지만 mlx-lm 지원은 개발 중입니다. 지원 릴리스를 확인한 뒤 실행하세요."}\n# https://huggingface.co/LiquidAI/LFM3-1.7B-MLX-4bit`;
+  if (model.name === "LFM3 1.7B") {
+    if (bits !== "4bit") return `# ${uiLanguage === "en" ? "Only the official 4-bit MLX checkpoint is verified. Select a 4-bit precision to get its launch command." : "공식 4비트 MLX 체크포인트만 확인됐습니다. 4비트 정밀도를 선택하면 실행 명령이 표시됩니다."}`;
+    return `pip install -U "mlx-vlm>=0.7.11"\npython -m mlx_vlm.generate --model LiquidAI/LFM3-1.7B-MLX-4bit --prompt "Hello" --enable-thinking --temperature 0.1 --top-k 50 --repetition-penalty 1.1 --max-tokens ${hardware.outputTokens}`;
+  }
   if (model.name === "LFM2.5 24B A2B") return `pip install -U mlx-lm\nmlx_lm.generate --model LiquidAI/LFM2.5-24B-A2B-MLX-${bits} --max-tokens ${hardware.outputTokens}`;
   return `pip install mlx-lm
 mlx_lm.generate --model mlx-community/${toSlug(model.name)}-${bits} --max-tokens ${hardware.outputTokens}`;

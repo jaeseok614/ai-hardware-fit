@@ -9,13 +9,13 @@ for (const file of ["gpus", "models", "embedding-models", "audio-models", "model
 }
 const data = context.window.LLM_GPU_CHECKER_DATA;
 
-test("LFM3 hybrid cache is a conservative upper bound and pending MLX is not executable", () => {
+test("LFM3 hybrid cache stays conservative and MLX uses the verified runtime and precision", () => {
   const context = vm.createContext({ window: {} });
   const model = data.models.find((row) => row.name === "LFM3 1.7B");
   assert.equal(model.params, 1.728801536);
   assert.equal(model.context * 1024, 262144);
   assert.equal(model.tags.includes("coding"), false);
-  assert.equal(data.modelMetadata[model.name].verifiedAt, "2026-11-02");
+  assert.equal(data.modelMetadata[model.name].verifiedAt, "2026-11-10");
   vm.runInContext(fs.readFileSync("features/estimation-engine.js", "utf8"), context);
   context.model = model;
   const kv = vm.runInContext("estimateKvCacheGb(model, {context:4096,concurrency:1,kvMeta:{factor:1}})", context);
@@ -26,7 +26,12 @@ test("LFM3 hybrid cache is a conservative upper bound and pending MLX is not exe
   vm.runInContext(source.slice(source.indexOf("function buildOllamaCommand("), source.indexOf("function buildOllamaModelName(")), context);
   context.uiLanguage = "en";
   assert.match(vm.runInContext('buildLlamaCppCommand(model, {id:"q4",label:"Q4_K_M"}, {context:4096})', context), /b11960/);
-  assert.doesNotMatch(vm.runInContext('buildMlxCommand(model, {bits:4.8}, {outputTokens:512})', context), /mlx_lm.generate/);
+  const launch = vm.runInContext('buildMlxCommand(model, {bits:4.8}, {outputTokens:512})', context);
+  assert.match(launch, /mlx-vlm>=0.7.11/);
+  assert.match(launch, /python -m mlx_vlm.generate/);
+  assert.match(launch, /--enable-thinking/);
+  assert.match(launch, /--max-tokens 512/);
+  assert.doesNotMatch(vm.runInContext('buildMlxCommand(model, {bits:16}, {outputTokens:512})', context), /python -m|pip install/);
 });
 
 test("DSpark companion release does not become a standalone model or inflate base estimates", () => {

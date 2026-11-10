@@ -1,5 +1,9 @@
 # Changelog
 
+## Runtime catalog update - 2026-11-10
+
+- Enabled the official LFM3 1.7B Apple Silicon recipe with MLX-VLM 0.7.11+, explicit 4-bit checkpoint and thinking controls. Higher precision selections request verification. [Sources](./docs/maintenance/2026-11-10-weekly.md)
+
 ## Weekly catalog update - 2026-11-02
 
 - Added LFM3 1.7B using official checkpoint parameters, 256K context, conservative hybrid KV sizing and verified GGUF commands. MLX launch is withheld while publisher-listed support remains in progress. Catalog: 350 models. [Sources and limits](./docs/maintenance/2026-11-02-weekly.md)
