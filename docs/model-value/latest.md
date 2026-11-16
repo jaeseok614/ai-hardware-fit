@@ -1,4 +1,4 @@
-# Weekly local-model value report — 2026-11-09
+# Weekly local-model value report — 2026-11-16
 
 같은 공개 벤치마크 안에서만 모델을 비교한 AI Hardware Fit 주간 요약입니다.
 
@@ -8,7 +8,7 @@
 
 ## 이번 주 변경
 
-- 지난 스냅샷 이후 모델·점수·VRAM 추천 변경이 없습니다.
+- 점수·메타데이터 변경: Qwen3.8 27B, Qwen3.8-Flash-Next
 
 ## VRAM별 최고 점수
 

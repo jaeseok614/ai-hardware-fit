@@ -1,5 +1,5 @@
 {
-  "date": "2026-11-09",
+  "date": "2026-11-16",
   "baseline": "Q4_K_M · 4K context · concurrency 1 · llama.cpp",
   "metric": "MMLU-Pro",
   "models": [
@@ -1100,14 +1100,14 @@
       "releaseDate": "2026-08-14",
       "metric": "LiveCodeBench v6",
       "score": 90.3,
-      "requiredGb": 22.18
+      "requiredGb": 22.71
     },
     {
       "name": "Qwen3.8-Flash-Next",
       "releaseDate": "2026-08-25",
       "metric": "SWE-bench Pro",
       "score": 62.5,
-      "requiredGb": 85.74
+      "requiredGb": 121.38
     },
     {
       "name": "SmolLM2 1.7B Instruct",
