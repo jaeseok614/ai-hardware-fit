@@ -1400,6 +1400,9 @@ mergeModelMetadata({
     qualityBenchmark: quality("MMLU-Pro 85.2", "MMLU-Pro", 85.2, "https://huggingface.co/Qwen/Qwen3.6-35B-A3B", "공식 카드"),
   },
   "Qwen3.8 27B": {
+    verifiedAt: "2026-11-16",
+    checkpointParameters: 27781427952,
+    parameterSourceUrl: "https://huggingface.co/api/models/Qwen/Qwen3.8-27B",
     releaseDate: "2026-08-14",
     sourceUrl: "https://huggingface.co/Qwen/Qwen3.8-27B",
     qualityBenchmark: quality("LiveCodeBench v6 90.3", "LiveCodeBench v6", 90.3, "https://huggingface.co/Qwen/Qwen3.8-27B", "공식 카드"),
@@ -1411,6 +1414,9 @@ mergeModelMetadata({
     verifiedAt: "2026-09-30",
   },
   "Qwen3.8-Flash-Next": {
+    verifiedAt: "2026-11-16",
+    checkpointParameters: 179999981424,
+    parameterSourceUrl: "https://huggingface.co/api/models/Qwen/Qwen3.8-Flash-Next",
     releaseDate: "2026-08-25",
     sourceUrl: "https://huggingface.co/Qwen/Qwen3.8-Flash-Next",
     qualityBenchmark: quality("SWE-bench Pro 62.5", "SWE-bench Pro", 62.5, "https://huggingface.co/Qwen/Qwen3.8-Flash-Next", "공식 카드"),

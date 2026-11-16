@@ -179,3 +179,22 @@ test("API catalog is separate and contains standard rather than batch/fast price
   assert.match(data.apiModels.find((item) => item.id === "deepseek-v4.1-flash").note.en, /Peak rates/);
   assert.match(data.apiModels.find((item) => item.id === "google-gemini-3.8-flash").note.en, /2027-01-01/);
 });
+
+
+test("Qwen3.8 weight budgets include checkpoint auxiliary components", () => {
+  const dense = data.models.find((row) => row.name === "Qwen3.8 27B");
+  const moe = data.models.find((row) => row.name === "Qwen3.8-Flash-Next");
+  assert.equal(dense.params, 27.781427952);
+  assert.equal(moe.params, 179.999981424);
+  assert.equal(moe.active, 6);
+  // 125B core alone would undercount the 51B n-gram and 4B MTP weights.
+  assert.ok(moe.params * 2 > 359);
+  assert.match(moe.summary.en, /4B MTP/);
+  assert.match(moe.summary.en, /not measurements/);
+  assert.match(dense.summary.en, /vision encoder/);
+  for (const model of [dense, moe]) {
+    const meta = data.modelMetadata[model.name];
+    assert.equal(meta.checkpointParameters / 1e9, model.params);
+    assert.equal(meta.verifiedAt, "2026-11-16");
+  }
+});

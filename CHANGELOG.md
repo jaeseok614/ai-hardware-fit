@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-11-16
+
+- Correct Qwen3.8 27B and Flash-Next weight budgets to include official checkpoint auxiliary components; retain explicit generic KV/speed caveats. See docs/maintenance/2026-11-16-weekly.md.
+
 ## Runtime catalog update - 2026-11-10
 
 - Enabled the official LFM3 1.7B Apple Silicon recipe with MLX-VLM 0.7.11+, explicit 4-bit checkpoint and thinking controls. Higher precision selections request verification. [Sources](./docs/maintenance/2026-11-10-weekly.md)
