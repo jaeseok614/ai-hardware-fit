@@ -1,5 +1,9 @@
 # Changelog
 
+## Catalog additions — 2026-11-19
+
+- Added LFM3-VL 2B and Mistral Large 4 with verified weights, publisher evaluations, license conditions and guarded launch recipes. Catalog: 352 models. See [verification notes](docs/maintenance/2026-11-19-models.md).
+
 ## 2026-11-16
 
 - Correct Qwen3.8 27B and Flash-Next weight budgets to include official checkpoint auxiliary components; retain explicit generic KV/speed caveats. See docs/maintenance/2026-11-16-weekly.md.

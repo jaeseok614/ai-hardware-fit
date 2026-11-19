@@ -4,7 +4,7 @@ import fs from "node:fs";
 import vm from "node:vm";
 
 const context = vm.createContext({ window: {} });
-for (const file of ["gpus", "models", "embedding-models", "audio-models", "model-metadata", "api-models", "licenses"]) {
+for (const file of ["gpus", "models", "embedding-models", "audio-models", "ocr-models", "model-metadata", "api-models", "licenses"]) {
   vm.runInContext(fs.readFileSync(`data/${file}.js`, "utf8"), context);
 }
 const data = context.window.LLM_GPU_CHECKER_DATA;
@@ -197,4 +197,49 @@ test("Qwen3.8 weight budgets include checkpoint auxiliary components", () => {
     assert.equal(meta.checkpointParameters / 1e9, model.params);
     assert.equal(meta.verifiedAt, "2026-11-16");
   }
+});
+
+
+test("Large 4 weights use published GGUF shards plus projector and unverified speeds stay separate", () => {
+  const model = data.models.find((row) => row.name === "Mistral Large 4 1T A52B");
+  assert.equal(model.params, 1000);
+  assert.equal(model.active, 52);
+  assert.equal(model.context * 1024, 1048576);
+  assert.equal(model.speedStatus, "unverified");
+  assert.equal(model.weightBytesByQuant.q4, 634802244608 + 3444696416);
+  assert.equal(model.weightBytesByQuant.fp16, 2098861021920 + 3444696416);
+  assert.equal(data.licensePolicies[model.license].commercialUse, "conditional");
+  const ctx = vm.createContext({window: {}, model, uiLanguage: "en"});
+  vm.runInContext(fs.readFileSync("features/estimation-engine.js", "utf8"), ctx);
+  assert.equal(vm.runInContext('estimateModelWeightsGb(model, {id:"q4",bytesPerB:0.6})', ctx), (634802244608 + 3444696416) / 1e9 * 1.08);
+  assert.equal(vm.runInContext('estimateSpeed(model, {}, {}, "A").perRequest', ctx), 0);
+  const source = fs.readFileSync("app.js", "utf8");
+  vm.runInContext(source.slice(source.indexOf("function buildOllamaCommand("), source.indexOf("function buildOllamaModelName(")), ctx);
+  assert.match(vm.runInContext('buildLlamaCppCommand(model, {id:"q4",label:"Q4_K_M"}, {context:4096})', ctx), /llama serve -hf ggml-org\/Mistral-Large-4-1T-A52B-GGUF:Q4_K_M/);
+  assert.match(vm.runInContext('buildLlamaCppCommand(model, {id:"fp16",label:"FP16"}, {context:4096})', ctx), /:BF16/);
+  assert.doesNotMatch(vm.runInContext('buildLlamaCppCommand(model, {id:"q6",label:"Q6_K"}, {context:4096})', ctx), /llama serve/);
+  assert.doesNotMatch(vm.runInContext('buildMlxCommand(model, {bits:4.8}, {})', ctx), /pip install|python -m/);
+});
+
+test("LFM3 vision uses full checkpoint BF16 and withholds uncalibrated page throughput", () => {
+  const model = data.ocrModels.find((row) => row.name === "LiquidAI/LFM3-VL-2B");
+  assert.equal(model.params, 1.918181888);
+  assert.deepEqual(Array.from(model.precisions), ["bf16"]);
+  assert.equal(model.kvHeads, 4);
+  assert.equal(model.patchSize, 16);
+  assert.equal(model.speedStatus, "unverified");
+  assert.equal(data.modelMetadata[model.name].qualityBenchmark.value, 45.7);
+  const ctx = vm.createContext({window: {}, model});
+  vm.runInContext(fs.readFileSync("features/estimation-engine.js", "utf8"), ctx);
+  assert.equal(vm.runInContext('estimateOcrThroughput(model, {}, {}, "A")', ctx), 0);
+  ctx.uiLanguage = "en";
+  const source = fs.readFileSync("app.js", "utf8");
+  vm.runInContext(source.slice(source.indexOf("function buildNonGenerativeCommand("), source.indexOf("function renderDetailMetric(")), ctx);
+  const command = vm.runInContext('buildNonGenerativeCommand(model, {})', ctx);
+  assert.match(command, /transformers>=5.21.0/);
+  assert.match(command, /AutoModelForImageTextToText/);
+  assert.match(command, /dtype=torch.bfloat16/);
+  assert.match(command, /max_new_tokens=512/);
+  assert.doesNotMatch(command, /vllm serve/);
+
 });

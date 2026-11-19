@@ -578,6 +578,7 @@ const ENGLISH_UI_REPLACEMENTS = [
   ["공식 발표", "Official report"],
   ["공식 품질", "Official quality"],
   ["제작사 재현 평가·로컬 실측 아님", "Publisher-reproduced evaluation · not a local hardware measurement"],
+  ["제작사 공개 평가·로컬 실측 아님", "Publisher-reported evaluation · not a local hardware measurement"],
   ["보기", "View"],
   ["상업 이용 가능", "Commercial use allowed"],
   ["조건부 상업 이용", "Conditional commercial use"],

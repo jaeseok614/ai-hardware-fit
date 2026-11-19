@@ -214,13 +214,18 @@ function getWorkloadSettings() {
   };
 }
 
+function estimateModelWeightsGb(model, quant) {
+  const bytes = model.weightBytesByQuant?.[quant.id];
+  return (Number.isFinite(bytes) ? bytes / 1e9 : model.params * quant.bytesPerB) * 1.08;
+}
+
 function estimateModel(model, quantId, hardware) {
   const fallbackQuant = QUANTS.find((item) => item.id === "q4") || QUANTS.find((item) => item.id !== "auto");
   const quant = quantId === "auto"
     ? recommendQuant(model, hardware)
     : QUANTS.find((item) => item.id === quantId) || fallbackQuant;
   const runtimeFactor = getRuntimeFactor(hardware.runtime);
-  const weightsGb = model.params * quant.bytesPerB * 1.08;
+  const weightsGb = estimateModelWeightsGb(model, quant);
   const contextLimitTokens = model.context * 1024;
   const contextSupported = hardware.context <= contextLimitTokens;
   const kvGb = estimateKvCacheGb(model, hardware);
@@ -233,9 +238,9 @@ function estimateModel(model, quantId, hardware) {
   const ramAssist = hardware.ram * 0.45;
   const offloadRoom = effectiveVram + ramAssist;
   const grade = contextSupported ? gradeFromPressure(pressure, requiredGb, offloadRoom) : "F";
-  const speedStats = estimateSpeed(model, quant, hardware, grade);
+  const speedStats = model.speedStatus === "unverified" ? { perRequest: 0, total: 0 } : estimateSpeed(model, quant, hardware, grade);
   const latencySeconds = speedStats.perRequest > 0 ? hardware.outputTokens / speedStats.perRequest : 0;
-  const firstTokenSeconds = estimateFirstTokenSeconds(model, hardware, grade);
+  const firstTokenSeconds = model.speedStatus === "unverified" ? 0 : estimateFirstTokenSeconds(model, hardware, grade);
   const reason = buildReason(grade, requiredGb, effectiveVram, model, hardware, contextLimitTokens, contextSupported);
 
   return {
@@ -248,6 +253,7 @@ function estimateModel(model, quantId, hardware) {
     effectiveVram,
     pressure,
     grade,
+    speedUnverified: model.speedStatus === "unverified",
     speed: speedStats.perRequest,
     throughput: speedStats.total,
     latencySeconds,
@@ -311,7 +317,7 @@ function recommendQuant(model, hardware) {
   const preferredIds = ["q6", "q5", "q5_k_s", "q5_0", "q4", "q4_k_s", "q4_0", "q3", "q3_k_s", "q2", "iq2_xxs"];
   const qualityFirst = preferredIds
     .map((id) => QUANTS.find((item) => item.id === id))
-    .filter(Boolean);
+    .filter((quant) => quant && (!model.quantizationIds || model.quantizationIds.includes(quant.id)));
   const effectiveVram = getEffectiveVram(hardware);
 
   for (const quant of qualityFirst) {
@@ -334,7 +340,7 @@ function recommendQuant(model, hardware) {
 
 function estimateWithQuant(model, quant, hardware) {
   const runtimeFactor = getRuntimeFactor(hardware.runtime);
-  const weightsGb = model.params * quant.bytesPerB * 1.08;
+  const weightsGb = estimateModelWeightsGb(model, quant);
   const kvGb = estimateKvCacheGb(model, hardware);
   const runtimeOverheadGb = runtimeFactor.base
     + Math.min(runtimeFactor.cap, weightsGb * runtimeFactor.weightRatio)
@@ -780,6 +786,7 @@ function estimateOcrWithPrecision(model, hardware, workload, precision) {
     effectiveVram,
     pressure,
     grade,
+    speedUnverified: model.speedStatus === "unverified",
     speed: pagesPerSecond,
     throughput: pagesPerSecond,
     latencySeconds: secondsPerPage,
@@ -787,7 +794,7 @@ function estimateOcrWithPrecision(model, hardware, workload, precision) {
     contextLimitTokens: model.maxImageTokens || 0,
     contextSupported: true,
     settingLabel: `${precision.label} · ${settingSuffix}`,
-    speedLabel: `${formatThroughput(pagesPerSecond, outputUnit)} · ${formatDuration(secondsPerPage)}/${durationUnit}`,
+    speedLabel: model.speedStatus === "unverified" ? (uiLanguage === "en" ? "Speed not calibrated" : "속도 보정 근거 미확인") : `${formatThroughput(pagesPerSecond, outputUnit)} · ${formatDuration(secondsPerPage)}/${durationUnit}`,
     limitLabel: `${formatMegapixels(megapixels)}`,
     unitLabel: outputUnit,
     reason,
@@ -800,7 +807,7 @@ function estimateOcrWithPrecision(model, hardware, workload, precision) {
 }
 
 function estimateOcrThroughput(model, hardware, workload, precision, megapixels, grade, featureMultiplier) {
-  if (grade === "F") return 0;
+  if (model.speedStatus === "unverified" || grade === "F") return 0;
 
   const reference = model.reference || {};
   const referenceBandwidth = reference.bandwidth || 1008;
@@ -949,7 +956,7 @@ function gradeFromPressure(pressure, requiredGb, offloadRoom) {
 }
 
 function estimateSpeed(model, quant, hardware, grade) {
-  if (grade === "F") return { perRequest: 0, total: 0 };
+  if (model.speedStatus === "unverified" || grade === "F") return { perRequest: 0, total: 0 };
 
   const multiGpuPenalty = hardware.count > 1 ? (hardware.heterogeneous ? 0.64 : 0.76) : 1;
   const runtimePenalty = hardware.runtime === "vllm" ? 1.1
@@ -982,7 +989,7 @@ function estimateFirstTokenSeconds(model, hardware, grade) {
 function computeConcurrencyBounds(model, quant, hardware, effectiveVramOverride) {
   // requiredGb(N) = A + N * B for N >= 1 (KV cache와 요청당 오버헤드가 선형이라는 전제 하의 역산)
   const runtimeFactor = getRuntimeFactor(hardware.runtime);
-  const weightsGb = model.params * quant.bytesPerB * 1.08;
+  const weightsGb = estimateModelWeightsGb(model, quant);
   const contextMultiplier = hardware.context / 4096;
   const kvPerUnit = model.active * 0.09 * contextMultiplier * hardware.kvMeta.factor;
   const fixedOverhead = runtimeFactor.base + Math.min(runtimeFactor.cap, weightsGb * runtimeFactor.weightRatio);

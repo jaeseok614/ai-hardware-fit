@@ -1705,3 +1705,9 @@ Object.assign(window.LLM_GPU_CHECKER_DATA.modelMetadata, {
   "Qwen3-TTS 1.7B CustomVoice": { ...meta("2026-01-22", "https://huggingface.co/Qwen/Qwen3-TTS-12Hz-1.7B-CustomVoice"), verifiedAt: "2026-09-30" },
   "Fish Audio S2 Pro": { ...meta("2026-03-09", "https://huggingface.co/fishaudio/s2-pro"), verifiedAt: "2026-09-30" },
 });
+
+// Verified 2026-11-19; publisher quality evaluations are not hardware measurements.
+Object.assign(window.LLM_GPU_CHECKER_DATA.modelMetadata, {
+  "Mistral Large 4 1T A52B": { sourceUrl: "https://huggingface.co/mistralai/Mistral-Large-4-1T-A52B", verifiedAt: "2026-11-19", ggufSourceUrl: "https://huggingface.co/ggml-org/Mistral-Large-4-1T-A52B-GGUF", weightSourceUrl: "https://huggingface.co/api/models/ggml-org/Mistral-Large-4-1T-A52B-GGUF?blobs=true", qualityBenchmark: quality("AA Intelligence Index v5 26", "AA Intelligence Index v5 (publisher report)", 26, "https://huggingface.co/mistralai/Mistral-Large-4-1T-A52B", "제작사 공개 평가·로컬 실측 아님") },
+  "LiquidAI/LFM3-VL-2B": { sourceUrl: "https://huggingface.co/LiquidAI/LFM3-VL-2B", verifiedAt: "2026-11-19", checkpointParameters: 1918181888, qualityBenchmark: quality("MMMU-Pro 45.7", "MMMU-Pro standard 10 options (Liquid evaluation)", 45.7, "https://huggingface.co/LiquidAI/LFM3-VL-2B", "제작사 공개 평가·로컬 실측 아님") },
+});

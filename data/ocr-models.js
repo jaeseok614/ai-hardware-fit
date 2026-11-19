@@ -28,6 +28,7 @@ function visionModel(record) {
 }
 
 window.LLM_GPU_CHECKER_DATA.ocrModels = [
+  visionModel({"type": "general-vlm", "name": "LiquidAI/LFM3-VL-2B", "maker": "Liquid AI", "params": 1.918181888, "hiddenSize": 2048, "decoderLayers": 24, "kvHeads": 4, "headDim": 128, "patchSize": 16, "mergeSize": 2, "maxImageTokens": 8192, "maxOutputTokens": 4096, "precisions": ["bf16"], "license": "Liquid AI", "tags": ["vision", "vlm", "general-vlm", "ocr", "document", "korean", "multilingual", "edge"], "sourceUrl": "https://huggingface.co/LiquidAI/LFM3-VL-2B", "speedStatus": "unverified", "summary": {"ko": "비전 인코더·프로젝터 포함 약 1.918B, 최대 128K 입력·출력의 온디바이스 VLM입니다. 여기서는 BF16 단일 이미지 계획용 메모리만 추정하며 24개 층 전체 KV를 잡는 보수적 상한입니다. 영상 전체 메모리와 속도는 산정하지 않습니다. Transformers 5.21+ 또는 지원 llama.cpp를 확인하세요. vLLM·SGLang 지원은 준비 중이며 코딩·복잡한 추론용이 아닙니다.", "en": "An on-device VLM with ~1.918B parameters including vision/projector and up to 128K input/output tokens. This view estimates BF16 single-image memory only, conservatively caching all 24 layers. Full-video memory and throughput are not estimated. Check Transformers 5.21+ or compatible llama.cpp; vLLM/SGLang support is pending. Not intended for coding or complex reasoning."}}),
   {
     type: "ocr-pipeline",
     name: "PP-OCRv6 Tiny",

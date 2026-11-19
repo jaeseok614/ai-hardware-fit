@@ -4238,6 +4238,9 @@ function buildFormulaText(type) {
 
 function buildNonGenerativeCommand(model, estimate, batchSizeOverride) {
   const lowerName = model.name.toLowerCase();
+  if (model.name === "LiquidAI/LFM3-VL-2B") {
+    return `# pip install "transformers>=5.21.0" torch torchvision pillow accelerate\n# ${uiLanguage === "en" ? "Review publisher remote code before running. BF16, single image; vLLM/SGLang support pending." : "실행 전 제작사 원격 코드를 검토하세요. BF16 단일 이미지 기준이며 vLLM/SGLang 지원은 준비 중입니다."}\nimport torch\nfrom transformers import AutoModelForImageTextToText, AutoProcessor\nmodel_id = "LiquidAI/LFM3-VL-2B"\nmodel = AutoModelForImageTextToText.from_pretrained(model_id, dtype=torch.bfloat16, device_map="auto", trust_remote_code=True)\nprocessor = AutoProcessor.from_pretrained(model_id, trust_remote_code=True)\nmessages = [{"role": "user", "content": [{"type": "image", "url": "./image.png"}, {"type": "text", "text": "Describe this image."}]}]\ninputs = processor.apply_chat_template(messages, add_generation_prompt=True, tokenize=True, return_dict=True, return_tensors="pt").to(model.device)\nwith torch.inference_mode():\n    ids = model.generate(**inputs, do_sample=True, temperature=0.1, top_k=50, repetition_penalty=1.1, max_new_tokens=512)\nprint(processor.batch_decode(ids[:, inputs["input_ids"].shape[1]:], skip_special_tokens=True)[0])`;
+  }
   if (model.type === "avatar-generation") {
     if (lowerName.includes("musetalk")) {
       return `git clone https://github.com/TMElyralab/MuseTalk.git
@@ -5067,7 +5070,11 @@ function buildOllamaCommand(model, quant, hardware) {
 
 function buildLlamaCppCommand(model, quant, hardware) {
   if (model.officialGgufRepo) {
-    const format = quant.id === "fp16" ? "F16" : quant.label;
+    const format = quant.id === "fp16" ? (model.ggufFormats?.includes("BF16") ? "BF16" : "F16") : quant.label;
+    if (model.name === "Mistral Large 4 1T A52B") {
+      if (!model.ggufFormats.includes(format)) return `# ${uiLanguage === "en" ? "No verified GGUF for this precision; choose IQ2_XXS, Q2_K, Q4_K_M, Q8_0 or BF16." : "이 정밀도의 GGUF는 미확인입니다. IQ2_XXS, Q2_K, Q4_K_M, Q8_0 또는 BF16을 선택하세요."}`;
+      return `# ${uiLanguage === "en" ? "Requires current Mistral Large 4 compatible llama.cpp; server-scale memory. DSpark is not enabled." : "Mistral Large 4 지원 최신 llama.cpp와 서버급 메모리가 필요합니다. DSpark는 켜지 않습니다."}\nllama serve -hf ${model.officialGgufRepo}:${format} -c ${hardware.context} --temp 1.0 --top-p 0.95`;
+    }
     if (["Q4_K_M", "Q5_K_M", "Q6_K", "Q8_0", "F16"].includes(format)) {
       const compatibility = model.name === "LFM3 1.7B" ? `# ${uiLanguage === "en" ? "Requires llama.cpp b11960 / v0.8.0 or newer" : "llama.cpp b11960 / v0.8.0 이상이 필요합니다"}\n` : "";
       return `${compatibility}llama-cli -hf ${model.officialGgufRepo}:${format} -c ${hardware.context} -ngl 999`;
@@ -5086,6 +5093,7 @@ function buildMlxCommand(model, quant, hardware) {
   // llama.cpp K-quant ladder), so map the selected quant tier's approximate
   // bit-width (quant.bits, e.g. Q4_K_M=4.8, Q8_0=8.5, FP16=16) onto the
   // closest commonly-published MLX tag rather than inventing a 1:1 label.
+  if (model.name === "Mistral Large 4 1T A52B") return `# ${uiLanguage === "en" ? "MLX support is not verified. Use the source-linked llama.cpp or vLLM recipe." : "MLX 지원은 미확인입니다. 출처의 llama.cpp 또는 vLLM 실행법을 확인하세요."}`;
   const bits = quant.bits == null ? "4bit" : quant.bits <= 5 ? "4bit" : quant.bits <= 9 ? "8bit" : "bf16";
   if (model.name === "LFM3 1.7B") {
     if (quant.bits != null && (quant.bits < 4 || quant.bits > 5)) return `# ${uiLanguage === "en" ? "Only the official 4-bit MLX checkpoint is verified. Select a 4-bit precision to get its launch command." : "공식 4비트 MLX 체크포인트만 확인됐습니다. 4비트 정밀도를 선택하면 실행 명령이 표시됩니다."}`;

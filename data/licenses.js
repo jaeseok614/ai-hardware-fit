@@ -64,6 +64,7 @@ const exaoneNc = licensePolicy(
 );
 
 window.LLM_GPU_CHECKER_DATA.licensePolicies = {
+  "Mistral Ecosystem Open-Weight": licensePolicy("conditional", "조건부 상업 이용", "공개 가중치", { ko: "내부 사용은 허용되지만 MaaS 사업자 또는 계열사의 상업 사용에는 별도 계약이 필요합니다. LICENSE의 정의와 예외를 확인하세요.", en: "Internal use is allowed; commercial use by a MaaS business or affiliate requires a separate agreement. Review the LICENSE definitions and exceptions." }, "https://huggingface.co/mistralai/Mistral-Large-4-1T-A52B/blob/main/LICENSE"),
   "원문 확인 필요": licensePolicy(
     "review",
     "약관 확인 필요",
