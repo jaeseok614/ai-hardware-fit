@@ -1,4 +1,4 @@
-# Weekly local-model value report — 2026-11-16
+# Weekly local-model value report — 2026-11-23
 
 같은 공개 벤치마크 안에서만 모델을 비교한 AI Hardware Fit 주간 요약입니다.
 
@@ -8,7 +8,7 @@
 
 ## 이번 주 변경
 
-- 점수·메타데이터 변경: Qwen3.8 27B, Qwen3.8-Flash-Next
+- 벤치마크 모델 추가: Aion 1.0 Instruct 2.3B, Mistral Large 4 1T A52B
 
 ## VRAM별 최고 점수
 

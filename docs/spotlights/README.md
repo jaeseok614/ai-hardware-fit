@@ -2,6 +2,7 @@
 
 Every Monday, this directory receives a share card plus ready-to-post Korean and English copy.
 
+- [2026-11-23-rtx3060-12](./posts/2026-11-23-rtx3060-12.md)
 - [2026-11-16-ryzen-ai-max-plus-395-128](./posts/2026-11-16-ryzen-ai-max-plus-395-128.md)
 - [2026-11-09-m4max-128](./posts/2026-11-09-m4max-128.md)
 - [2026-11-02-rx7900xtx-24](./posts/2026-11-02-rx7900xtx-24.md)

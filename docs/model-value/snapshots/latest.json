@@ -1,5 +1,5 @@
 {
-  "date": "2026-11-16",
+  "date": "2026-11-23",
   "baseline": "Q4_K_M · 4K context · concurrency 1 · llama.cpp",
   "metric": "MMLU-Pro",
   "models": [
@@ -16,6 +16,13 @@
       "metric": "MMLU (자체 평가, CoT)",
       "score": 75.43,
       "requiredGb": 6.64
+    },
+    {
+      "name": "Aion 1.0 Instruct 2.3B",
+      "releaseDate": "",
+      "metric": "MMLU-Pro (Microsoft publisher evaluation, lm-evaluation-harness)",
+      "score": 33.35,
+      "requiredGb": 2.98
     },
     {
       "name": "Aya Expanse 32B",
@@ -695,6 +702,13 @@
       "metric": "MMLU (pretrained)",
       "score": 84,
       "requiredGb": 94.97
+    },
+    {
+      "name": "Mistral Large 4 1T A52B",
+      "releaseDate": "",
+      "metric": "AA Intelligence Index v5 (publisher report)",
+      "score": 26,
+      "requiredGb": 656.88
     },
     {
       "name": "Mistral Medium 3.5 128B",
