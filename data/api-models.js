@@ -21,6 +21,11 @@ window.LLM_GPU_CHECKER_DATA = window.LLM_GPU_CHECKER_DATA || {};
 // from five providers; an extra premium flagship is shown separately.
 // Tier labels describe positioning, NOT a benchmark-equivalent quality level.
 window.LLM_GPU_CHECKER_DATA.apiModels = [
+  {"id": "openai-gpt-6.2-astra", "supersedes": "openai-gpt-6-astra", "provider": "OpenAI", "name": "GPT-6.2 Astra", "tier": "flagship", "inputPerMTokUsd": 8, "cachedInputPerMTokUsd": 0.4, "outputPerMTokUsd": 40, "note": {"ko": "표준 Short 컨텍스트 요금. 장문·Fast·Ultrafast·배치·캐시 쓰기 요금은 별도이며 자동 반영하지 않습니다.", "en": "Standard Short-context rates. Long-context, Fast, Ultrafast, batch and cache-write pricing are separate and not applied automatically."}, "sourceUrl": "https://developers.openai.com/api/docs/pricing", "verifiedAt": "2026-11-23"},
+  {"id": "openai-gpt-6.2-sol", "supersedes": "openai-gpt-6.1-sol", "provider": "OpenAI", "name": "GPT-6.2 Sol", "tier": "balanced", "inputPerMTokUsd": 2, "cachedInputPerMTokUsd": 0.1, "outputPerMTokUsd": 10, "note": {"ko": "표준 Short 컨텍스트 요금. 장문·Fast·Ultrafast·배치·캐시 쓰기 요금은 별도이며 자동 반영하지 않습니다.", "en": "Standard Short-context rates. Long-context, Fast, Ultrafast, batch and cache-write pricing are separate and not applied automatically."}, "sourceUrl": "https://developers.openai.com/api/docs/pricing", "verifiedAt": "2026-11-23"},
+  {"id": "anthropic-claude-fable-5.2", "supersedes": "anthropic-claude-fable-5.1", "provider": "Anthropic", "name": "Claude Fable 5.2", "tier": "flagship", "inputPerMTokUsd": 8, "cachedInputPerMTokUsd": 0.2, "outputPerMTokUsd": 40, "note": {"ko": "고난도 추론·장기 에이전트 작업용 표준 API 요금. 캐시 쓰기·도구 비용은 별도입니다.", "en": "Standard API rates for demanding reasoning and long-horizon agentic work. Cache writes and tools are extra."}, "sourceUrl": "https://platform.claude.com/docs/en/about-claude/pricing", "verifiedAt": "2026-11-23"},
+  {"id": "anthropic-claude-haiku-5.5", "supersedes": "anthropic-claude-haiku-4.5", "provider": "Anthropic", "name": "Claude Haiku 5.5", "tier": "economy", "inputPerMTokUsd": 0.1, "cachedInputPerMTokUsd": 0.01, "outputPerMTokUsd": 0.5, "note": {"ko": "프롬프트 100,000토큰 이하 기준. 초과 시 입력 $0.50·출력 $2.50·캐시 $0.05/MTok이며 이 할증은 자동 반영하지 않습니다.", "en": "For prompts up to 100,000 tokens. Above that, input/output/cache rates are $0.50/$2.50/$0.05 per MTok; this surcharge is not applied automatically."}, "sourceUrl": "https://platform.claude.com/docs/en/about-claude/pricing", "verifiedAt": "2026-11-23"},
+
   {
     id: "openai-gpt-6-astra",
     provider: "OpenAI",
@@ -87,14 +92,14 @@ window.LLM_GPU_CHECKER_DATA.apiModels = [
     name: "Claude Sonnet 5.5",
     tier: "balanced",
     inputPerMTokUsd: 2.0,
-    cachedInputPerMTokUsd: 0.2,
+    cachedInputPerMTokUsd: 0.1,
     outputPerMTokUsd: 10.0,
     note: {
       ko: "속도·품질 균형형 Sonnet 5.5의 표준가. 캐시 쓰기·도구 비용은 별도이며 제공사 간 토크나이저 차이도 고려하세요",
       en: "Standard rate for the speed/intelligence-balanced Sonnet 5.5. Cache writes and tools cost extra; consider tokenizer differences between providers",
     },
     sourceUrl: "https://platform.claude.com/docs/en/about-claude/pricing",
-    verifiedAt: "2026-09-30",
+    verifiedAt: "2026-11-23",
   },
   {
     id: "anthropic-claude-haiku-4.5",
@@ -105,8 +110,8 @@ window.LLM_GPU_CHECKER_DATA.apiModels = [
     cachedInputPerMTokUsd: 0.1,
     outputPerMTokUsd: 5.0,
     note: {
-      ko: "가장 저렴한 Anthropic 상시 처리용 모델",
-      en: "Anthropic's cheapest everyday-use model",
+      ko: "이전 세대 Haiku 비교군. 최신 Haiku 5.5는 별도 항목입니다",
+      en: "Previous-generation Haiku comparison; current Haiku 5.5 is listed separately",
     },
     sourceUrl: "https://platform.claude.com/docs/en/about-claude/pricing",
     verifiedAt: "2026-09-30",

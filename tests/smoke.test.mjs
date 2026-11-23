@@ -537,7 +537,7 @@ test("the ontology-construction placement demo chip seeds a distinct 1-GPU extra
   app.eval('placementSelectedKeys = new Set(); gpuInventoryRows = []; placementInventorySeeded = false;');
 });
 
-test("API vs Local defaults to tier-matched models with a computed usage summary, and can expand to all 13", () => {
+test("API vs Local defaults to tier-matched models with a computed usage summary, and can expand to all tracked models", () => {
   app.document.querySelector('[data-core-task="apiCost"]').click();
   assert.equal(app.document.body.classList.contains("api-cost-task-active"), true);
   assert.equal(app.document.getElementById("apiCostPanel").hidden, false);
@@ -547,6 +547,8 @@ test("API vs Local defaults to tier-matched models with a computed usage summary
   // not the full API catalog upfront.
   const compactRows = () => app.document.querySelectorAll("#apiCostTable .api-cost-candidate-card");
   assert.equal(compactRows().length, 4);
+  assert.match(app.document.getElementById("apiCostTable").textContent, /GPT-6.2 Sol/);
+  assert.doesNotMatch(app.document.getElementById("apiCostTable").textContent, /GPT-6.1 Sol/);
   assert.equal(app.document.getElementById("apiCostTier").value, "balanced");
   [...compactRows()].forEach((row) => assert.match(row.querySelector(".api-cost-candidate-rates").textContent, /균형형/));
   const cheapestRow = app.document.querySelector("#apiCostTable .api-cost-candidate-card.is-cheapest");
@@ -613,11 +615,11 @@ test("API vs Local defaults to tier-matched models with a computed usage summary
   // The full catalog expands with the provider/tier
   // filter and sortable columns; collapsing goes back to the compact view.
   const expandToggle = app.document.getElementById("apiCostExpandToggle");
-  assert.match(expandToggle.textContent, /13/);
+  assert.match(expandToggle.textContent, /17/);
   assert.equal(app.document.getElementById("apiCostExpanded").hidden, true);
   expandToggle.click();
   assert.equal(app.document.getElementById("apiCostExpanded").hidden, false);
-  assert.equal(app.document.querySelectorAll("#apiCostFullTable tbody tr").length, 13);
+  assert.equal(app.document.querySelectorAll("#apiCostFullTable tbody tr").length, 17);
   expandToggle.click();
   assert.equal(app.document.getElementById("apiCostExpanded").hidden, true);
   assert.equal(compactRows().length, 5, "collapsing back should restore the compact tier-matched view");
@@ -878,7 +880,7 @@ test("Ontology Cost tab estimates a one-time document-processing cost, separate 
   app.eval('setUiLanguage("ko");');
 });
 
-test("API vs Local's expanded 13-model table supports provider/tier filtering and column sorting", () => {
+test("API vs Local's expanded API-model table supports provider/tier filtering and column sorting", () => {
   app.document.querySelector('[data-core-task="apiCost"]').click();
   app.document.getElementById("apiCostExpandToggle").click();
   const table = () => app.document.getElementById("apiCostFullTable");
@@ -894,20 +896,20 @@ test("API vs Local's expanded 13-model table supports provider/tier filtering an
   providerSelect.value = "Anthropic";
   providerSelect.dispatchEvent(new app.Event("change"));
   let rows = [...table().querySelectorAll("tbody tr")];
-  assert.equal(rows.length, 4, "filtering to Anthropic should include its three tiers and premium flagship");
+  assert.equal(rows.length, 6, "filtering to Anthropic retains current and previous-generation comparison models");
   rows.forEach((row) => assert.equal(row.cells[0].textContent, "Anthropic"));
 
   tierSelect.value = "flagship";
   tierSelect.dispatchEvent(new app.Event("change"));
   rows = [...table().querySelectorAll("tbody tr")];
-  assert.equal(rows.length, 2, "the flagship filter should retain both Opus and Fable");
+  assert.equal(rows.length, 3, "the flagship filter retains Opus and both Fable generations");
   assert.match(rows.map((row) => row.cells[1].textContent).join(" "), /Opus.*Fable|Fable.*Opus/);
 
   providerSelect.value = "all";
   providerSelect.dispatchEvent(new app.Event("change"));
   tierSelect.value = "all";
   tierSelect.dispatchEvent(new app.Event("change"));
-  assert.equal(table().querySelectorAll("tbody tr").length, 13, "clearing both filters should restore all tracked models");
+  assert.equal(table().querySelectorAll("tbody tr").length, 17, "clearing both filters should restore all tracked models");
 
   // Clicking the "Provider" column header should sort alphabetically by
   // provider instead of the default cost-ascending order. The header

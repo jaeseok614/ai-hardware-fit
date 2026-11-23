@@ -935,7 +935,7 @@
     // quality tier -- the data file tracks exactly one model per
     // provider per tier, so filtering by tier alone already yields the
     // "one per provider" set with no extra dedupe logic needed.
-    const compactRows = allRows.filter((row) => row.tier === viewState.tier);
+    const compactRows = allRows.filter((row) => row.tier === viewState.tier && !allRows.some((candidate) => candidate.supersedes === row.id));
 
     // Same-tier Local estimate, plus the selected candidate's KRW monthly
     // cost as the comparison baseline for the verdict banner, the plain

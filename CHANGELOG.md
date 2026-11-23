@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-11-23 — Weekly catalog verification
+
+- Added Microsoft Aion 1.0 Instruct 2.3B with full BF16 checkpoint sizing, conservative GQA KV, a publisher Transformers recipe and explicit unverified speed/runtime limits. Catalog: 353 local models; 17 API pricing entries after adding GPT-6.2 Astra/Sol and Claude Fable 5.2/Haiku 5.5, plus a Sonnet cache-hit correction. [Verification](docs/maintenance/2026-11-23-weekly.md)
+
 ## Catalog additions — 2026-11-19
 
 - Added LFM3-VL 2B and Mistral Large 4 with verified weights, publisher evaluations, license conditions and guarded launch recipes. Catalog: 352 models. See [verification notes](docs/maintenance/2026-11-19-models.md).

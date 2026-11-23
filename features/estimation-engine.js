@@ -237,11 +237,12 @@ function estimateModel(model, quantId, hardware) {
   const pressure = getVramPressure(requiredGb, effectiveVram);
   const ramAssist = hardware.ram * 0.45;
   const offloadRoom = effectiveVram + ramAssist;
-  const grade = contextSupported ? gradeFromPressure(pressure, requiredGb, offloadRoom) : "F";
+  const settingSupported = !model.transformersOnly || (quant.id === "fp16" && hardware.runtime === "transformers");
+  const grade = contextSupported && settingSupported ? gradeFromPressure(pressure, requiredGb, offloadRoom) : "F";
   const speedStats = model.speedStatus === "unverified" ? { perRequest: 0, total: 0 } : estimateSpeed(model, quant, hardware, grade);
   const latencySeconds = speedStats.perRequest > 0 ? hardware.outputTokens / speedStats.perRequest : 0;
   const firstTokenSeconds = model.speedStatus === "unverified" ? 0 : estimateFirstTokenSeconds(model, hardware, grade);
-  const reason = buildReason(grade, requiredGb, effectiveVram, model, hardware, contextLimitTokens, contextSupported);
+  const reason = settingSupported ? buildReason(grade, requiredGb, effectiveVram, model, hardware, contextLimitTokens, contextSupported) : (uiLanguage === "en" ? "Only the publisher BF16 Transformers route is verified. Select FP16/BF16 and Transformers; review custom code before running." : "공식 BF16 Transformers 경로만 확인됐습니다. FP16/BF16과 Transformers를 선택하고 실행 전 커스텀 코드를 검토하세요.");
 
   return {
     model,
@@ -314,7 +315,7 @@ function estimateKvCacheGb(model, hardware) {
 }
 
 function recommendQuant(model, hardware) {
-  const preferredIds = ["q6", "q5", "q5_k_s", "q5_0", "q4", "q4_k_s", "q4_0", "q3", "q3_k_s", "q2", "iq2_xxs"];
+  const preferredIds = model.quantizationIds?.length === 1 ? model.quantizationIds : ["q6", "q5", "q5_k_s", "q5_0", "q4", "q4_k_s", "q4_0", "q3", "q3_k_s", "q2", "iq2_xxs"];
   const qualityFirst = preferredIds
     .map((id) => QUANTS.find((item) => item.id === id))
     .filter((quant) => quant && (!model.quantizationIds || model.quantizationIds.includes(quant.id)));
@@ -987,6 +988,7 @@ function estimateFirstTokenSeconds(model, hardware, grade) {
 }
 
 function computeConcurrencyBounds(model, quant, hardware, effectiveVramOverride) {
+  if (model.transformersOnly && (quant.id !== "fp16" || hardware.runtime !== "transformers")) return { recommendedN: 0, maxN: 0, speedAtRecommended: { perRequest: 0, total: 0 }, speedAtMax: { perRequest: 0, total: 0 } };
   // requiredGb(N) = A + N * B for N >= 1 (KV cache와 요청당 오버헤드가 선형이라는 전제 하의 역산)
   const runtimeFactor = getRuntimeFactor(hardware.runtime);
   const weightsGb = estimateModelWeightsGb(model, quant);

@@ -159,7 +159,7 @@ test("API catalog is separate and contains standard rather than batch/fast price
     "openai-gpt-6.1-sol": [2, 0.1, 10],
     "openai-gpt-6-luna": [0.1, 0.01, 0.5],
     "anthropic-claude-opus-5.5": [4, 0.2, 20],
-    "anthropic-claude-sonnet-5.5": [2, 0.2, 10],
+    "anthropic-claude-sonnet-5.5": [2, 0.1, 10],
     "anthropic-claude-fable-5.1": [10, 0.25, 50],
     "google-gemini-3.8-flash": [0.75, 0.075, 3.75],
     "deepseek-v4.1-flash": [0.3, 0.006, 1.2],
@@ -169,13 +169,13 @@ test("API catalog is separate and contains standard rather than batch/fast price
   for (const [id, prices] of Object.entries(expected)) {
     const row = data.apiModels.find((item) => item.id === id);
     assert.deepEqual([row.inputPerMTokUsd, row.cachedInputPerMTokUsd, row.outputPerMTokUsd], prices);
-    assert.equal(row.verifiedAt, "2026-09-30");
+    assert.equal(row.verifiedAt, id === "anthropic-claude-sonnet-5.5" ? "2026-11-23" : "2026-09-30");
     assert.equal(row.params, undefined);
     // An open-weight family can also be hosted by an API provider. The
     // pricing record must still remain separate from local sizing records.
     assert.equal(Object.hasOwn(row, "active"), false);
   }
-  assert.equal(data.apiModels.length, 13);
+  assert.equal(data.apiModels.length, 17);
   assert.match(data.apiModels.find((item) => item.id === "deepseek-v4.1-flash").note.en, /Peak rates/);
   assert.match(data.apiModels.find((item) => item.id === "google-gemini-3.8-flash").note.en, /2027-01-01/);
 });
@@ -242,4 +242,52 @@ test("LFM3 vision uses full checkpoint BF16 and withholds uncalibrated page thro
   assert.match(command, /max_new_tokens=512/);
   assert.doesNotMatch(command, /vllm serve/);
 
+});
+
+
+test("Aion preview uses full BF16 weights, bounded runtime claims and conservative hybrid KV", () => {
+  const model = data.models.find((row) => row.name === "Aion 1.0 Instruct 2.3B");
+  assert.equal(model.params, 2.288831488);
+  assert.equal(model.context * 1024, 32768);
+  assert.equal(model.tags.includes("korean"), false);
+  assert.equal(model.license, "MIT");
+  assert.equal(data.modelMetadata[model.name].qualityBenchmark.value, 33.35);
+  const hardware = {context:4096,concurrency:1,ram:32,kvMeta:{factor:1},runtime:"transformers",outputTokens:512};
+  const ctx = vm.createContext({window:{}, model, hardware, uiLanguage:"en", QUANTS:[{id:"auto"},{id:"q4",label:"Q4_K_M",bytesPerB:0.6},{id:"fp16",label:"FP16/BF16",bytesPerB:2}]});
+  vm.runInContext(fs.readFileSync("features/estimation-engine.js", "utf8"), ctx);
+  ctx.getEffectiveVram = () => 32;
+  ctx.buildReason = () => "Memory estimate";
+  const estimate = vm.runInContext('estimateModel(model, "auto", hardware)', ctx);
+  assert.equal(estimate.quant.id, "fp16");
+  assert.equal(estimate.weightsGb, 2.288831488 * 2 * 1.08);
+  assert.equal(estimate.kvGb, 2 * 28 * 8 * 128 * 4096 * 2 / 1e9);
+  assert.equal(estimate.speed, 0);
+  assert.equal(estimate.speedUnverified, true);
+  const frontier = fs.readFileSync("features/value-frontier.js", "utf8").replace("{ render, compute };", "{ render, compute, estimateVram };");
+  vm.runInContext(frontier, ctx);
+  assert.equal(vm.runInContext("window.AIHardwareValueFrontier.estimateVram(model)",ctx), null);
+  assert.equal(vm.runInContext('estimateModel(model, "q4", hardware).grade',ctx), "F");
+  assert.equal(vm.runInContext('estimateModel(model, "fp16", {...hardware,runtime:"llamacpp"}).grade',ctx), "F");
+  assert.equal(vm.runInContext('computeConcurrencyBounds(model, {id:"q4"}, hardware).recommendedN',ctx), 0);
+  const source = fs.readFileSync("app.js", "utf8");
+  vm.runInContext(source.slice(source.indexOf("function buildPublisherTransformersCommand("), source.indexOf("function buildOllamaModelName(")),ctx);
+  const launch=vm.runInContext('buildOllamaCommand(model, {id:"fp16"}, hardware)',ctx);
+  assert.match(launch,/microsoft\/Aion-1.0-Instruct-2.3B/);
+  assert.match(launch,/trust_remote_code=True/);
+  assert.match(launch,/dtype="auto"/);
+  assert.match(launch,/apply_chat_template/);
+  assert.doesNotMatch(vm.runInContext('buildLlamaCppCommand(model, {id:"q4"}, hardware)',ctx),/AutoModel|llama-cli|ollama run/);
+  assert.doesNotMatch(vm.runInContext('buildMlxCommand(model, {id:"fp16"}, hardware)',ctx),/mlx_lm|pip install/);
+});
+
+
+test("November API refresh separates standard text pricing from batch and long-prompt surcharges", () => {
+  const expected = {"openai-gpt-6.2-astra":[8,0.4,40],"openai-gpt-6.2-sol":[2,0.1,10],"anthropic-claude-fable-5.2":[8,0.2,40],"anthropic-claude-haiku-5.5":[0.1,0.01,0.5]};
+  for(const [id,prices] of Object.entries(expected)) {
+    const model=data.apiModels.find((row)=>row.id===id);
+    assert.deepEqual([model.inputPerMTokUsd,model.cachedInputPerMTokUsd,model.outputPerMTokUsd],prices);
+    assert.equal(model.verifiedAt,"2026-11-23");
+    assert.equal(model.params,undefined);
+  }
+  assert.match(data.apiModels.find((row)=>row.id==="anthropic-claude-haiku-5.5").note.en,/100,000/);
 });

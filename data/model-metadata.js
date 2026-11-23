@@ -1711,3 +1711,8 @@ Object.assign(window.LLM_GPU_CHECKER_DATA.modelMetadata, {
   "Mistral Large 4 1T A52B": { sourceUrl: "https://huggingface.co/mistralai/Mistral-Large-4-1T-A52B", verifiedAt: "2026-11-19", ggufSourceUrl: "https://huggingface.co/ggml-org/Mistral-Large-4-1T-A52B-GGUF", weightSourceUrl: "https://huggingface.co/api/models/ggml-org/Mistral-Large-4-1T-A52B-GGUF?blobs=true", qualityBenchmark: quality("AA Intelligence Index v5 26", "AA Intelligence Index v5 (publisher report)", 26, "https://huggingface.co/mistralai/Mistral-Large-4-1T-A52B", "제작사 공개 평가·로컬 실측 아님") },
   "LiquidAI/LFM3-VL-2B": { sourceUrl: "https://huggingface.co/LiquidAI/LFM3-VL-2B", verifiedAt: "2026-11-19", checkpointParameters: 1918181888, qualityBenchmark: quality("MMMU-Pro 45.7", "MMMU-Pro standard 10 options (Liquid evaluation)", 45.7, "https://huggingface.co/LiquidAI/LFM3-VL-2B", "제작사 공개 평가·로컬 실측 아님") },
 });
+
+// Official checkpoint and publisher evaluation checked 2026-11-23.
+Object.assign(window.LLM_GPU_CHECKER_DATA.modelMetadata, {
+  "Aion 1.0 Instruct 2.3B": { sourceUrl: "https://huggingface.co/microsoft/Aion-1.0-Instruct-2.3B", verifiedAt: "2026-11-23", checkpointParameters: 2288831488, qualityBenchmark: quality("MMLU-Pro 33.35", "MMLU-Pro (Microsoft publisher evaluation, lm-evaluation-harness)", 33.35, "https://huggingface.co/microsoft/Aion-1.0-Instruct-2.3B", "제작사 공개 평가·로컬 실측 아님") },
+});

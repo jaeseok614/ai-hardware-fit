@@ -347,7 +347,7 @@
     tierSelect.value = viewState.tier;
 
     const docTokens = docTokensFromPages(viewState.docPages, viewState.docType, viewState.scanResolution);
-    const rows = estimateOntologyCost({ docTokens, passProfileKey: viewState.passProfile }).filter((row) => row.tier === viewState.tier);
+    const rows = estimateOntologyCost({ docTokens, passProfileKey: viewState.passProfile }).filter((row) => row.tier === viewState.tier && !apiModels().some((candidate) => candidate.supersedes === row.id));
     const cheapestUsd = rows.length ? Math.min(...rows.map((row) => row.costUsd)) : 0;
     // A previously-selected provider can disappear from view when the
     // tier changes (each tier only shows its own 3 models) -- clear a

@@ -18,7 +18,7 @@ function metricDisplay(metric, en) {
 
 function estimateVram(model) {
   const quant = QUANTS.find((item) => item.id === BASELINE.quantId);
-  if (!quant || !model?.params || !model?.active) return null;
+  if (!quant || !model?.params || !model?.active || (model.quantizationIds && !model.quantizationIds.includes(quant.id))) return null;
   const weightsGb = estimateModelWeightsGb(model, quant);
   const kvGb = model.active * 0.09;
   const runtimeOverheadGb = 1.2 + Math.min(3, weightsGb * 0.06);

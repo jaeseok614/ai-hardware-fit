@@ -3905,9 +3905,9 @@ function buildGenerativeDetailBodyHtml(model, hardware) {
     <section class="detail-section">
       <h3>${en ? "Run command" : "실행 명령어"}</h3>
       <pre class="command-block"><code>${escapeHtml(buildOllamaCommand(model, estimate.quant, hardware))}
-${escapeHtml(buildLlamaCppCommand(model, estimate.quant, hardware))}${gpuRuntimeFamily(hardware.preset) === "apple" ? `
+${model.transformersOnly ? "" : escapeHtml(buildLlamaCppCommand(model, estimate.quant, hardware))}${gpuRuntimeFamily(hardware.preset) === "apple" ? `
 ${escapeHtml(buildMlxCommand(model, estimate.quant, hardware))}` : ""}</code></pre>
-      <p class="settings-note">${en
+      <p class="settings-note">${model.transformersOnly ? (en ? 'Publisher BF16 Transformers preview; other runtimes are not verified.' : '제작사 BF16 Transformers 공개판 기준이며 다른 런타임은 미확인입니다.') : en
         ? 'LM Studio, koboldcpp, and text-generation-webui all use the llama.cpp engine internally, so they match the "llama.cpp / Ollama" numbers above.'
         : 'LM Studio·koboldcpp·text-generation-webui도 내부적으로 llama.cpp 엔진을 사용해 위 "llama.cpp / Ollama" 수치와 동일합니다.'}</p>
     </section>
@@ -4727,7 +4727,7 @@ function renderRuntimeRows(model, hardware) {
     scenarios.push({ label: "MLX (mlx-lm)", hardware: { ...hardware, runtime: "mlx" } });
   }
 
-  return scenarios.map((scenario) => {
+  return scenarios.filter((scenario) => !model.transformersOnly || scenario.hardware.runtime === "transformers").map((scenario) => {
     const estimate = estimateModel(model, selectedQuant, scenario.hardware);
     const meta = GRADE_META[estimate.grade];
     const confidence = getEstimateConfidence(model, estimate, scenario.hardware);
@@ -5063,12 +5063,28 @@ function ocrTypeLabel(value) {
   return en ? "OCR pipeline" : "OCR 파이프라인";
 }
 
+function buildPublisherTransformersCommand(model, quant) {
+  if (quant.id !== "fp16") return `# ${uiLanguage === "en" ? "Only the publisher BF16 checkpoint is verified; select FP16/BF16." : "공식 BF16 체크포인트만 확인됐습니다. FP16/BF16을 선택하세요."}`;
+  return `# pip install "transformers>=5.9,<6" torch accelerate
+# ${uiLanguage === "en" ? "Python example. Review publisher custom code before running; no quantized weights are substituted." : "Python 예제입니다. 실행 전 제작사 커스텀 코드를 검토하세요. 양자화 가중치를 대체하지 않습니다."}
+from transformers import AutoModelForCausalLM, AutoTokenizer
+model_id = "${model.hfRepo}"
+tokenizer = AutoTokenizer.from_pretrained(model_id, trust_remote_code=True)
+model = AutoModelForCausalLM.from_pretrained(model_id, dtype="auto", device_map="auto", trust_remote_code=True)
+messages = [{"role": "user", "content": "Summarize the following document: ..."}]
+inputs = tokenizer.apply_chat_template(messages, add_generation_prompt=True, return_dict=True, return_tensors="pt").to(model.device)
+outputs = model.generate(**inputs, max_new_tokens=512)
+print(tokenizer.decode(outputs[0][inputs["input_ids"].shape[-1]:], skip_special_tokens=True))`;
+}
+
 function buildOllamaCommand(model, quant, hardware) {
+  if (model.transformersOnly) return buildPublisherTransformersCommand(model, quant);
   if (model.officialGgufRepo) return buildLlamaCppCommand(model, quant, hardware);
   return `ollama run ${buildOllamaModelName(model)} # ${quant.label}, ${formatContext(hardware.context)}`;
 }
 
 function buildLlamaCppCommand(model, quant, hardware) {
+  if (model.transformersOnly) return buildPublisherTransformersCommand(model, quant);
   if (model.officialGgufRepo) {
     const format = quant.id === "fp16" ? (model.ggufFormats?.includes("BF16") ? "BF16" : "F16") : quant.label;
     if (model.name === "Mistral Large 4 1T A52B") {
@@ -5089,6 +5105,7 @@ function buildLlamaCppCommand(model, quant, hardware) {
 // "bf16", not "Q4_K_M"), so this snippet intentionally shows the conversion
 // step rather than pretending a 1:1 named MLX repo exists for every quant tier.
 function buildMlxCommand(model, quant, hardware) {
+  if (model.transformersOnly) return `# ${uiLanguage === "en" ? "MLX support is unverified; use the publisher Transformers recipe." : "MLX 지원은 미확인입니다. 제작사 Transformers 실행법을 확인하세요."}`;
   // mlx-community mostly publishes 4bit/8bit/bf16 repo variants (not the full
   // llama.cpp K-quant ladder), so map the selected quant tier's approximate
   // bit-width (quant.bits, e.g. Q4_K_M=4.8, Q8_0=8.5, FP16=16) onto the
