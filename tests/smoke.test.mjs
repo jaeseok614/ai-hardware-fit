@@ -548,6 +548,7 @@ test("API vs Local defaults to tier-matched models with a computed usage summary
   const compactRows = () => app.document.querySelectorAll("#apiCostTable .api-cost-candidate-card");
   assert.equal(compactRows().length, 4);
   assert.match(app.document.getElementById("apiCostTable").textContent, /GPT-6.2 Sol/);
+  assert.match(app.document.getElementById("apiCostCaveat").textContent, /2026-09-30.*2026-11-23/);
   assert.doesNotMatch(app.document.getElementById("apiCostTable").textContent, /GPT-6.1 Sol/);
   assert.equal(app.document.getElementById("apiCostTier").value, "balanced");
   [...compactRows()].forEach((row) => assert.match(row.querySelector(".api-cost-candidate-rates").textContent, /균형형/));

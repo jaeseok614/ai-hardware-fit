@@ -992,7 +992,9 @@
 
     const meta = window.LLM_GPU_CHECKER_DATA?.apiPricingMeta;
     const caveat = meta?.basis?.[en ? "en" : "ko"] || "";
-    panel.querySelector("#apiCostCaveat").textContent = `${caveat}${caveat ? " " : ""}${en ? `(checked ${meta?.verifiedAt || ""})` : `(확인일 ${meta?.verifiedAt || ""})`}`;
+    const dates = [...new Set(apiModels().map((model) => model.verifiedAt).filter(Boolean))].sort();
+    const checked = dates.length > 1 ? `${dates[0]}–${dates[dates.length - 1]}` : dates[0] || meta?.verifiedAt || "";
+    panel.querySelector("#apiCostCaveat").textContent = `${caveat}${caveat ? " " : ""}${en ? `(entry verification dates: ${checked})` : `(항목별 확인일: ${checked})`}`;
     panel.querySelector("#apiCostBridge").innerHTML = en
       ? `The Local figures above use one reference GPU per tier. For a precise sizing that accounts for concurrent users and target latency, try <button type="button" class="ghost-button" data-core-task="infra">the infra sizing estimate</button>.`
       : `위 Local 수치는 등급별 기준 GPU 1종을 기준으로 한 값입니다. 동시 사용자·응답 목표까지 반영한 정밀 견적은 <button type="button" class="ghost-button" data-core-task="infra">인프라 견적</button>에서 확인하세요.`;
